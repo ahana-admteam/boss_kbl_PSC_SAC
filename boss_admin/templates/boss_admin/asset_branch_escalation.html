@@ -1,0 +1,237 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{%  block content %}
+
+{% include "boss_admin/assign_role_page/left_nav_bar.html" %}
+
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+<style>
+.div1 {
+width:100:
+height:50px;
+padding:8px;
+border:2px solid pink;
+margin-top:10px;
+margin-left:50px;
+margin-right:50px;
+}
+
+.alert11 {
+   width:100%;
+   line-height:10%;
+}
+</style>
+
+<div class="right-main-container" style="margin-top:30px;">
+    <div class="header">
+        Escalation Matrix
+    </div>
+    <form id="submit_form" method="POST">
+        {% csrf_token %}
+        <div class="div1">
+            {% if messages %}
+                  {% for message in messages %}
+                       {% if message.tags == 'success' %}
+                            <div class="alert alert-success alert-dismissible alert11" role="alert">
+                                <p style="text-align:center;margin-top:10px;">{{ message }}</p>
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                            {% elif message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible alert11" role="alert">
+                                <p style="text-align:center;margin-top:10px;">{{ message }}</p>
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                       {% endif %}
+                   {% endfor%}
+             {% endif %}
+
+                                         {% if form.errors %}
+                                <div class="alert alert-danger alert-dismissible col-12 mx-1" role="alert"
+                                     style="font-size: 11px">
+                                    <div class="row">
+                                        {% for key, value in form.errors.items %}
+                                            <div class="col-sm-6">
+                                                {{ key }}:
+                                            </div>
+                                            <div class="col-sm-6">
+                                                {{ value }}
+                                            </div>
+                                        {% endfor %}
+
+                                    </div>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+
+            
+            <div class="row mt-3">
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-3 col-xxl-3 ml-4">
+                    <select required="required" id="branch_id"  name="branch_code" class="form-control dropdowns" style="width: 120% !important; font-size: 14px;">
+                        <option value="">Branch</option>
+                        {% for branch in branch_list %}
+                        <option id="branch_id__" name="xyz" value="{{branch.branch_code}}">
+                            {{branch.branch_name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-3 col-xxl-3 ml-4">
+                    <select name="escalation_type" class="form-control dropdowns" id="employee_id"
+                            style="width: 120% !important;font-size: 14px;" required="required">
+                        <option value="">Escalation Level</option>
+
+                        <!-- <option name="escalation_1_mail" value="ROL">ROL</option>
+                        <option name="escalation_2_mail" value="HO">HO</option>
+                        <option name="escalation_3_mail" value="ZO">ZO</option> -->
+                        {% for esc_level in escalation_level %}
+                        <option name="escalation_1_mail"  value="{{esc_level}}">{{esc_level}}</option>
+                        {% endfor %}
+                        
+                    </select>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-3 col-xxl-3 ml-4">
+                   <input required="required" type="text" class="form-control" style=" width: 100% !important; font-size: 14px;" name="escalation_person" id="escalation_person" placeholder="Name">
+                </div>
+                <br> <br> <br>
+
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-3 col-xxl-3 ml-4">
+                    <input required="required" type="email" class="form-control" style="width: 100% !important; " id="escalation_mail_id" name="escalation_mail_id" placeholder="Email ID">
+                </div>
+              
+
+
+                <div class="col-sm-1 ml-4">
+                    <button class="btn btn-primary" type="submit" name="submit">Add
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+
+
+
+           <div class="tb_search mt-2 " style="float:right;padding-right:70px;width:25%;">
+                <input  type="text" id="search_input_all" onkeyup="FilterkeyWord_all_table()"
+                       placeholder="Search.." class="form-control">
+            </div>
+   <div style="text-align:center; margin-top:55px; margin-left:23px; margin-right:32px;">
+        <div class="container" style="width:980px; height:235px; overflow:auto; position:fixed;">
+            <div class="table-responsive">
+                <table class="table table-hover" id="table-id" style="border:rgb(255,0,158); font-size: 14px; ">
+                    <thead style="background-color:rgb(255,0,158); border: pink; color: white;">
+                    <tr>
+<!--                        <th>Registers</th>-->
+                        <th>Branch Name</th>
+                        <th>Escalation Level</th>
+                        <th>Employee Name</th>
+                        <th>Employee Email-ID</th>
+<!--                        <th>Status</th>-->
+                        <!--                              <th>Edit</th>-->
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for list in asset_branch_esc %}
+                    <tr>
+<!--                        <td>{{list.registers_code__registers_type}}</td>-->
+                        <td>{{list.branch_code}}</td>
+                        <td>{{list.escalation_type}}</td>
+                        <td>{{list.escalation_person}}</td>
+                        <td>{{list.escalation_mail_id}}</td>
+<!--                        {% if list.is_active == True %}-->
+<!--                        <td>Active</td>-->
+<!--                        {% endif %}-->
+                        <!--                              <td><button  data-toggle="modal" data-target="#myModal"><i class="fa fa-edit" style="font-size:25px; color: black;"> </i> </button></td>-->
+                        <td>
+                            <button type="button" data-toggle="modal" data-target="#myModal"
+                                    onclick="confirms({{list.id}})"><i class="fa fa-trash"
+                                                                                    style="font-size:25px; color: black;"> </i>
+                            </button>
+                        </td>
+                        <!--                       <a href="#"> <i class="fa fa-edit" style="font-size:25px; color: black;"> </i> </a> </td>-->
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</div>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body">
+                    <p>are you sure you want to delete..?</p>
+                    <div style="float:right">
+                        <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                                onclick="delete1()">yes
+                        </button>
+                        <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+
+<!-- message -->
+<script>
+   $('#success').hide()
+</script>
+
+<!-- javascript for popup -->
+<script type="text/javascript">
+// Popup window code
+function newPopup(url) {
+	popupWindow = window.open(
+		url,'popUpWindow','height=423,width=961,left=293,top=166,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+}
+
+
+</script>
+
+<!-- value to button deleteid-->
+<script>
+function confirms(a) {
+            // console.log(a)
+            $("#deleteid").attr('value',a);
+       }
+</script>
+
+<!-- to DELETE THE BASED ON DELETEID -->
+<script>
+function delete1() {
+var delete_data = $("#deleteid").val();
+var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+                url: "delete_branch_esc",
+                headers: {
+                                "X-CSRFToken": csrftoken
+                            },
+                data: { "value": delete_data },
+                dataType:"html",
+                type: "post",
+                success: function(data){
+                   location.reload();
+                }
+            });
+        }
+</script>
+
+
+{%  endblock content %}

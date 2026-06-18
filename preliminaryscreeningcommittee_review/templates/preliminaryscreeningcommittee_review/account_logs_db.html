@@ -1,0 +1,218 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+<style>
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+        resize: none;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    .in-control {
+        border: none;
+        width: 5%;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+        padding-right: 30px;
+
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+
+    .block {
+        border: 1px solid black;
+    }
+
+    .custom-dropdown {
+        /* border: none; */
+        /* Optionally, you can remove other border properties as well */
+        /* border-width: 0; */
+        /* border-color: transparent; */
+        /* border-radius: 0; */
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+
+    .block {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        overflow: hidden;
+    }
+
+
+
+    .sidebar a:hover {
+        background-color: white;
+    }
+
+    .block {
+        margin-left: 150px;
+        padding: 120px;
+        width: calc(100% - 260px);
+        height: 30vh;
+        overflow-y: auto;
+    }
+
+    .block {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+
+
+
+    input[type="file"] {
+        margin: 10px 0;
+    }
+
+    h1 {
+        color: #333;
+    }
+</style>
+
+
+<div class="right-main-container" style="padding: 0px 20px;">
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row" style="padding-top: 125px">
+            <div class="form-group row block">
+
+                <form action="{% url 'account_dashboard' %}" method="post" class="form-inline">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="psc_form_date" class="col-form-label">
+                                <strong>Select Nature of Account :</strong></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <select class="custom-dropdown" type="text" required class="form-control" name="review_type"
+                                id="review_type">
+                                <option value="" selected hidden>Choose</option>
+                                <option value="PSC">PSC</option>
+                                <option value="SAC">SAC</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-6">
+                            <label for="psc_form_date" class="col-form-label">
+                                <strong>Enter Account No.</strong></label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input name="review_id" class="form-control" id="review_id">
+                        </div>
+                    </div>
+                    <div class="col-md-3 mt-3" style="margin-left: 40%;">
+                        <button id="reviewTypeSelection" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

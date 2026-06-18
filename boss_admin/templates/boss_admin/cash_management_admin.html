@@ -1,0 +1,173 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2 pt-3">
+            <form method="POST" id="branch_form"  action="{% url 'cash_admin' %}">
+                {% csrf_token %}
+                <div class="col-sm-12" id="branch">
+                    <!-- <label for="branch_code">Branch Code<span style="color:red">*</span></label> -->
+                    <select class="form-control" required autocomplete="off" name="branch_code" id="branch_code">
+                        <option value="" disabled selected hidden>Branch</option>
+                        {% for item in branch_list %}
+                        <option value="{{item.branch_code}}">
+                            {{item.branch_name}}-{{item.branch_code}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+        {% comment %} <div class="col-md-8 pt-3">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div style="height: 60px;" class="message alert alert-success" role="alert">
+                            <p style="text-align:center;">{{ message }}</p>
+                        </div>
+                        {% elif message.tags == 'error' %}
+                        <div style="height: 60px;" class="message alert alert-danger" role="alert">
+                            <p style="text-align:center;">{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor%}
+            {% endif %}
+        </div> {% endcomment %}
+        <div class="col-md-8 pt-3 text-center">
+           <h4>Cash Register</h4>
+        </div>
+        <div class="col-md-2 pt-3">
+            <a type="button" class="btn btn-primary button-custom-hover pull-right" id="unfreeze_submit"
+                href="{% url 'cash_reports' %}">Cash Reports</a>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <table class="table table-striped table-hover" id="cr_table">
+            <thead class="table-dark">
+                <tr>
+                    <th>CR Date</th>
+                    <th>Branch Code</th>
+                    <th>Created By</th>
+                    <th>Opening Balance</th>
+                    <th>Closing Balance</th>
+                    <th>Status</th>
+                    <th>Frozen Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for val in cr_data %}
+                <tr>
+                    <td hidden>{{val.id}}</td>
+                    <td>{{val.cr_date | date:'d-m-Y'}}</td>
+                    <td>{{val.branch_code}} - {{val.branch_code__branch_name}}</td>
+                    <td>{{val.created_user__emp_name}}</td>
+                    <td>{{val.opening_bal}}</td>
+                    <td>{{val.closing_bal}}</td>
+                    {% if val.freeze == True %}
+                    <td>Frozen</td>
+                    {% elif val.freeze == False %}
+                    <td>Not Frozen</td>
+                    {% endif %}
+                    <td>{{val.freeze_date | date:'d-m-Y'}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            
+                
+            {% for val in branch_cr_data %}
+                <tr>
+                    <td hidden>{{val.id}}</td>
+                    <td>{{val.cr_date | date:'d-m-Y'}}</td>
+                    <td>{{val.branch_code}} - {{val.branch_code__branch_name}}</td>
+                    <td>{{val.created_user__emp_name}}</td>
+                    <td>{{val.opening_bal}}</td>
+                    <td>{{val.closing_bal}}</td>
+                    {% if val.freeze == True %}
+                    <td>Frozen</td>
+                    {% elif val.freeze == False %}
+                    <td>Not Frozen</td>
+                    {% endif %}
+                    <td>{{val.freeze_date | date:'d-m-Y'}}</td>
+                    <td>
+                        <button class="btn btn-primary" data-toggle="modal" id="unfreeze_cr_{{val.id}}"
+                            onclick="myFunction('{{val.id}}')"data-target="#exampleModal" hidden>
+                            <i>Unfreeze</i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<form id="edit_modal" method="POST" action="{% url 'unfreeze_cr' %}">
+    <div class="modal" id="exampleModal" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel">Freeze Confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row">
+                        <input type="text" name="cr_id" id="cr_id" hidden>
+                        <p>Are you sure you want to unfreeze this cash register ?</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-sm-6 form-group">
+                            <button id="submit_id" type="submit" class="btn btn-primary button-custom-hover">Yes</button>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <button class="btn btn-danger button-custom-hover" data-dismiss="modal" onclick="window.location.reload()">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    var data = JSON.parse(JSON.stringify({{unfreeze_data|safe}}))
+    var unfreeze_data = Object.values(data);
+    unfreeze_data.forEach(function(element,index){
+        document.getElementById("unfreeze_cr_"+element+"").hidden =false;
+    });
+</script>
+<script>
+    if(window.history.replaceState){
+        window.history.replaceState(null,null,window.location.href);
+    }
+
+    $(document).ready(function () {
+
+    // messages timeout for 10 sec
+    setTimeout(function () {
+        $('.message').fadeOut('slow');
+    }, 5000); // <-- time in milliseconds, 1000 =  1 sec
+    // delete message
+    $('.del-msg').live('click', function () {
+        $('.del-msg').parent().attr('style', 'display:none;');
+    })
+
+    });
+</script>
+<script>
+function myFunction(id) {
+    $('#cr_id').val(id);
+}
+
+$('#branch_code').on("change",function(e){
+    $('#branch_form').submit();
+})
+</script>
+{% endblock %}

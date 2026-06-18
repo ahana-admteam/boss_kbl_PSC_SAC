@@ -1,0 +1,726 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+<!-- <style>
+.alert11 {
+   width:100%;
+   line-height:10%;
+}
+th {
+    position: sticky;
+    top: 0;
+    text-align: center;        
+}
+.pagination-container {
+    width: 70%;
+    float: left;
+    position: absolute;
+    bottom: 5px;
+    margin-left: 1px;
+}
+ .pag{
+    margin-top: -35px;
+}
+
+</style> -->
+
+<div class="container mt-3">
+    <div class="row mb-3">
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="clickadd" onclick="addasset()">Add Employee</button>
+                </div>
+                <div class="form-group col-sm-3">
+                    <button id="bulk" action="" class="btn btn-primary" onclick="bulkasset()">Bulk Add</button>
+                </div>    
+            </div>
+        </div>
+        <div class="form-group col-sm-4">
+            <div class="export">
+                <button class="btn btn-primary btn-export pull-right" data-toggle="modal" data-target="#newModal_export">
+                    <i class="fa fa-download" data-toggle="tooltip" title="Export"></i>
+                </button> 
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-left:365px;">
+        <div id="message_success" style="margin-top:-38px; display:none; text-align:center; height:38px; padding-top:5px;" class="alert-danger alert-dismissible col-7 mx-1" role="alert">
+            <span id="response_id" value={{data}}></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <form action="{% url 'employee_data_search' %}" method="post" class="form-inline">
+                <div class="row pull-right">
+                <div class="col-md-10" id="search_all">
+                    {% csrf_token %}
+                    <input type="text" name="search" placeholder="Search" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group col-sm-2">
+                    <button style="float: right;width:40px;" class="form-control btn-outline-primary" type="submit"><i class="fa fa-search"></i></button>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class=" message alert alert-success alert-dismissible alert11" role="alert">
+                        <p style="text-align:center;">{{ message }}</p>
+                    </div>
+                    {% elif message.tags == 'error' %}
+                    <div class="col-md-12">
+                        <div class="message alert alert-danger alert-dismissible alert11" role="alert">
+                                <p id="id1" style="text-align:center;">{{ message }}
+                                <a href="{% url 'upload_err_logs_export' %}" style="margin-left: 150px" class="btn btn-primary">
+                                <i class="fa fa-download"></i>
+                                Upload Logs</a>
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor%}
+        {% endif %}
+        <!-- {% if msg %}
+        <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible alert11" role="alert">
+                    <p id="id1" style="text-align:center;margin-top:10px;">{{ msg }}
+                    <a href="{% url 'upload_err_logs_export' %}" style="margin-left: 250px" class="btn btn-primary">
+                    <i class="fa fa-download"></i>
+                    Upload Logs</a></p>
+
+                <button id = "closeButton" type="button" style="margin-top: 20px" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        </div>
+        {% endif %} -->
+
+        <table class="table table-striped mytable" id="table-id" style="margin-top: -10px;">
+            <thead class="table-dark">
+                <tr>
+                
+                    <th>Domain ID</th>
+                    <th>Employee ID</th>
+                    <th >Employee Name</th>
+                    <th>Designation</th>
+                    <th>Branch Code </th>
+                    <th>Email ID</th>
+                    <th>Phone Number</th>
+                    <!-- <th>Function</th>
+                    <th>Sub Function</th>
+                    <th>Job Role</th>
+                    <th>Created By</th>
+                    <th>Created Date</th> -->
+                    <th colspan="3" style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+                {% if emp_data %}
+            <tbody>
+                    {% for list in emp_data %}
+                    
+                    {% if list.active == False %}
+                    <tr  style="color: lightsalmon;">
+                    {% else %}
+                    <tr>
+                    {% endif %}
+                        <td hidden>{{list.sl_no}}</td>
+                        <td>{{list.domain_id}}</td>
+                        <td>{{list.emp_id}}</td>
+                        <td>{{list.emp_name}}</td> 
+                        <td>{{list.designation}}</td>
+                        <td>{{list.branch_code_id__branch_name}}-{{list.branch_code_id__branch_code}}</td>
+                        <td>{{list.email_id}}</td>
+                        <td>{{list.phone_number}}</td>
+                        <!-- <td>{{list.function}}</td>
+                        <td>{{list.sub_function}}</td>
+                        <td>{{list.job_role}}</td>
+                        <td>{{list.created_by}}</td>
+                        <td>{{list.created_date|date:"d-m-Y"}}</td> -->
+
+                        <td>
+                            <a data-toggle="modal" data-target="#exampleModal" class="btn btn-primary"
+                            onclick="myFunction('{{ list.sl_no }}', '{{ list.domain_id }}','{{ list.emp_id }}','{{list.emp_name}}',
+                                                    '{{ list.designation }}','{{ list.email_id }}','{{ list.function }}','{{ list.sub_function }}','{{ list.job_role }}','{{ list.phone_number }}','{{ list.branch_code }}', 'Edit')"><i class="fa fa-edit"
+                                                                        style="font-size:15px;" data-toggle="tooltip" title="Edit"> </i></a></td>
+                        <td>
+                            <a data-toggle="modal" data-target="#deleteModal" class="btn btn-primary"
+                                onclick="confirms('{{list.sl_no}}')"><i class="fa fa-trash"
+                                                                            style="font-size:15px;" data-toggle="tooltip" title="Delete"> </i>
+                            </a>
+                        </td>
+                        <td>
+                            <a data-toggle="modal" data-target="#newModal" class="btn btn-primary"
+                                onclick="move_emp('{{list.sl_no}}','{{ list.emp_id }}')"><i class="fa fa-arrow-right" data-toggle="tooltip" title="Transfer"
+                                                                            style="font-size:15px;"> </i>
+                            </a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <!-- <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td> -->
+                        
+                    </tr>
+                    {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class='pagination-container'>
+        <div class="row mytable">
+            <div class="col-md-10">
+                    {% if emp_data.has_other_pages %}
+                    <ul class="pagination">
+                        {% if emp_data.has_previous %}
+                        <li><a href="?page={{ emp_data.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in emp_data.paginator.page_range %}
+                    {% if emp_data.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% elif i > emp_data.number|add:'-5' and i < emp_data.number|add:'5' %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                        {% if emp_data.has_next %}
+                        <li><a href="?page={{ emp_data.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+            </div>
+            <div class="col-md-3 pag" style="margin-left: 900px;">
+                    <span class="current" style="color: #95a4f2">
+                        Page {{ emp_data.number }} of {{ emp_data.paginator.num_pages }}.
+                    </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row1" style="display:none;">
+        <div class="row pt-5">
+            <div class="offset-4 col-md-4 shadow p-5">
+                <center>
+            <h2>Employee Upload</h2><hr><br>
+            <form id="submit_form" method="POST" action="{% url 'employee_upload_new' %}" enctype ="multipart/form-data">
+            {% csrf_token %}
+                <input type = "file" style="margin-left:85px;" name= "myfile"><br><br>
+                    <button type="submit" class="btn btn-success">Upload</button>
+            </form>
+                </center>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="edit_modal">
+            {% csrf_token %}
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Employee</h5>
+                        
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="text" hidden id="req_id">
+                                    <div class="alert alert-success alert-dismissible alert8" id="err_msg" style="display: none;">
+                                        <p style="text-align:center;padding:2px; height:25px;" id="branch_msg">test</p>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="domain">Domain ID<span style="color:red">*</span></label>
+                                        <input type="text" id="domain" name="domain" autocomplete="off" required class="form-control"/></input>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="emp_id">Employee ID<span style="color:red">*</span></label>
+                                        <input type="text" id="emp_id" name="emp_id" autocomplete="off" required class="form-control"/></input>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="emp_name">Employee Name<span style="color:red">*</span></label>
+                                        <input type="text" id="emp_name" name="emp_name" autocomplete="off" required class="form-control"/></input>
+                                    </div>
+                                    <div class="form-group col-sm-6" id="passcode">
+                                        <label for="phn_num">Phone Number<span style="color:red">*</span></label>
+                                        <input type="text" id="phn_num" name="phn_num" autocomplete="off" required class="form-control"/></input>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="designation">Designation<span style="color:red">*</span></label>
+                                        <input type="text" id="designation" name="designation" autocomplete="off" required class="form-control"/></input>
+                                    </div>
+                                    <div class="form-group col-sm-6" id="branch">
+                                        <label for="branch_code">Branch Code<span style="color:red">*</span></label>
+                                        <select class="form-control" required autocomplete="off" name="branch_code" id="branch_code" >
+                                            <option value="" disabled selected hidden>Choose Options</option>
+                                            {% for item in branch_list %}
+                                            <option style="width:300px;" value="{{item.branch_code}}">
+                                                {{item.branch_name}}-{{item.branch_code}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>    
+                                    <div class="form-group col-sm-6">
+                                        <label for="email_id">Email ID<span style="color:red">*</span></label>
+                                        <input type="email" id="email_id" autocomplete="off" name="email_id"  required class="form-control">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="function">Function</label>
+                                        <input type="text" id="function" name="function" class="form-control"> 
+                                    </div>
+
+                                    <div class="form-group col-sm-6">
+                                        <label for="sub_function">Sub Function</label>
+                                        <textarea type="text" id="sub_function" name="sub_function" style="width: 220px;" class="form-control" autocomplete="off" ></textarea>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="job_role">Job Role</label>
+                                        <textarea type="text" id="job_role" name="job_role" style="width: 220px;" class="form-control" autocomplete="off" ></textarea>
+                                    </div>
+                                    <div>
+                                        <input type="text" hidden id="test_id">
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-7">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary button-custom-hover"
+                                            data-dismiss="modal" onclick="window.location.reload()">Close
+                                    </button>
+                                    <button type="submit" id="submit_id" class="btn btn-primary button-custom-hover">Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+    <div class="modal fade" id="deleteModal" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body">
+                    <p>are you sure you want to delete..?</p>
+                    <div style="float:right">
+                        <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                                onclick="delete1()">yes
+                        </button>
+                        <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="newModal" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Transfer Employee</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="text" hidden id="row_id">
+                    <input type="text" hidden id="emp">
+
+                    <div class="form-group col-sm-6" id="branch">
+                        <label for="branch_code">Branch Code<span style="color:red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="new_branch_code" id="new_branch_code" >
+                            <option value="" disabled selected hidden>Choose Options</option>
+                            {% for item in branch_list %}
+                            <option style="width:300px;" value="{{item.branch_code}}">
+                                {{item.branch_name}}-{{item.branch_code}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>                                         
+                </div>
+                <div class="modal-footer" style="float:right">
+                    <button type="button" class="btn btn-secondary button-custom-hover"
+                                            data-dismiss="modal">Close
+                                    </button>
+                    <button type="submit" class="btn btn-primary button-custom-hover" onclick="move_employee()">Submit
+                    </button>    
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div class="modal" id="newModal_export" role="dialog" aria-labelledby="exampleModalLabelExport" aria-hidden="true">
+    <form method="POST" action="{% url 'add_employee_export' %}">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelExport">Export</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="alert alert-danger alert-dismissible alert8" id="date_err_msg" style="display: none;">
+                            <p style="text-align:center;height:14px;" id="date_msg">Dateeee</p>
+                        </div>
+                        <div class="form-group col-sm-6" id="from">
+                            
+                                <input placeholder="From Date" name="export_fromdate" id="export_fromdate" class="form-control export_date_validity" type="text"
+                                onchange='export_dateFunction(id)' onfocus="(this.type='date')">
+                        </div>
+                        
+                        <div class="form-group col-sm-6" id="to">
+                                <input placeholder="To Date" class="form-control export_date_validity" name="export_todate" id="export_todate" type="text"
+                                    onfocus="(this.type='date')">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger button-custom-hover"
+                                data-dismiss="modal" id="close_id" >Close
+                            </button>
+                            <button type="submit"
+                                class="btn btn-primary button-custom-hover" id="submit_export">Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> 
+
+<script src={% static '/assets/static_files/js/custome.js' %}"></script>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+<script>
+    function addasset(){
+        var add_type = 'Add'
+        console.log(add_type)
+    }
+    
+</script>
+<script>
+    $('#emp_id').on('change',function(e){
+        // messages timeout for 10 sec
+        //if($('#domain').val()!="" && $('#emp_id').val()!="" &&
+          //  $('#emp_name').val()!="" && $('#designation').val()!="" &&
+            //$('#email_id').val()!="" && $('#branch_code').val()!="" &&
+            //$('#phn_num').val()!=""){ 
+        emp = $('#emp_id').val()
+        console.log(emp)
+        $('#branch_msg').text("Please check the employee id - " + emp + " before submitting the data.")
+        $('#err_msg').show();
+        //}
+    });
+</script>
+<script>
+    function myFunction(a, b, c, d, e, f,g,h,i,j,k, l) { 
+        $('#exampleModalLabel').text('Update Employee')
+        $('#branch_code').attr('required',false); 
+        $('#phn_num').attr('required',false);  
+        $('#emp_id').attr('disabled',true);  
+        $('#domain').attr('disabled',true);      
+        var id = a;
+        var domain= b;
+        var emp_id = c;
+        var emp_name= d;
+        var designation = e;
+        var email_id = f;
+        var func = g;
+        var sub_function = h;
+        var job_role = i;
+        var phn_num = j;
+        var branch_code = k;
+        var test = l
+        console.log(test)
+
+        $('#req_id').val(id);
+        $('#domain').val(domain);
+        $('#emp_id').val(emp_id);
+        $('#emp_name').val(emp_name);
+        $('#designation').val(designation);
+        $('#email_id').val(email_id);
+        $('#function').val(func);
+        $('#sub_function').val(sub_function);
+        $('#job_role').val(job_role);
+        $('#branch_code').val(branch_code); 
+        $('#phn_num').val(phn_num);
+        $('#test_id').val(test),
+        $('#branch').hide();
+        console.log(id,domain,emp_id,emp_name,designation,email_id,func,sub_function,job_role)
+    }
+</script>
+<script>
+        
+    $(function () {
+        $('#edit_modal').on('submit', function (e) {
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $('#submit_id').attr('disabled',true);
+            var id = $('#req_id').val();
+            var domain = $('#domain').val();
+            var emp_id = $('#emp_id').val();
+            var emp_name = $('#emp_name').val();
+            var phn_num = $('#phn_num').val();
+            var designation = $('#designation').val();
+            var branch_code = $('#branch_code').val();
+            var email_id = $('#email_id').val();  
+            var func = $('#function').val();  
+            var sub_function = $('#sub_function').val();  
+            var job_role = $('#job_role').val();  
+            var add_type = $('#test_id').val();
+            console.log(add_type)
+            console.log(domain,email_id,emp_id,emp_name,phn_num,designation,branch_code,email_id,func,sub_function,job_role)
+            e.preventDefault();
+            if(add_type == "Edit"){
+                console.log('edit')
+                $.ajax({
+                    type: "POST",
+                    url: '/add_employee_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'id':id,
+                        'domain': domain,
+                        'emp_id': emp_id,
+                        'emp_name': emp_name,
+                        'designation': designation,
+                        'email_id':email_id,
+                        'function': func,
+                        'sub_function':sub_function,
+                        'job_role':job_role,
+                        'phn_num': phn_num,
+                        'branch_code': branch_code,
+
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            }
+            else if(add_type == ""){
+                console.log('add');
+                $.ajax({                    
+                    type: "POST",
+                    url: '/add_employee_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'id':"",
+                        'domain': domain,
+                        'emp_id': emp_id,
+                        'emp_name': emp_name,
+                        'phn_num': phn_num,
+                        'designation': designation,
+                        'email_id':email_id,
+                        'function': func,
+                        'sub_function':sub_function,
+                        'job_role':job_role,
+                        'branch_code': branch_code,
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            }
+            });
+
+        });
+</script>
+<!-- <script>
+        
+    $(function () {
+        $('#submit_id').on('click', function (e) {
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $('#submit_id').attr('disabled',true);
+            var id = $('#req_id').val();
+            var domain = $('#domain').val();
+            var emp_id = $('#emp_id').val();
+            var emp_name = $('#emp_name').val();
+            var designation = $('#designation').val();
+            var email_id = $('#email_id').val();  
+            var func = $('#function').val();  
+            var sub_function = $('#sub_function').val();  
+            var job_role = $('#job_role').val(); 
+            var phn_num = $('#phn_num').val();
+            var branch_code = $('#branch_code').val();
+            console.log(domain,email_id,emp_id,emp_name,designation,email_id,func,sub_function,job_role)
+            e.preventDefault();
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_employee_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'id':id,
+                        'domain': domain,
+                        'emp_id': emp_id,
+                        'emp_name': emp_name,
+                        'designation': designation,
+                        'email_id':email_id,
+                        'function': func,
+                        'sub_function':sub_function,
+                        'job_role':job_role,
+                        'phn_num': phn_num,
+                        'branch_code': branch_code,
+
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            });
+        });
+</script> -->
+<script>
+    function bulkasset(){
+        $('.row1').show();
+        $('.mytable').hide(); 
+        $('#search_all').hide();
+        $('.export').hide();
+    }
+
+    function addasset(){
+        $('.row1').hide();
+        $('.mytable').show(); 
+        $('#search_all').show();
+        $('.export').show();
+
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+    
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 5000); 
+
+        
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+<!-- value to button deleteid-->
+<script>
+    function move_emp(a,b) {
+            $("#row_id").attr('value',a);
+            $('#emp').attr('value',b);
+           }
+    </script>
+    
+    <!-- to DELETE THE BASED ON DELETEID -->
+    <script>
+    function move_employee() {
+    var id = $('#row_id').val(); 
+    var emp = $('#emp').val();
+    var new_branch = $("#new_branch_code").val();
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        
+            $.ajax({
+                    url: "/transfer_employee/",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false, 
+                    data: { "value":id,"branch_code":new_branch,'emp':emp },
+                    dataType:"html",
+                    type: "post",
+                    success: function(data){
+                       location.reload();
+                    }
+                });
+            }
+    </script>
+    <script>
+    function confirms(a) {
+        $("#deleteid").attr('value',a);
+       }
+    </script>
+    
+    <!-- to DELETE THE BASED ON DELETEID -->
+    <script>
+    function delete1() {
+    var delete_data = $("#deleteid").val();
+    console.log(delete_data)
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        
+            $.ajax({
+                    url: "/delete_employee/",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false, 
+                    data: { "value": delete_data },
+                    dataType:"html",
+                    type: "post",
+                    success: function(data){
+                       location.reload();
+                    }
+                });
+            }
+    </script>
+
+<!-- <script>
+$('#branch_id').change(function() {
+
+  // get optios of second dropdown and cache it
+  var $options = $('#employee_id')
+
+
+    // update the dropdown value if necessary
+    .val('')
+    // get options
+    .find('option')
+    // show all of the initially
+    .show();
+  // check current value is not 0
+  if (this.value != '0')
+    $options
+    // filter out options which is not corresponds to the first option
+    .not('[data-val="' + this.value + '"],[data-val=""]')
+    // hide them
+    .hide();
+})
+</script> -->
+{%  endblock content %}

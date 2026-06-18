@@ -1,0 +1,76 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+    </div>
+    <div class="row pt-4" style="margin-top: 100px;">
+            <div class="offset-4 col-md-4">
+            {% if messages %}
+                {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                            <div class="message alert alert-success alert-dismissible alert11" role="alert">
+                                <p id="id1" style="text-align:center;margin-top:10px;">{{ message }}</p>
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        {% endif %}
+                        {% if message.tags == 'error' %}
+                            <div class="message alert alert-danger alert-dismissible alert11" role="alert">
+                                <p style="text-align:center;margin-top:10px;">{{ message }}</p>
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                       {% endif %}
+                {% endfor %}
+            {% endif %}
+            </div>
+    </div>
+    <div class="row pt-5">
+        <div class="offset-4 col-md-4 shadow p-5">
+        <center>
+            <h2>Upload Branch Here</h2><hr><br><br>
+ <form id="submit_form" method="POST" action="{% url 'branch_upload' %}" enctype ="multipart/form-data">
+       {% csrf_token %}
+       <input type = "file" name= "myfile"><br>
+       <button type="submit" class="btn btn-success">Upload</button>
+ </form>
+        </center>
+        </div>
+    </div>
+</div>
+<script>
+    $('#success').hide()
+ </script>
+ 
+ <!-- javascript for popup -->
+ <script type="text/javascript">
+ // Popup window code
+ function newPopup(url) {
+     popupWindow = window.open(
+         url,'popUpWindow','height=423,width=961,left=293,top=166,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+ }
+ 
+ $(document).ready(function() {
+         // messages timeout for 10 sec
+         setTimeout(function() {
+             $('.message').fadeOut('slow');
+         }, 10000); // <-- time in milliseconds, 1000 =  1 sec
+ 
+         // delete message
+         $('.del-msg').live('click',function(){
+             $('.del-msg').parent().attr('style', 'display:none;');
+         })
+     });
+ </script>
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+<script src="{% static '/js/js/popper.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap-datepicker.min.js' %}"></script>
+
+<script src="{% static '/js/additional-methods.js' %}"></script>
+<script src="{% static '/js/jquery.validate.js' %}"></script>
+<script src="{% static '/js/forge.min.js' %}"></script>
+<script src="{% static '/js/js_rsa.js' %}"></script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,781 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{%  block content %}
+<style>
+
+.combined-div{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+
+.alert11 {
+   width:100%;
+   line-height:10%;
+}
+
+.esc-table tr:nth-child(odd){
+    background-color:#fff;
+}
+
+.esc-table tr:nth-child(even){
+    background-color: #f1f1f1;
+}
+
+.esc-table tr {
+    border-bottom:1px solid #ddd;
+}
+
+.esc-table th:first-child,
+.esc-table td:first-child{
+    padding-left:16px;
+}
+
+.esc-table td,
+.esc-table th {
+    padding: 8px 8px;
+    display:table-cell;
+    text-align: left;
+    vertical-align:top;
+}
+
+.esc-table th {
+    font-weight: bold;
+}
+
+.esc-table{
+    font-size: 13px! important;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    border-spacing:0;
+    width:100%;
+    display:table;
+}
+
+.container1 {
+    width: 40%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-container {
+    width:60%;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+.right-main-container {
+    position: fixed;
+    top: 115px;
+    background-color: #fff;
+    left: 241px;
+    right: 10px;
+}
+
+</style>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                <p>are you sure you want to delete..?</p>
+                <div style="float:right">
+                    <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                            onclick="delete1()">yes
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-3">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="message alert alert-success alert-dismissible alert11" role="alert">
+                    <p style="text-align:center;margin-top:10px;">{{ message }}</p>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="message alert alert-danger alert-dismissible alert11" role="alert">
+                    <p style="text-align:center;margin-top:10px;">{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor%}
+    {% endif %}
+    <!-- <div class="header">
+        Escalation Matrix
+    </div> -->
+    
+    <div class="modal fade"  id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% if add %}
+    <form id="submit_form" action="{% url 'assign_escalation' %}" method="POST">
+        {% csrf_token %}
+        <div class="modal-dialog" style="width:85%" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Escalation</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="hidden" id="esc_id">
+                        <input type="test" hidden id="add_type"/>
+                        <div class="container1">
+                            <select required="required" id="branch_id"  name="branch_code" class="form-control dropdowns" style="width:80%;margin-left: 5px;">
+                                <option value="">Branch</option>
+                                {% for branch in branch_list %}
+                                <option id="branch_id__" name="xyz" value="{{branch.branch_code}}">
+                                    {{branch.branch_name}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="table-container" style="width:500px; margin-top:20px;" >
+                            <table class="esc-table">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>Escalation Level</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                </tr>
+                                </thead>
+                                <tr>
+                                    <td>BOM</td>
+                                    <td>
+                                        <select name="bom_name" id="employee_id" style="padding: 5px 5px;display:table-cell;width: 90%;">
+                                        <option value="">BOM Name</option>
+                                            {% for b in bom %}
+                                            <option value="{{b.emp_name}}" data-val="{{b.branch_code}}">
+                                            {{b.emp_name}}
+                                            </option>
+                                            {% endfor %} 
+                                        </select>
+                                        <small style="display: none;color:red" id="err1">BOM not assigned to this branch !</small>
+                                    </td>
+                                    <td>
+                                        <input type="email" placeholder="Type BOM email" {% if data %} value="{{ data.bom_email }}" {% endif %} name="bom_email" id="bom_email" autocomplete="off" required>
+                                        {% if err.bom %}
+                                            <small style="color: red;">Invalid Email !</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ROL</td>
+                                    <td><input name="rol_name" id="rol_name" {% if data %} value="{{ data.rol_name }}" {% endif %}  placeholder="Type ROL Name" required autocomplete="off" /></td>
+                                    <td><input type="email" name="rol_email" id="rol_email" {% if data %} value="{{ data.rol_email }}" {% endif %}  placeholder="Type ROL email" required autocomplete="off"  />
+                                        {% if err.rol %}
+                                            <small style="color: red;">Invalid Email !</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ZO</td>
+                                    <td><input name="zo_name" id="zo_name" {% if data %} value="{{ data.zo_name }}" {% endif %}  placeholder="Type ZO Name" required autocomplete="off" /></td>
+                                    <td><input type="email" name="zo_email" id="zo_email" {% if data %} value="{{ data.zo_email }}" {% endif %} placeholder="Type ZO email" required autocomplete="off" />
+                                        {% if err.zo %}
+                                            <small style="color: red;">Invalid Email !</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>HO</td>
+                                    <td><input name="ho_name" id="ho_name" {% if data %} value="{{ data.ho_name }}" {% endif %}  placeholder="Type HO Name" required autocomplete="off" /></td>
+                                    <td><input type="email" name="ho_email" id="ho_email" {% if data %} value="{{ data.ho_email }}" {% endif %}  placeholder="Type HO email" required autocomplete="off" />
+                                        {% if err.ho %}
+                                            <small style="color: red;">Invalid Email !</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <!-- <td colspan="3" ><button class="btn btn-primary" type="submit" name="submit" style="width: 90px;">Add</button></td> -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger button-custom-hover"
+                                    data-dismiss="modal" onclick="window.location.reload()">Close
+                            </button>
+                            <button type="submit" id="submit_id" class="btn btn-primary button-custom-hover">Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+
+    </div>
+    {% if edit %}
+    
+    <form id="submit_form" action="{% url 'assign_escalation_update' update_data.id %}" method="POST">
+        {% csrf_token %}
+        <div class="combined-div">
+            <div class="container1">
+                <input value="{{ update_data.branch_code }}" required="required" readonly id="branch_id" name="branch_code" class="form-control dropdowns" style="width:90%;">
+            </div>
+            <div class="table-container">
+                <table class="esc-table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Escalation Level</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td>BOM</td>
+                        <td>
+                            <input class="form-control" style="height: 28px;width: 160px;" name="bom_name" readonly value="{{ update_data.bom_name }} " required autocomplete="off">
+                        </td>
+                        <td>
+                        <input type="email" placeholder="Type BOM email" value="{{ update_data.bom_email }}" name="bom_email" required autocomplete="off">
+                            {% if err.bom %}
+                                <small style="color: red;">Invalid Email !</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ROL</td>
+                        <td><input name="rol_name" value="{{ update_data.rol_name }}" placeholder="Type ROL Name" required autocomplete="off" /></td>
+                        <td><input type="email" name="rol_email" value="{{ update_data.rol_email }}" placeholder="Type ROL email" required autocomplete="off" />
+                            {% if err.rol %}
+                                <small style="color: red;">Invalid Email !</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ZO</td>
+                        <td><input name="zo_name" value="{{ update_data.zo_name }}" placeholder="Type ZO Name" required autocomplete="off" /></td>
+                        <td><input type="email" name="zo_email" value="{{ update_data.zo_email }}" placeholder="Type ZO email" required autocomplete="off" />
+                            {% if err.zo %}
+                                <small style="color: red;">Invalid Email !</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>HO</td>
+                        <td><input name="ho_name" value="{{ update_data.ho_name }}" placeholder="Type HO Name" required autocomplete="off" /></td>
+                        <td><input type="email" name="ho_email" value="{{ update_data.ho_email }}" placeholder="Type HO email" required autocomplete="off" />
+                            {% if err.ho %}
+                                <small style="color: red;">Invalid Email !</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <td colspan="3" ><button class="btn btn-primary" type="submit" name="submit">Update</button></td>
+                </table>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <div class="row">
+            <div class="col-sm-3">
+            <button class="btn btn-primary" type="button" value="Verify" data-toggle="modal" data-target="#exampleModal">Add
+            </button>
+            </div>
+            <div class="col-sm-9">
+            <form action="{% url 'escalation_search' %}" method="post" class="form-inline">
+                <div class="row pull-right">
+                    <div class="form-group col-sm-10">
+                        {% csrf_token %}
+                        <input type="text" name="search" placeholder="Search" class="form-control pull-right">
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <button style="float:right; width:40px;" class="form-control" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Branch Name</th>
+                    <th style="padding-right: 40px;padding-left: 40px;">BOM Name</th>
+                    <th>BOM Email</th>
+                    <th>ROL Name</th>
+                    <th>ROL Email</th>
+                    <th>ZO Name</th>
+                    <th>ZO Email</th>
+                    <th>HO Name</th>
+                    <th>HO Email</th>
+                    <th>Edit</th>                   
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in esca_data %}
+                <tr>
+                    <td>{{list.branch_code}}</td>
+                    <td>{{list.bom_name}}</td>
+                    <td>{{list.bom_email}}</td>
+                    <td>{{list.rol_name}}</td>
+                    <td>{{list.rol_email}}</td>
+                    <td>{{list.zo_name}}</td>
+                    <td>{{list.zo_email}}</td>
+                    <td>{{list.ho_name}}</td>
+                    <td>{{list.ho_email}}</td>
+                    <!-- <td><a class="btn btn-primary" data-toggle="modal" onclick="assign_escalation_update('{{list.id}}','{{list.branch_code}}','{{list.bom_name}}','{{list.bom_email}}','{{list.rol_name}}','{{list.rol_email}}','{{list.zo_name}}','{{list.zo_email}}','{{list.ho_name}}','{{list.ho_email}}')" data-target="#exampleModal"><i class="fa fa-edit" data-toggle="tooltip" title="Edit" style="font-size:18px;"></i></a></td> -->
+                    <td><a class="btn btn-primary" href="{% url 'assign_escalation_update' list.id %}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit" style="font-size:18px;"></i></a></td>
+    {#                <td><a class="btn btn-sm btn-primary" style="color: white" href="{% url 'assign_escalation_delete' list.id %}">Delete</a></td>#}
+                    <input type="text" value="{{list.id}}" id="text1" hidden>
+                    <td>
+                        <!-- <button type="button" id="delete" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal">Delete</button> -->
+                        <button data-toggle="modal" data-target="#myModal" class="btn btn-danger"
+                                        onclick="confirms({{list.id}})"><i class="fa fa-trash" data-toggle="tooltip" title="Delete"
+                                                                                        style="font-size:18px;"> </i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-md-10">
+                {% if esca_data.has_other_pages %}
+                  <ul class="pagination">
+                    {% if esca_data.has_previous %}
+                      <li><a href="?page={{ esca_data.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+
+                    {% for i in esca_data.paginator.page_range %}
+                      {% if esca_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                      
+                      {% elif i > esca_data.number|add:'-5' and i < esca_data.number|add:'5' %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+
+                    {% if esca_data.has_next %}
+                      <li><a href="?page={{ esca_data.next_page_number }}">&raquo;</a></li>
+                    {% elif esca_data.number < esca_data.paginator.num_pages|add:'-2'  %}
+                      <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                  </ul>
+                {% endif %}
+            </div>
+            <div class="col-md-2">
+                <span class="current" style="color: #95a4f2">
+                    Page {{ esca_data.number }} of {{ esca_data.paginator.num_pages }}.
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row-mb-3" style="margin-top:30px;">
+        <div class="col-sm-3">
+        <button class="btn btn-primary" type="button" value="Verify" data-toggle="modal" data-target="#exampleModal_new">Add
+        </button>
+        </div>
+    
+    <div class="table-responsive" style="margin-top:10px;">
+        <table class="table table-striped" id="table-id">
+            <thead class="table-dark">
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Modified Date</th>
+                    <th>First Escalation</th>
+                    <th>Second Escalation</th>
+                    <th>Third Escalation</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                
+                </tr>
+            </thead>
+            <tbody>
+               {% for data in verified_data %}
+                <tr>
+                    <td hidden>{{data.id}}</td>
+                    <td>{{start_date }}</td>
+                    <td>{{end_date }}</td>                        
+                    <td>{{data.modified_date | date:'d-m-Y'}}</td>
+                    <td>{{first_esc}}</td>
+                    <td>{{second_esc}}</td>
+                    <td>{{third_esc}}</td>
+                                                          
+                    <td> <button type="submit" id="button1" data-toggle="modal" onclick="get_esc_values('{{data.id}}','{{start_date}}','{{end_date}}','{{data.last_modified_date}}','{{first_esc}}','{{second_esc}}','{{third_esc}}')" data-target="#exampleModal_new" class="btn btn-primary"><i class="fa fa-edit" data-toggle="tooltip" title="Edit" style="font-size:18px;"></i></button></td> 
+                    <!-- <input name="id" value={{data.id}} hidden>  -->
+                
+                    <td>
+                        <button data-toggle="modal" data-target="#myModal_new" class="btn btn-danger" onclick="confirm_delete('{{data.id}}')"><i class="fa fa-trash" data-toggle="tooltip" title="Delete"
+                                                                                style="font-size:18px;"> </i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+               
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>are you sure you want to delete..?</p>
+                <div style="float:right">
+                    <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                            onclick="delete1()">yes
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal_new" role="dialog">
+    <div class="modal-dialog">
+    
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>are you sure you want to delete..?6776</p>
+                <div style="float:right">
+                    <button type="button" class="btn btn-danger delete_data1" data-dismiss="modal" id="delete_id"
+                            onclick="delete_data()">yes
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade"  id="exampleModal_new" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-keyborad="false" data-backdrop="static">
+    <form id="submit_form1" method="POST">
+        {% csrf_token %}
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Verification Window</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="hidden" id="req_id">
+                        <input type="test" hidden id="add_type"/>
+                        <div class="col-sm-7">
+                            <div class="row">
+                            <div class="col-sm-6">
+                            <label for="fromdate" class="col-form-label">Verification Start Date :</label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input required name ="fromdate" id="start_date"  placeholder="Start Date" class="textbox-n form-control date_validity" onchange='myfunction(id)'  type="text" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="row">
+                            <div class="col-sm-6">
+                            <label for="firstesc" class="col-form-label" >First Escalation :</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name ="firstesc" required id="first_esc" class="textbox-n form-control" min="1" type="number"/>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7" style="padding: 10px;">
+                            <div class="row">
+                            <div class="col-sm-6">
+                                <label for="todate" class="col-form-label">Verification End Date :</label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input name ="todate" required id="end_date" placeholder="End Date" class= "textbox-n form-control date_validity" type="text" onfocus="(this.type='date')" onblur="(this.type='text')"/>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5" style="padding: 10px;">
+                            <div class="row">
+                            <div class="col-sm-6">
+                                <label for="secondesc" class="col-form-label">Second Escalation :</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name = "secondesc" required id="second_esc" class="textbox-n form-control" min="1" type="number">
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7" style="padding: 10px;">
+                            
+                        </div>
+                        <div class="col-sm-5" style="padding: 0px;">
+                            <div class="row">
+                            <div class="col-sm-6">
+                                <label for="thirdesc" class="col-form-label" >Third Escalation :</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name = "thirdesc" required id="third_esc" class="textbox-n form-control" min="1" type="number">
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col" style="margin-top: 10px;margin-left: 16px;">    
+                        <label for="fromdate" class="col-form-label">Verification Start Date :</label>
+                        <div class="col-sm-4" style="margin-left: 180px;margin-top: -36px;">
+                            <input required name ="fromdate" id="start_date" style="width:80%;" placeholder="Start Date" class="textbox-n form-control date_validity" onchange='myfunction(id)'  type="text" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                        </div>
+                            
+                        <label for="todate" class="col-form-label" style="margin-top: 20px;">Verification End Date :</label>
+                        <div class="col-sm-4" style="margin-left: 180px;margin-top: -36px;">
+                            <input name ="todate" required id="end_date" style="width:80%;" placeholder="End Date" class= "textbox-n form-control date_validity" type="text" onfocus="(this.type='date')" onblur="(this.type='text')"/>
+                        </div>
+                        
+                    </div> -->
+                    <!-- <div class="row">
+                        
+                        <div class="row p-3" style="margin-top: -126px;margin-left:450px;">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                <label for="firstesc" class="col-form-label" >First Escalation :</label>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name ="firstesc" style="margin-top: 5px;width:60px" required id="first_esc" class="textbox-n form-control" min="1" type="number"/>
+                                    </div>
+                            </div>
+                            <div class="row" >
+                                <div class="col-sm-3">
+                                <label for="secondesc" class="col-form-label">Second Escalation :</label>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name = "secondesc" style="margin-top: 5px; width:60px" required id="second_esc" class="textbox-n form-control" min="1" type="number">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                <label for="thirdesc" class="col-form-label" >Third Escalation :</label>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name = "thirdesc" style="margin-top: 5px;width:60px" required id="third_esc" class="textbox-n form-control" min="1" type="number">
+                                </div>
+                            </div>
+                        </div>  
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger button-custom-hover"
+                                    data-dismiss="modal" onclick="window.location.reload()">Close
+                            </button>
+                            <button type="submit" id="submit_id" class="btn btn-primary button-custom-hover">Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+<script type="text/javascript">
+$('#branch_id').change(function() {
+
+// get optios of second dropdown and cache it
+var $options = $('#employee_id')
+
+
+  // update the dropdown value if necessary
+  .val('')
+  // get options
+  .find('option')
+  // show all of the initially
+  .show();
+// check current value is not 0
+if (this.value != '0'){
+  $options
+  // filter out options which is not corresponds to the first option
+  .not('[data-val="' + this.value + '"],[data-val=""]')
+  // hide them
+  .hide();
+}
+else {
+    document.getElementById("err1").style.display = "";
+    return false;
+}
+})
+
+    
+</script>
+<!-- <script type="text/javascript">
+    $("#delete").click(function () {
+        var text = $("#text1").val();
+        var newurl = "assign_escalation_delete/"+text;
+        $("#aaa").attr("href", newurl);
+    });
+
+
+</script> -->
+<script>
+function get_esc_values(a,b,c,d,e,f,g){
+    var req_id = a;
+    var start_date =b;
+    var end_date=c;
+    var first_esc=e;
+    var second_esc=f;
+    var third_esc=g;
+
+    $('#start_date').val(start_date);
+    $('#end_date').val(end_date);
+    $('#first_esc').val(first_esc);
+    $('#second_esc').val(second_esc);
+    $('#third_esc').val(third_esc);
+    $('#req_id').val(req_id);
+
+
+}
+
+function assign_escalation_update(a,b,c,d,e,f,g,h,i,j){
+    esc_id=a;
+    branch_code=b;
+    bom_name=c;
+    bom_email=d;
+    rol_name=e;
+    rol_email=f;
+    zo_name=g;
+    zo_email=h;
+    ho_name=i;
+    ho_email=j
+    console.log(a,branch_code,c,d,e,f,g,h,i,j)
+    $('#esc_id').val(esc_id);
+    $('#branch_id').val(branch_code);
+    $('#employee_id').val(bom_name);
+    $('#bom_email').val(bom_email);
+    $('#rol_name').val(rol_name);
+    $('#rol_email').val(rol_email);
+    $('#zo_name').val(zo_name);
+    $('#zo_email').val(zo_email);
+    $('#ho_name').val(ho_name);
+    $('#ho_email').val(ho_email);
+    //$('#employee_id').attr('disabled', true);
+
+}
+</script>
+
+<script>
+    function confirms(a) {
+                $("#deleteid").attr('value',a);
+                console.log(a)
+           }
+</script>
+<script>
+    function confirm_delete(a) {
+                $("#delete_id").attr('value',a);
+                console.log(a)
+           }
+</script>
+    
+    <!-- to DELETE THE BASED ON DELETEID -->
+<script>
+    function delete1() {
+    var delete_data = $("#deleteid").val();
+        $.ajax({
+            url: "/assign_escalation_delete/",
+            data: { "value": delete_data },
+            dataType:"html",
+            type: "post",
+            success: function(data){
+                location.reload();
+            }
+        });
+    }
+</script>
+<script>
+    function delete_data() {
+    var delete_data1 = $("#delete_id").val();
+    console.log(delete_data1)
+        $.ajax({
+            url: "organization_delete",
+            data: { "value": delete_data1 },
+            dataType:"html",
+            type: "post",
+            success: function(data){
+                location.reload();
+            }
+        });
+    }
+</script>
+
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+<script>
+    $(document).ready(function() {       
+        setTimeout(function() {
+        $('.message').fadeOut('slow');
+        }, 5000); 
+        
+        $('.del-msg').live('click',function(){
+        $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+<script>
+
+    $('#submit_form1').submit(function(e) {
+    
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    
+    var start_date = $('#start_date').val();
+    var end_date = $('#end_date').val();
+    var first_escalation = $('#first_esc').val();
+    var second_escalation = $('#second_esc').val();
+    var third_escalation = $('#third_esc').val();
+    
+    var json_data = {
+        'start_date' : start_date,
+        'end_date' : end_date,
+        'first_escalation' : first_escalation,
+        'second_escalation' : second_escalation,
+        'third_escalation' : third_escalation,
+    }
+    
+    $.ajax({
+                type:'POST',
+                url:'rule_data',
+                headers: {
+                "X-CSRFToken": csrftoken
+                },
+                data:{
+    
+                    'json_data': JSON.stringify(json_data)
+                                
+                },
+                success: function (data) {
+            
+                        $('#success').show();
+                        location.reload();
+                                    
+                }
+            });
+    
+    });
+</script>
+
+
+{%  endblock content %}

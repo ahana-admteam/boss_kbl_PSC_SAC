@@ -1,0 +1,270 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet"  href="{% static '/scss/styles.scss' %}">
+    <style>
+        .admin-link:link {
+            text-decoration: underline;
+        }
+
+        .tiles_container{
+            display:flex;
+            flex-direction: row;
+            justify-content:center;
+            flex-wrap: wrap;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .tile{
+            width:25%;
+            padding:20px;
+            padding-bottom: 10px;
+            height: 130px;
+        }
+        .card-header{
+            height: 50px;
+
+        }
+        .card-body{
+            text-align: center;
+            font-size: 14px;
+            font-weight:700;
+            height: 50px;
+        }
+        .block{
+            display: flex;
+            width:71%;
+            margin-top: 115px;
+            margin-left:20px;
+        }
+        .block1{
+            width:25%;
+            margin-top: 137px;
+            margin-left:1020px;
+            position:fixed;
+        }
+        .block2{
+            margin-top: 0px;
+            width:71%;
+            margin-left:20px;
+        }
+        .grid{
+            width:270px;
+            height: 130px;
+            margin-left: 60px;
+
+        }
+        
+    </style>
+    
+
+        <div class="row" style="width: 100%">                            
+            <div class="block">
+                <div class="tiles_container">
+                    <div class="tile">
+                        <a name="admin-link" href="/inward/">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Inward</div>
+                                <div class="card-body">
+                                      (1)                                 
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/outward/">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Outward</div>
+                                <div class="card-body">
+                                     (3)                                  
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/keys/">
+                            <div class="card text-white bg-success bg-success3 mb-3">
+                                <div class="card-header">Key Movement</div>
+                                <div class="card-body">
+                                     (1)                                   
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/branchdocuments/">
+                            <div class="card text-white bg-success bg-success4 mb-3">
+                                <div class="card-header">Branch Document</div>
+                                <div class="card-body">
+                                    (3)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/securityStockRegister/">
+                            <div class="card text-white bg-success bg-success5 mb-3">
+                                <div class="card-header">Security Stock</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/issuanceregister/">
+                        <div class="card text-white bg-success bg-success1 mb-3">
+                            <div class="card-header"> Security Issuance</div>
+                            <div class="card-body">
+                                (5)
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/suspensecash/">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Suspense Cash</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/securityequipments/">
+                            <div class="card text-white bg-success bg-success3 mb-3">
+                                <div class="card-header">Security Equipment</div>
+                                <div class="card-body">
+                                    (1)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="{% url 'petty_home' %}">
+                            <div class="card text-white bg-success bg-success4 mb-3">
+                                <div class="card-header">Petty Cash</div>
+                                <div class="card-body">
+                                    (7)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/complaints/">
+                            <div class="card text-white bg-success bg-success5 mb-3">
+                                <div class="card-header">Complaint Book</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/goldloan/">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Gold Loan</div>
+                                <div class="card-body">
+                                    (4)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- {% with request.session.new_roles|my_filter as roles %}
+                    {% if 'lar001jc' in roles or 'lar001oic' in roles or 'ad001branchadmin' in roles %}
+                    <div class="tile">
+                        <a name="admin-link" href="{% url 'locker_home'%}">
+                            <div class="card text-white bg-success bg-success3 mb-3">
+                                <div class="card-header">Locker Access</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endwith %}-->                    
+                </div>
+            </div>
+            <div class="block1"> 
+                <div class="grid-container">
+                    <div class="grid">
+                        <a name="admin-link" href="{% url 'role_assign_page' %}">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Admin</div>
+                                <div class="card-body">
+                                                              
+                                </div>
+                            </div>
+                        </a>
+                    </div>                        
+                    
+                    <div class="grid">
+                        <a name="admin-link" href="{% url 'it_recon_assets' %}">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Reporting</div>
+                                <div class="card-body">
+                                   
+                                </div>
+                            </div>
+                        </a>
+                    </div>                       
+                    <div class="grid">
+                        <a name="admin-link" href="{% url 'audit_home' %}">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Audit and Compliance</div>
+                                <div class="card-body">
+                                  
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="block2">
+                <div class="tiles_container">
+                    <div class="tile">
+                        <a name="admin-link" href="/fixedasset/new/">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Non-IT Asset</div>
+                                <div class="card-body">
+                                    (15)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% with request.session.new_roles|my_filter as roles %}
+                    {% if 'ita001verifier' in roles %}
+                    <div class="tile">
+                                <a name="admin-link" href="{% url 'itassetstab' %}">
+                                    <div class="card text-white bg-success bg-success4 mb-3">
+                                        <div class="card-header">IT Assets </div>
+                                        <div class="card-body">
+                                            (20)
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                    {% else %}
+                    <div class="tile">
+                        <a name="admin-link" href="{% url 'viewall_it_asset' %}">
+                            <div class="card text-white bg-success bg-success4 mb-3">
+                                <div class="card-header">IT Assets </div>
+                                <div class="card-body">
+                                    (5)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>                 
+    </div>
+   
+{% endblock content %}

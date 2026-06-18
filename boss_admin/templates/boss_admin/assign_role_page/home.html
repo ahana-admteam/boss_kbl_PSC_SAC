@@ -1,0 +1,512 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+<!-- <style>
+  .card[disabled]{
+    border: 1px solid #c3ddff;
+    background-color: #2a4f80;
+    color: #2e5586;
+    }
+  .card[disabled] .admin-icon{
+    background-color: #2a4f80;
+  }
+  .card[disabled] .card-title{
+    background-color: #2a4f80;
+  }
+</style> -->
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+  });
+</script>
+    <div class="container mt-3">
+        <div class="row mb-3 main_cont">
+          {% if display_name.IN001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'in001receiver' in roles or 'in001approver' in roles or 'ad001branchadmin' in roles %}
+                <a href="/inward/branch_view/">
+                <div class="card text-center tile1">
+                <div class="card-body">
+                    <i class="fa fa-arrow-circle-o-down admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{ display_name.IN001.display_name }}</h5>
+                  <!-- <a href="/inward/branch_view/" class="btn btn-primary">Inward</a> -->
+                </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile1" disabled data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                      <i class="fa fa-arrow-circle-o-down admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{ display_name.IN001.display_name }}</h5>
+                    <!-- <a href="/inward/branch_view/" class="btn btn-primary">Inward</a> -->
+                  </div>
+                </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          {% endif %}
+          {% if display_name.OUT001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'out001sender' in roles or 'out001approver' in roles %}
+                <a href="/outward/checkerlistall/">
+                <div class="card text-center tile2">
+                <div class="card-body">
+                    <i class="fa fa-arrow-circle-o-up admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.OUT001.display_name}}</h5>
+                  <!-- <a href="/outward/checkerlistall/" class="btn btn-primary">Outward</a> -->
+                </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                      <i class="fa fa-arrow-circle-o-up admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.OUT001.display_name}}</h5>
+                    <!-- <a href="/outward/checkerlistall/" class="btn btn-primary">Outward</a> -->
+                  </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            {% endif %}
+            {% if display_name.KEY001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+                <a href="/keys/history/">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <i class="fa fa-key admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.KEY001.display_name}}</h5>
+                    <!-- <a href="/keys/history/" class="btn btn-primary">Key Movement</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+            {% endif %}
+            {% if display_name.DOC001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'doc001custodian' in roles %}
+                <a href="/branchdocuments/maintainancelist">
+                <div class="card text-center tile2">
+                  <div class="card-body">
+                    <i class="fa fa-code-fork admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.DOC001.display_name}}</h5>
+                    <!-- <a href="/branchdocuments/maintainancelist" class="btn btn-primary">Branch Document</a> -->
+                  </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-code-fork admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.DOC001.display_name}}</h5>
+                    <!-- <a href="/branchdocuments/maintainancelist" class="btn btn-primary">Branch Document</a> -->
+                  </div>
+                </div>
+                {% endif %}
+              {% endwith %}
+              </div>
+            {% endif %}
+            {% if display_name.SS001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+            {% with request.session.new_roles|my_filter as roles %}
+            {% if 'ss001maintainer' in roles %}
+                <a href="/securityStockRegister/mystockentries/">
+                <div class="card text-center tile2">
+                <div class="card-body">
+                    <i class="fa fa-file-code-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SS001.display_name}}</h5>
+                </div>
+                </div>
+                </a>
+            {% elif 'ss001verifier' in roles %}
+                <a href="/securityStockRegister/branchtransaction/">
+                <div class="card text-center tile2">
+                    <div class="card-body">
+                        <i class="fa fa-file-code-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                        <h5 class="card-title">{{display_name.SS001.display_name}}</h5> 
+                    </div>
+                </div>
+                </a>
+              {% else %}
+              <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                <div class="card-body">
+                    <i class="fa fa-file-code-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SS001.display_name}}</h5> 
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+            </div>
+          {% endif %}
+            <!-- <div class="col-sm-3 tile">
+              <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-lock admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">Security Issuance</h5>
+                  <a href="#" class="btn btn-primary">Click for more</a>
+                </div>
+              </div>
+            </div> -->
+            {% if display_name.SC001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'sc001crec' in roles or 'sc001cashier' in roles or 'ad001branchadmin' in roles %}
+                <a href="/suspensecash/all">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <i class="fa fa-inr admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SC001.display_name}}</h5>
+                    <!-- <a href="/suspensecash/all" class="btn btn-primary">Suspense Cash</a> -->
+                  </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-inr admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SC001.display_name}}</h5>
+                    <!-- <a href="/suspensecash/all" class="btn btn-primary">Suspense Cash</a> -->
+                  </div>
+                </div>
+                {% endif %}
+              {% endwith %}
+              </div>
+            {% endif %}
+            {% if display_name.SEQ001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                {% with request.session.new_roles|my_filter as roles %}
+                {% if 'seq001checker' in roles or 'seq001maker' in roles%}
+                <a href="/securityequipments/listall">
+                <div class="card text-center tile2">
+                  <div class="card-body">
+                    <i class="fa fa-cog admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SEQ001.display_name}}</h5>
+                    <!-- <a href="/securityequipments/listall" class="btn btn-primary">Security Equipment</a> -->
+                  </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-cog admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SEQ001.display_name}}</h5>
+                    <!-- <a href="/securityequipments/listall" class="btn btn-primary">Security Equipment</a> -->
+                  </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div>
+            {% endif %}
+            {% if display_name.CR001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                {% with request.session.new_roles|my_filter as roles %}
+                  {% if 'cr001maker' in roles or 'cr001approver' in roles %}
+                <a href="/complaints/viewall">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-book admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.CR001.display_name}}</h5>
+                    <!-- <a href="/complaints/viewall" class="btn btn-primary">Complaint Book</a> -->
+                  </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                      <i class="fa fa-book admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.CR001.display_name}}</h5>
+                    <!-- <a href="/complaints/viewall" class="btn btn-primary">Complaint Book</a> -->
+                  </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div>
+            {% endif %}
+            {% if display_name.GL001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'gl001maker' in roles or 'gl001approver' in roles %}
+                <a href= "/goldloan/viewall/">
+                <div class="card text-center tile1">
+                <div class="card-body">
+                    <img style="width: 60px; margin-left: 115px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/gold.png"></img>
+                    <h5 class="card-title" id="img_title">{{display_name.GL001.display_name}}</h5>
+                  <!-- <a href= "/goldloan/viewall/" class="btn btn-primary">Gold Loan</a> -->
+                </div>
+                </div>
+                </a>
+              {% else %}
+              <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                <div class="card-body">
+                    <img style="width: 60px; margin-left: 115px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/gold.png"></img>
+                    <h5 class="card-title" id="img_title">{{display_name.GL001.display_name}}</h5>
+                  <!-- <a href= "/goldloan/viewall/" class="btn btn-primary">Gold Loan</a> -->
+                </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            {% endif %}
+            {% if display_name.PC001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'pc001maker' in roles or 'pc001approver' in roles %}
+                <a href="/pettycash/view_all">
+                <div class="card text-center tile2">
+                  <div class="card-body">
+                    <i class="fa fa-money admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.PC001.display_name}}</h5>
+                    <!-- <a href="/pettycash/view_all" class="btn btn-primary">Petty Cash</a> -->
+                  </div>
+                </div>
+                </a>
+                {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-money admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.PC001.display_name}}</h5>
+                    <!-- <a href="/pettycash/view_all" class="btn btn-primary">Petty Cash</a> -->
+                  </div>
+                </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+            {% endif %}
+            {% if display_name.CD001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'cd001maker' in roles %}
+              <a href="/chequedropbox/viewall">
+              <div class="card text-center tile1">
+                <div class="card-body">
+                  <i class="fa fa-dropbox admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                  <h5 class="card-title">{{display_name.CD001.display_name}}</h5>
+                </div>
+              </div>
+              </a>
+              {% else %}
+              <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                <div class="card-body">
+                  <i class="fa fa-dropbox admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                  <h5 class="card-title">{{display_name.CD001.display_name}}</h5>
+                </div>
+              </div>
+              {% endif %}
+              {% endwith %}
+            </div>
+            {% endif %}
+            {% if display_name.CF001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'cf001maker' in roles or 'cf001approver' in roles %}
+                <a href="/counterfeitnotes/">
+                  <div class="card text-center tile2">
+                    <div class="card-body">
+                      <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/money-check.png"></img>
+                      <h5 class="card-title" id="img_title">{{display_name.CF001.display_name}}</h5>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/money-check.png" hidden="true"></img>
+                    <h5 class="card-title" id="img_title">{{display_name.CF001.display_name}}</h5>
+                  </div>
+                </div>
+              {% endif %}
+              {% endwith %}
+          </div>
+          {% endif %}
+          {% if display_name.CL001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'cl001maker' in roles or 'ad001branchadmin' in roles or 'cl001checker' in roles %}
+                <a href="/cashlimit/viewall">
+                  <div class="card text-center tile2">
+                    <div class="card-body">
+                      <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/cash_limit.png" hidden="true"></img>
+                      <h5 class="card-title">{{display_name.CL001.display_name}}</h5>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/cash_limit.png" hidden="true"></img>
+                    <h5 class="card-title">{{display_name.CL001.display_name}}</h5>
+                  </div>
+                </div>
+              {% endif %}
+              {% endwith %}
+          </div>
+          {% endif %}
+          {% if display_name.CNE001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'cne001maker' in roles or 'cne001checker' in roles %}
+                <a href="/notesexchange/viewall">
+                  <div class="card text-center tile2">
+                    <div class="card-body">
+                      <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img>
+                      <h5 class="card-title">{{display_name.CNE001.display_name}}</h5>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img>
+                    <h5 class="card-title">{{display_name.CNE001.display_name}}</h5>
+                  </div>
+                </div>
+              {% endif %}
+              {% endwith %}
+          </div>
+          {% endif %}
+          {% if display_name.AOF001.app_required == 'True' %}
+            <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'aof001maker' in roles or 'aof001checker' in roles %}
+                <a href="/aofmovement/aof_viewall">
+                  <div class="card text-center tile2">
+                    <div class="card-body">
+                      <i class="fa fa-file-text-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <!-- <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img> -->
+                      <h5 class="card-title">{{display_name.AOF001.display_name}}</h5>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-file-text-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <!-- <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img> -->
+                    <h5 class="card-title">{{display_name.AOF001.display_name}}</h5>
+                  </div>
+                </div>
+              {% endif %}
+              {% endwith %}
+          </div>
+          {% endif %}
+          {% if display_name.CM001.app_required == 'True' %}
+            <!-- <div class="col-sm-3 tile">
+              {% with request.session.new_roles|my_filter as roles %}
+                {% if 'cm001maker' in roles or 'cm001checker' in roles %}
+                
+                  <div class="card text-center tile2">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-sm-4 mt-3"><h5 class="card-title"><a href="/cash_register/cash_register_vault/">Vault</a></h5></div>
+                        <div class="col-sm-3"><img class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img></div>
+                        <div class="col-sm-4  mt-3"><h5 class="card-title"><a href="/cash_register/cash_register_cashier/">Cashier</a></h5></div>
+                      </div>
+                      <h5 class="card-title">{{display_name.CM001.display_name}}</h5>
+                    </div>
+                  </div>
+              {% else %}
+                <div class="card text-center tile2">
+                  <div class="card-body">
+                    <!-- <img style="height: 55px;width: 60px; margin-left:90px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img> -->
+                    <!--<div class="row">
+                      <div class="col-sm-4 mt-3"><h5 class="card-title">Vault</h5></div>
+                      <div class="col-sm-3"><img class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img></div>
+                      <div class="col-sm-4  mt-3"><h5 class="card-title">Cashier</h5></div>
+                    </div>
+                    <h5 class="card-title">{{display_name.CM001.display_name}}</h5>
+                  </div>
+                </div>
+              {% endif %}
+              {% endwith %}
+          </div> -->
+          <div class="col-sm-3 tile">
+            {% with request.session.new_roles|my_filter as roles %}
+              {% if 'cm001maker' in roles or 'cm001checker1' in roles or 'cm001checker2' in roles or 'ad001branchadmin' in roles %}
+              <a href="/cash_register/cash_register_home/">
+                <div class="card text-center tile2">
+                  <div class="card-body">
+                    <img style="height: 55px;width: 60px; margin-left:115px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img>
+                    <h5 class="card-title">{{display_name.CM001.display_name}}</h5>
+                  </div>
+                </div>
+              </a>
+            {% else %}
+              <div class="card text-center tile2" data-toggle="tooltip" title="don't have access">
+                <div class="card-body">
+                  <img style="height: 55px;width: 60px; margin-left:115px;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/note_sorting.png" hidden="true"></img>
+                  <h5 class="card-title">{{display_name.CM001.display_name}}</h5>
+                </div>
+              </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+          {% endif %}
+              <div class="col-sm-3 tile" >
+                {% with request.session.new_roles|my_filter as roles %}
+                {% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles %}
+                <a href="/screeningcommittee/dashboard/">
+                  <div class="card text-center tile2">
+                    <div class="card-body" >
+                      <img style="height: 20%;width: 40%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/psc_review.png" hidden="true"></img>
+                      <h5 class="card-title" style="color: #8a2895;">{{display_name.PSC001.app_namepsc}}</h5>
+                    </div>
+                  </div>
+                </a>                
+                {% elif 'sac001maker3' in roles or 'sac001checker3' in roles %}
+                <a href="/screeningcommittee/dashboard/">
+                  <div class="card text-center tile2">
+                    <div class="card-body" >
+                      <img style="height: 20%;width: 40%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/psc_review.png" hidden="true"></img>
+                      <h5 class="card-title" style="color: #8a2895;">{{display_name.PSC001.app_namesac}}</h5>
+                    </div>
+                  </div>
+                </a>                
+                {% elif 'psc001maker2' in roles or 'psc001checker2' in roles %}              
+                <a href="/screeningcommittee/dashboard/">
+                    <div class="card text-center tile2">
+                      <div class="card-body" >
+                        <img style="height: 20%;width: 30%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/psc_review.png" hidden="true"></img>
+                        <h5 class="card-title" style="color: #8a2895;">{{display_name.PSC001.app_name}}</h5>
+                      </div>
+                    </div>
+                  </a>
+                {% else %}
+                  <div class="card text-center tile2" data-toggle="tooltip" title="You don't have access">
+                    <div class="card-body">
+                      <img style="height: 20%;width: 30%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/psc_review.png" hidden="true"></img>
+                      <h5 class="card-title" style="color: #8a2895;" >{{display_name.PSC001.app_name}}</h5>
+                    </div>
+                  </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="col-sm-3 tile" >
+              {% with request.session.new_roles|my_filter as roles %}
+              {% if 'psc001checker3' in roles or 'sac001checker3' in roles or 'momconvener' in roles %}              
+              <a href="/screeningcommittee/mom_dashboard/">
+                  <div class="card text-center tile2">
+                    <div class="card-body" >
+                      <img style="height: 60%;width: 40%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/mom.png" hidden="true"></img>
+                      <h5 class="card-title" style="color: #8a2895;">{{display_name.PSC001.app_name2}}</h5>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="card text-center tile2" data-toggle="tooltip" title="You don't have access">
+                  <div class="card-body">
+                    <img style="height: 60%;width: 40%; margin-left:35%;" class="fa-solid admin-icon mb-2" src="{% static '/assets/images/'%}{{tenant}}/icons/mom.png" hidden="true"></img>
+                    <h5 class="card-title" style="color: #8a2895;" >{{display_name.PSC001.app_name2}}</h5>
+                  </div>
+                </div> 
+              {% endif %}
+              {% endwith %}
+          </div>
+          </div>
+    </div>
+    
+   
+{% endblock content %}

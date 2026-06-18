@@ -1,0 +1,2193 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+<style>
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+        resize: none;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    .in-control {
+        border: none;
+        width: 5%;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+        padding-right: 30px;
+
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+
+
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+</style>
+
+<div class="right-main-container" style="padding: 0px 20px;">
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-danger" data-dismiss="alert">&times;</button>
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-success" data-dismiss="alert">&times;</button>
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row" style="padding-top: 25px">
+            <form id="submit_form" action="" method="post">
+                {% csrf_token %}
+                <!-- alert messages -->
+                <div>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                    <div class="message alert alert-success alert-dismissible col-12 mx-1" style="text-align: center;"
+                        role="alert">
+                        <div id="form_errors">
+                            <span class="fieldWrapper">{{ message }}</span>
+
+                            {% endif %}
+                            {% if message.tags == 'error' %}
+                            <div class="message alert alert-danger alert-dismissible col-12 mx-1"
+                                style="text-align: center;" role="alert">
+                                <div id="form_errors">
+                                    <span class="fieldWrapper">{{ message }}</span>
+                                    {% endif %}
+                                    <!-- <button type="button" class="close pull-right" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button> -->
+                                </div>
+
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Main contents -->
+                <div>
+                    <div class="col-md-12" style="padding: 0px 20px; margin-bottom: 5%; border: 2px solid black;">
+                        <div class="row">
+                            {% for mom in mom_data %}
+                            <input type='text' hidden name='mom_id' id="mom_id" value="{{mom.id}}">
+                            <div class="col-md-12 mt-3 mb-3" style="padding: 0px 20px; border: 2px solid black;">
+                                <div class="row">
+                                    <div class="form-group col-sm-10" style="padding-top: 10px">
+                                        <label for="branch_name"><strong>Meeting No. :
+                                                {{mom.meeting_id}}</strong></label>
+                                    </div>
+
+                                    <div class="form-group col-sm-2" style="padding-top: 10px">
+                                        <label for="mom_creation_date"><strong>Date :
+                                                {{mom.mom_creation_date|date:'d-m-Y'}}</strong></label>
+                                    </div>
+
+                                    {% if mom.review_type == 'PSC1' or mom.review_type == 'PSC2' %}
+                                    <div class="form-group col-sm-12 mt-3" style="padding-top: 10px">
+                                        <h5 class="text-center"><u><strong>Minutes of the meeting of the PRELIMINARY
+                                                    SCREENING COMMITTEE - I held on <span
+                                                        id="mom_datetime">{{mom.mom_date|date:'d-m-Y'}} at 11.00
+                                                        AM.</u></strong></span>
+                                        </h5>
+                                    </div>
+                                    {% elif mom.review_type == 'sac' %}
+                                    <div class="form-group col-sm-12 mt-3" style="padding-top: 10px">
+                                        <h5 class="text-center"><u><strong>Minutes of the meeting of the STAFF
+                                                    ACCOUNTABILITY
+                                                    COMMITTEE - I held on <span
+                                                        id="mom_datetime">{{mom.mom_date|date:'d-m-Y'}} at 11.00
+                                                        AM.</u></strong></span>
+                                        </h5>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+                                <h6><strong>PRESENT:</strong></h6>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        {% for aud_index in mom.audience %}
+                                        {% if forloop.counter0|divisibleby:3 %}
+                                    </div>
+                                    <div class="row">
+                                        {% endif %}
+                                        <div class="col-md-4 mb-2">
+                                            <div style="font-weight: bold;">{{ aud_index.slno }}){{ aud_index.staffName
+                                                }}({{ aud_index.staffNo }})</div>
+                                            <div>{{ aud_index.designation }}</div>
+                                            <div>{{ aud_index.role }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if review_type == 'PSC1' %}
+                            {% for psc in psc_data %}
+                            <div id="psc_review_mom" class="mt-3">
+                                <h6>Basic Details<span></span></h6>
+                                <div id="basic-mom-details">
+                                    <div class="row">
+                                        <input type="hidden" id="crnvalue" name="" value="{{psc.id}}">
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="sol_id1">Sol ID</label>
+                                            <input readonly type="text" id="sol_id1" class="form-control"
+                                                value="{{psc.branch_code_id__branch_code}}" name="sol_id1" />
+                                        </div>
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="branch_name">Branch Name</label>
+                                            <input readonly id="branch_name" name="branch_name"
+                                                value="{{psc.branch_code_id__branch_name}}" type="text"
+                                                class="form-control" />
+                                        </div>
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="region">Region</label>
+                                            <input readonly id="region" name="region" value="{{psc.region_name}}"
+                                                type="text" class="form-control" />
+                                        </div>
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="facc_no">Facility Number</label>
+                                            <input readonly id="facc_no" name="facc_no" value="{{psc.facility_num}}"
+                                                type="text" class="form-control" />
+                                        </div>
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="pacc_no">PSC ID</label>
+                                            <input readonly id="pacc_no" name="pacc_no" value="{{psc.psc_rec_id}}"
+                                                type="text" class="form-control" />
+                                        </div>
+                                        <div class="form-group col-sm-4" style="padding-top: 10px">
+                                            <label for="npa_date">NPA Date</label>
+                                            <input readonly id="npa_date" name="npa_date"
+                                                value="{{psc.npa_date|date:'d-m-Y'}}" type="text"
+                                                class="form-control" />
+                                        </div>
+                                        {% endfor %}
+                                        <div>
+                                            <table class="table table-striped table-hover custom-margin mt-3 pb-3"
+                                                id="creditsanction_table" style="border:1px solid;">
+                                                <thead class="table-dark" style="font-size: 10px;">
+                                                    <tr>
+                                                        <th>Sl. NO.</th>
+                                                        <th>SRN</th>
+                                                        <th>Date of Release</th>
+                                                        <th>Nature of Account</th>
+                                                        <th>Nature of Advance</th>
+                                                        <th>LAN</th>
+                                                        <th>Sanction Amount</th>
+                                                        <th>Due date</th>
+                                                        <th>NPA Date</th>
+                                                        <th>Present Balance</th>
+                                                        <th>Current Balance</th>
+                                                        <th>Purpose of Advance</th>
+                                                        <th>Asset Classification</th>
+                                                        <th>Document Date</th>
+                                                        {% if all_aod %}
+                                                        <th width="5%" style="text-align: center;">
+                                                            AOD
+                                                        </th>
+                                                        {% endif %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="border:1px solid rgb(235, 235, 235); font-size: 12px;">
+                                                    {% if creditsanctiontable_data %}
+                                                    {% for cs in creditsanctiontable_data %}
+                                                    <tr>
+                                                        <td id="cs_slno-{{ forloop.counter }}">{{ cs.credit_feci_slno }}
+                                                        </td>
+                                                        <td id="cs_refno-{{ forloop.counter }}">{{ cs.reference_num }}
+                                                        </td>
+                                                        <td id="cs_sanc_date-{{ forloop.counter }}"
+                                                            style="white-space: nowrap;">{{
+                                                            cs.sanction_date|date:'d-m-Y' }}</td>
+                                                        <td id="cs_acc_nat-{{ forloop.counter }}">{{ cs.account_nature
+                                                            }}</td>
+                                                        <td id="cs_adv_nat-{{ forloop.counter }}">{{ cs.advance_nature
+                                                            }}</td>
+                                                        <td id="cs_lan-{{ forloop.counter }}">{{ cs.lan }}</td>
+                                                        <td id="cs_san_lim-{{ forloop.counter }}">{{ cs.sanctioned_limit
+                                                            }}</td>
+                                                        <td id="cs_duedate-{{ forloop.counter }}"
+                                                            style="white-space: nowrap;">{{ cs.due_date|date:'d-m-Y' }}
+                                                        </td>
+                                                        <td id="cs_npadate-{{ forloop.counter }}"
+                                                            style="white-space: nowrap;">{{ cs.npa_date|date:'d-m-Y' }}
+                                                        </td>
+                                                        <td id="cs_npa_bal-{{ forloop.counter }}">{{ cs.npa_balance }}
+                                                        </td>
+                                                        <td id="cs_bal-{{ forloop.counter }}">{{ cs.balance }}</td>
+                                                        <td id="cs_adv_purp-{{ forloop.counter }}">{{ cs.advance_purpose
+                                                            }}</td>
+                                                        <td id="cs_asst_clss-{{ forloop.counter }}">{{
+                                                            cs.asset_classification }}</td>
+                                                        <td id="doc_date-{{ forloop.counter }}"
+                                                            style="padding: 4px; white-space: nowrap;">{{
+                                                            cs.doc_date|date:'d-m-Y' }}</td>
+                                                        {% if all_aod %}
+                                                        <td>
+                                                            <a style="cursor: pointer;"
+                                                                id="openAOD-{{ forloop.counter }}" data-toggle="modal"
+                                                                data-toggle="tooltip" title="Add Row"
+                                                                data-target="#creditSanctionAODModal"
+                                                                class="btn no-loader btn-primary addAOD">AOD
+                                                            </a>
+                                                        </td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                    {% endif %}
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                        <span id="errormsghmcheck" style="color: red;"></span>
+
+                                        <div class="col-md-12 mt-3" id="psc_table_valid">
+                                            <table class="table table-striped table-hover" id="psc_lapses_table"
+                                                style="border:1px solid;">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>Lapses <span style="color: red">*</span></th>
+                                                        <th colspan="2">Branch Head During lapses observed <span
+                                                                style="color: red">*</span></th>
+                                                        <th width=5%><a onclick="addrow('psc_lapses_table_addrow')"
+                                                                style="cursor: pointer;" id="addrow_lapses"
+                                                                class="no-loader" data-toggle="tooltip"
+                                                                title="Add Row"><span
+                                                                    style="font-weight:900; font-size:20px"><b>&plus;</b></span></a>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="border:1px solid rgb(235, 235, 235);">
+                                                    <tr>
+                                                        <td><textarea required class="form-control ta-control" cols="50"
+                                                                rows="3" type="text" value=""
+                                                                id="branch_head-1"></textarea>
+                                                        </td>
+                                                        <td colspan="2">
+                                                            <div class="col-md-12">
+                                                                <div class="row">
+                                                                    <div class="col-md-6" id="lapses_head_div">
+                                                                        <form action="" method="POST"
+                                                                            id="lapses_head_form" class="form-inline">
+                                                                            {% csrf_token %}
+                                                                            <div class="row">
+
+                                                                                <div class="col-md-7">
+                                                                                    <input type="text"
+                                                                                        placeholder="Staff NO"
+                                                                                        id="psc_lap_staff-1"
+                                                                                        name="psc_lap_staff-1"
+                                                                                        autocomplete="off" value=""
+                                                                                        class="form-control">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+
+                                                                                    <a style="cursor: pointer;"
+                                                                                        id="lapses_psc_branch_head_btn-1"
+                                                                                        title="Add Employee Data"
+                                                                                        class="btn btn-primary no-loader"
+                                                                                        onclick="openEmpDataModal(this.id)"><i
+                                                                                            class="fa fa-search"></i>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="row" style="margin-left: -80px;">
+                                                                            <div class="col-md-8"><input required
+                                                                                    type="text" class="form-control "
+                                                                                    id="lapses_psc_branch_head_name-1"
+                                                                                    disabled value=""
+                                                                                    name="lapses_psc_branch_head_name-1">
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <input type="text" class="form-control "
+                                                                                    id="lapses_psc_branch_head_id-1"
+                                                                                    disabled value=""
+                                                                                    name="lapses_psc_branch_head_id-1">
+                                                                            </div>
+                                                                            <div hidden class="col-md-6 mt-2"><input
+                                                                                    type="text" class="form-control"
+                                                                                    id="lapses_psc_branch_head_sol_id-1"
+                                                                                    disabled value=""
+                                                                                    name="lapses_psc_branch_head_sol_id-1">
+                                                                            </div>
+                                                                            <div hidden class="col-md-6 mt-2"><input
+                                                                                    type="text" class="form-control"
+                                                                                    id="lapses_psc_branch_head_desig-1"
+                                                                                    disabled value=""
+                                                                                    name="lapses_psc_branch_head_desig-1">
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        <td></td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="form-group col-sm-12" style="padding-top: 10px">
+                                            <label for="bal_on_npa">Present Branch Head <span
+                                                    style="color: red">*</span></label>
+                                            <div class="row">
+                                                <div class="col-md-5" id="branch_head_div">
+                                                    <form action="" method="POST" id="branch_head_form"
+                                                        class="form-inline">
+                                                        {% csrf_token %}
+                                                        <div class="row">
+
+                                                            <div class="col-md-7">
+                                                                <input type="text" placeholder="Staff NO"
+                                                                    name="staff_no1" autocomplete="off" value=""
+                                                                    class="form-control">
+                                                            </div>
+                                                            <div class="col-md-3">
+
+                                                                <a style="cursor: pointer;" id="psc_branch_head_btn"
+                                                                    title="Add Employee Data"
+                                                                    class="btn btn-primary no-loader"
+                                                                    onclick="openEmpDataModal(this.id)"><i
+                                                                        class="fa fa-search"></i>
+                                                                </a>
+                                                            </div>
+
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-5" style="margin-left: -100px;">
+                                                    <div class="row">
+                                                        <div class="col-md-6"><input type="text" class="form-control "
+                                                                id="psc_branch_head_id" disabled value=""
+                                                                name="psc_branch_head_id"></div>
+                                                        <div id="psc_branch_head_valid" class="col-md-6">
+                                                            <input required type="text" class="form-control "
+                                                                id="psc_branch_head_name" disabled value=""
+                                                                name="psc_branch_head_name">
+                                                        </div>
+                                                        <div hidden class="col-md-6 mt-2"><input type="text"
+                                                                class="form-control" id="psc_branch_head_sol_id"
+                                                                disabled value="" name="psc_branch_head_sol_id"></div>
+                                                        <div hidden class="col-md-6 mt-2"><input type="text"
+                                                                class="form-control" id="psc_branch_head_desig" disabled
+                                                                value="" name="psc_branch_head_desig"></div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% if file_data %}
+                                    <div class="docTable p-1 mb-3"
+                                        style="border: 1px solid rgb(201, 201, 201); border-radius: 5px;">
+                                        <table class="table table-hover shadow-lg bg-white" id="myTable"
+                                            style="border-radius: 5px;">
+                                            <thead class="bg-white text-dark">
+                                                <tr class="bg-primary text-white">
+                                                    <th class="col-md-3" style="border: 1px solid rgb(201, 201, 201);">
+                                                        File Name</th>
+                                                    <th style="border: 1px solid rgb(201, 201, 201);">Section</th>
+                                                    <th style="border: 1px solid rgb(201, 201, 201);">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-group col-sm-4" style="padding: 10px 0px; margin-left: 90%;">
+                                        <button class="btn btn-primary" id="submit_button_confirm_psc1">Submit</button>
+                                    </div>
+
+                                </div>
+
+                                {% elif review_type == 'PSC2' %}
+                                {% for psc in psc_data %}
+                                <div id="psc_review_mom" class="mt-3">
+                                    <h6>Basic Details<span></span></h6>
+                                    <div id="basic-mom-details">
+                                        <div class="row">
+                                            <input type="hidden" id="crnvalue" name="" value="{{psc.id}}">
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="sol_id1">Sol ID</label>
+                                                <input readonly type="text" id="sol_id1" class="form-control"
+                                                    value="{{psc.branch_code_id__branch_code}}" name="sol_id1" />
+                                            </div>
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="branch_name">Branch Name</label>
+                                                <input readonly id="branch_name" name="branch_name"
+                                                    value="{{psc.branch_code_id__branch_name}}" type="text"
+                                                    class="form-control" />
+                                            </div>
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="region">Region</label>
+                                                <input readonly id="region" name="region" value="{{psc.region_name}}"
+                                                    type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="facc_no">Facility Number</label>
+                                                <input readonly id="facc_no" name="facc_no" value="{{psc.facility_num}}"
+                                                    type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="pacc_no">PSC ID</label>
+                                                <input readonly id="pacc_no" name="pacc_no" value="{{psc.psc_rec_id}}"
+                                                    type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                <label for="npa_date">NPA Date</label>
+                                                <input readonly id="npa_date" name="npa_date"
+                                                    value="{{psc.npa_date|date:'d-m-Y'}}" type="text"
+                                                    class="form-control" />
+                                            </div>
+                                            {% endfor %}
+                                            <div>
+                                                <table class="table table-striped table-hover custom-margin mt-3 pb-3"
+                                                    id="creditsanction_table" style="border:1px solid;">
+                                                    <thead class="table-dark" style="font-size: 10px;">
+                                                        <tr>
+                                                            <th>Sl. NO.</th>
+                                                            <th>SRN</th>
+                                                            <th>Date of Release</th>
+                                                            <th>Nature of Account</th>
+                                                            <th>Nature of Advance</th>
+                                                            <th>LAN</th>
+                                                            <th>Sanction Amount</th>
+                                                            <th>Due date</th>
+                                                            <th>NPA Date</th>
+                                                            <th>Present Balance</th>
+                                                            <th>Current Balance</th>
+                                                            <th>Purpose of Advance</th>
+                                                            <th>Asset Classification</th>
+                                                            <th>Document Date</th>
+                                                            {% if all_aod %}
+                                                            <th width="5%" style="text-align: center;">
+                                                                AOD
+                                                            </th>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody
+                                                        style="border:1px solid rgb(235, 235, 235); font-size: 12px;">
+                                                        {% if creditsanctiontable_data %}
+                                                        {% for cs in creditsanctiontable_data %}
+                                                        <tr>
+                                                            <td id="cs_slno-{{ forloop.counter }}">{{
+                                                                cs.credit_feci_slno }}</td>
+                                                            <td id="cs_refno-{{ forloop.counter }}">{{ cs.reference_num
+                                                                }}</td>
+                                                            <td id="cs_sanc_date-{{ forloop.counter }}"
+                                                                style="white-space: nowrap;">{{
+                                                                cs.sanction_date|date:'d-m-Y' }}</td>
+                                                            <td id="cs_acc_nat-{{ forloop.counter }}">{{
+                                                                cs.account_nature }}</td>
+                                                            <td id="cs_adv_nat-{{ forloop.counter }}">{{
+                                                                cs.advance_nature }}</td>
+                                                            <td id="cs_lan-{{ forloop.counter }}">{{ cs.lan }}</td>
+                                                            <td id="cs_san_lim-{{ forloop.counter }}">{{
+                                                                cs.sanctioned_limit }}</td>
+                                                            <td id="cs_duedate-{{ forloop.counter }}"
+                                                                style="white-space: nowrap;">{{ cs.due_date|date:'d-m-Y'
+                                                                }}</td>
+                                                            <td id="cs_npadate-{{ forloop.counter }}"
+                                                                style="white-space: nowrap;">{{ cs.npa_date|date:'d-m-Y'
+                                                                }}</td>
+                                                            <td id="cs_npa_bal-{{ forloop.counter }}">{{ cs.npa_balance
+                                                                }}</td>
+                                                            <td id="cs_bal-{{ forloop.counter }}">{{ cs.balance }}</td>
+                                                            <td id="cs_adv_purp-{{ forloop.counter }}">{{
+                                                                cs.advance_purpose }}</td>
+                                                            <td id="cs_asst_clss-{{ forloop.counter }}">{{
+                                                                cs.asset_classification }}</td>
+                                                            <td id="doc_date-{{ forloop.counter }}"
+                                                                style="padding: 4px; white-space: nowrap;">{{
+                                                                cs.doc_date|date:'d-m-Y' }}</td>
+                                                            {% if all_aod %}
+                                                            <td>
+                                                                <a style="cursor: pointer;"
+                                                                    id="openAOD-{{ forloop.counter }}"
+                                                                    data-toggle="modal" data-toggle="tooltip"
+                                                                    title="Add Row"
+                                                                    data-target="#creditSanctionAODModal"
+                                                                    class="btn no-loader btn-primary addAOD">AOD
+                                                                </a>
+                                                            </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                        {% endfor %}
+                                                        {% endif %}
+
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                            <span id="errormsghmcheck" style="color: red;"></span>
+
+                                            <div class="col-md-12 mt-3" id="psc_table_valid">
+                                                <table class="table table-striped table-hover" id="psc_lapses_table"
+                                                    style="border:1px solid;">
+                                                    <thead class="table-dark">
+                                                        <tr>
+                                                            <th>Lapses <span style="color: red">*</span></th>
+                                                            <th colspan="2">Branch Head During lapses observed <span
+                                                                    style="color: red">*</span></th>
+                                                            <th width=5%><a onclick="addrow('psc_lapses_table_addrow')"
+                                                                    style="cursor: pointer;" id="addrow_lapses"
+                                                                    class="no-loader" data-toggle="tooltip"
+                                                                    title="Add Row"><span
+                                                                        style="font-weight:900; font-size:20px"><b>&plus;</b></span></a>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody style="border:1px solid rgb(235, 235, 235);">
+                                                        <tr>
+                                                            <td><textarea required class="form-control ta-control"
+                                                                    cols="50" rows="3" type="text" value=""
+                                                                    id="branch_head-1"></textarea>
+                                                            </td>
+                                                            <td colspan="2">
+                                                                <div class="col-md-12">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6" id="lapses_head_div">
+                                                                            <form action="" method="POST"
+                                                                                id="lapses_head_form"
+                                                                                class="form-inline">
+                                                                                {% csrf_token %}
+                                                                                <div class="row">
+
+                                                                                    <div class="col-md-7">
+                                                                                        <input type="text"
+                                                                                            placeholder="Staff NO"
+                                                                                            id="psc_lap_staff-1"
+                                                                                            name="psc_lap_staff-1"
+                                                                                            autocomplete="off" value=""
+                                                                                            class="form-control">
+                                                                                    </div>
+                                                                                    <div class="col-md-3">
+
+                                                                                        <a style="cursor: pointer;"
+                                                                                            id="lapses_psc_branch_head_btn-1"
+                                                                                            title="Add Employee Data"
+                                                                                            class="btn btn-primary no-loader"
+                                                                                            onclick="openEmpDataModal(this.id)"><i
+                                                                                                class="fa fa-search"></i>
+                                                                                        </a>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="row"
+                                                                                style="margin-left: -80px;">
+                                                                                <div class="col-md-8"><input required
+                                                                                        type="text"
+                                                                                        class="form-control "
+                                                                                        id="lapses_psc_branch_head_name-1"
+                                                                                        disabled value=""
+                                                                                        name="lapses_psc_branch_head_name-1">
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <input type="text"
+                                                                                        class="form-control "
+                                                                                        id="lapses_psc_branch_head_id-1"
+                                                                                        disabled value=""
+                                                                                        name="lapses_psc_branch_head_id-1">
+                                                                                </div>
+                                                                                <div hidden class="col-md-6 mt-2"><input
+                                                                                        type="text" class="form-control"
+                                                                                        id="lapses_psc_branch_head_sol_id-1"
+                                                                                        disabled value=""
+                                                                                        name="lapses_psc_branch_head_sol_id-1">
+                                                                                </div>
+                                                                                <div hidden class="col-md-6 mt-2"><input
+                                                                                        type="text" class="form-control"
+                                                                                        id="lapses_psc_branch_head_desig-1"
+                                                                                        disabled value=""
+                                                                                        name="lapses_psc_branch_head_desig-1">
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+                                                            <td></td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="form-group col-sm-12" style="padding-top: 10px">
+                                                <label for="bal_on_npa">Present Branch Head <span
+                                                        style="color: red">*</span></label>
+                                                <div class="row">
+                                                    <div class="col-md-5" id="branch_head_div">
+                                                        <form action="" method="POST" id="branch_head_form"
+                                                            class="form-inline">
+                                                            {% csrf_token %}
+                                                            <div class="row">
+
+                                                                <div class="col-md-7">
+                                                                    <input type="text" placeholder="Staff NO"
+                                                                        id="staff_no1" name="staff_no1"
+                                                                        autocomplete="off" value=""
+                                                                        class="form-control">
+                                                                </div>
+                                                                <div class="col-md-3">
+
+                                                                    <a style="cursor: pointer;" id="psc_branch_head_btn"
+                                                                        title="Add Employee Data"
+                                                                        class="btn btn-primary no-loader"
+                                                                        onclick="openEmpDataModal(this.id)"><i
+                                                                            class="fa fa-search"></i>
+                                                                    </a>
+                                                                </div>
+
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-md-5" style="margin-left: -100px;">
+                                                        <div class="row">
+                                                            <div class="col-md-6"><input type="text"
+                                                                    class="form-control " id="psc_branch_head_id"
+                                                                    disabled value="" name="psc_branch_head_id"></div>
+                                                            <div id="psc_branch_head_valid" class="col-md-6">
+                                                                <input required type="text" class="form-control "
+                                                                    id="psc_branch_head_name" disabled value=""
+                                                                    name="psc_branch_head_name">
+                                                            </div>
+                                                            <div hidden class="col-md-6 mt-2"><input type="text"
+                                                                    class="form-control" id="psc_branch_head_sol_id"
+                                                                    disabled value="" name="psc_branch_head_sol_id">
+                                                            </div>
+                                                            <div hidden class="col-md-6 mt-2"><input type="text"
+                                                                    class="form-control" id="psc_branch_head_desig"
+                                                                    disabled value="" name="psc_branch_head_desig">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        {% if file_data %}
+                                        <div class="docTable p-1 mb-3"
+                                            style="border: 1px solid rgb(201, 201, 201); border-radius: 5px;">
+                                            <table class="table table-hover shadow-lg bg-white" id="myTable"
+                                                style="border-radius: 5px;">
+                                                <thead class="bg-white text-dark">
+                                                    <tr class="bg-primary text-white">
+                                                        <th class="col-md-3"
+                                                            style="border: 1px solid rgb(201, 201, 201);">File Name</th>
+                                                        <th style="border: 1px solid rgb(201, 201, 201);">Section</th>
+                                                        <th style="border: 1px solid rgb(201, 201, 201);">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-group col-sm-4" style="padding: 10px 0px; margin-left: 90%;">
+                                            <button class="btn btn-primary"
+                                                id="submit_button_confirm_psc2">Submit</button>
+                                        </div>
+
+                                    </div>
+
+                                    {% elif review_type == 'sac' %}
+                                    {% for sac in sac_data %}
+                                    <div id="sac_review_mom" class="mt-3">
+                                        <h6>Basic Details<span></span></h6>
+                                        <div id="basic-mom-details">
+                                            <div class="row">
+                                                <input type="hidden" id="crnvalue" name="" value="{{sac.id}}">
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="sol_id1">Sol ID</label>
+                                                    <input readonly type="text" id="sol_id1" class="form-control"
+                                                        value="{{sac.psc_rec_id__branch_code_id__branch_code}}"
+                                                        name="sol_id1" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="branch_name">Branch Name</label>
+                                                    <input readonly id="branch_name" name="branch_name"
+                                                        value="{{sac.psc_rec_id__branch_code_id__branch_name}}"
+                                                        type="text" class="form-control" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="region">Region</label>
+                                                    <input readonly id="region" name="region"
+                                                        value="{{sac.psc_rec_id__region_name}}" type="text"
+                                                        class="form-control" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="facc_no">Facility Number</label>
+                                                    <input readonly id="facc_no" name="facc_no"
+                                                        value="{{sac.psc_rec_id__facility_num}}" type="text"
+                                                        class="form-control" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="pacc_no">PSC ID</label>
+                                                    <input readonly id="pacc_no" name="pacc_no" value="{{psc_rec_id}}"
+                                                        type="text" class="form-control" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="sacc_no">SAC ID</label>
+                                                    <input readonly id="sacc_no" name="sacc_no"
+                                                        value="{{sac.sac_rec_id}}" type="text" class="form-control" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-top: 10px">
+                                                    <label for="npa_date">NPA Date</label>
+                                                    <input readonly id="npa_date" name="npa_date"
+                                                        value="{{sac.psc_rec_id__npa_date|date:'d-m-Y'}}" type="date"
+                                                        class="form-control" />
+                                                </div>
+                                                <div>
+                                                    <table
+                                                        class="table table-striped table-hover custom-margin mt-3 pb-3"
+                                                        id="creditsanction_table" style="border:1px solid;">
+                                                        <thead class="table-dark" style="font-size: 10px;">
+                                                            <tr>
+                                                                <th>Sl. NO.</th>
+                                                                <th>SRN</th>
+                                                                <th>Date of Release</th>
+                                                                <th>Nature of Account</th>
+                                                                <th>Nature of Advance</th>
+                                                                <th>LAN</th>
+                                                                <th>Sanction Amount</th>
+                                                                <th>Due date</th>
+                                                                <th>NPA Date</th>
+                                                                <th>Present Balance</th>
+                                                                <th>Current Balance</th>
+                                                                <th>Purpose of Advance</th>
+                                                                <th>Asset Classification</th>
+                                                                <th>Document Date</th>
+
+                                                                {% if all_aod %}
+                                                                <th width="5%" style="text-align: center;">
+                                                                    AOD
+                                                                </th>
+                                                                {% endif %}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody
+                                                            style="border:1px solid rgb(235, 235, 235); font-size: 12px;">
+                                                            {% if creditsanctiontable_data %}
+                                                            {% for cs in creditsanctiontable_data %}
+                                                            <tr>
+                                                                <td id="cs_slno-{{ forloop.counter }}">{{
+                                                                    cs.credit_feci_slno }}</td>
+                                                                <td id="cs_refno-{{ forloop.counter }}">{{
+                                                                    cs.reference_num }}</td>
+                                                                <td id="cs_sanc_date-{{ forloop.counter }}"
+                                                                    style="white-space: nowrap;">{{
+                                                                    cs.sanction_date|date:'d-m-Y' }}</td>
+                                                                <td id="cs_acc_nat-{{ forloop.counter }}">{{
+                                                                    cs.account_nature }}</td>
+                                                                <td id="cs_adv_nat-{{ forloop.counter }}">{{
+                                                                    cs.advance_nature }}</td>
+                                                                <td id="cs_lan-{{ forloop.counter }}">{{ cs.lan }}</td>
+                                                                <td id="cs_san_lim-{{ forloop.counter }}">{{
+                                                                    cs.sanctioned_limit }}</td>
+                                                                <td id="cs_duedate-{{ forloop.counter }}"
+                                                                    style="white-space: nowrap;">{{
+                                                                    cs.due_date|date:'d-m-Y' }}</td>
+                                                                <td id="cs_npadate-{{ forloop.counter }}"
+                                                                    style="white-space: nowrap;">{{
+                                                                    cs.npa_date|date:'d-m-Y' }}</td>
+                                                                <td id="cs_npa_bal-{{ forloop.counter }}">{{
+                                                                    cs.npa_balance }}</td>
+                                                                <td id="cs_bal-{{ forloop.counter }}">{{ cs.balance }}
+                                                                </td>
+                                                                <td id="cs_adv_purp-{{ forloop.counter }}">{{
+                                                                    cs.advance_purpose }}</td>
+                                                                <td id="cs_asst_clss-{{ forloop.counter }}">{{
+                                                                    cs.asset_classification }}</td>
+                                                                <td id="doc_date-{{ forloop.counter }}"
+                                                                    style="padding: 4px; white-space: nowrap;">{{
+                                                                    cs.doc_date|date:'d-m-Y' }}</td>
+                                                                {% if all_aod %}
+                                                                <td>
+                                                                    <a style="cursor: pointer;"
+                                                                        id="openAOD-{{ forloop.counter }}"
+                                                                        data-toggle="modal" data-toggle="tooltip"
+                                                                        title="Add Row"
+                                                                        data-target="#creditSanctionAODModal"
+                                                                        class="btn no-loader btn-primary addAOD">AOD
+                                                                    </a>
+                                                                </td>
+                                                                {% endif %}
+                                                            </tr>
+                                                            {% endfor %}
+                                                            {% endif %}
+
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                                <span id="errormsghmcheck" style="color: red;"></span>
+
+                                                <div class="col-md-12 mt-3" id="sac_table_valid">
+                                                    <table class="table table-striped table-hover" id="sac_lapses_table"
+                                                        style="border:1px solid;">
+                                                        <thead class="table-dark">
+                                                            <tr>
+                                                                <th>Lapses <span style="color: red">*</span></th>
+                                                                <th colspan="2">Branch Head During lapses observed <span
+                                                                        style="color: red">*</span></th>
+                                                                <!-- <th width=5%><a onclick="addrow('sac_lapses_table_addrow')"
+                                                        style="cursor: pointer;" id="addrow_lapses"
+                                                        data-toggle="tooltip" title="Add Row"><span
+                                                            style="font-weight:900; font-size:20px"><b>&plus;</b></span></a>
+                                                </th> -->
+                                                            </tr>
+
+                                                        </thead>
+                                                        <tbody style="border:1px solid rgb(235, 235, 235);">
+                                                            <!-- <tr>
+                                                <td><textarea required  class="form-control ta-control" cols="50" rows="3"
+                                                        type="text" value="" id="branch_head-1"></textarea>
+                                                </td>
+                                                 <td colspan="2">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6" id="lapses_head_div">
+                                                                <form action="" method="POST" id="lapses_head_form"
+                                                                    class="form-inline">
+                                                                    {% csrf_token %}
+                                                                    <div class="row">
+                    
+                                                                        <div class="col-md-7">
+                                                                            <input type="text" placeholder="Staff NO" id="sac_lap_staff-1"
+                                                                                name="sac_lap_staff-1" autocomplete="off" value=""
+                                                                                class="form-control">
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                    
+                                                                            <a style="cursor: pointer;" id="lapses_sac_branch_head_btn-1"
+                                                                                title="Add Employee Data"
+                                                                                class="btn btn-primary" 
+                                                                                onclick="openEmpDataModal(this.id)"
+                                                                                ><i
+                                                                                    class="fa fa-search"></i>
+                                                                            </a>
+                                                                        </div>
+                    
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="col-md-6" >
+                                                                <div class="row" style="margin-left: -80px;">
+                                                                    <div class="col-md-8" ><input required type="text"
+                                                                            class="form-control "
+                                                                            id="lapses_sac_branch_head_name-1" disabled value=""
+                                                                            name="lapses_sac_branch_head_name-1"></div>
+                                                                    <div hidden class="col-md-6">
+                                                                        <input  type="text"
+                                                                            class="form-control "
+                                                                            id="lapses_sac_branch_head_id-1" disabled value=""
+                                                                            name="lapses_sac_branch_head_id-1"></div>
+                                                                    <div hidden class="col-md-6 mt-2"><input
+                                                                             type="text"
+                                                                            class="form-control"
+                                                                            id="lapses_sac_branch_head_sol_id-1" disabled value=""
+                                                                            name="lapses_sac_branch_head_sol_id-1"></div>
+                                                                    <div hidden class="col-md-6 mt-2"><input
+                                                                             type="text"
+                                                                            class="form-control"
+                                                                            id="lapses_sac_branch_head_desig-1" disabled value=""
+                                                                            name="lapses_sac_branch_head_desig-1"></div>
+                                                                </div>
+                    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td></td>
+
+                                            </tr> -->
+                                                            {% for md in mom_lapse_desc %}
+                                                            <tr>
+
+                                                                <td>
+                                                                    <label
+                                                                        id="branch_head-{{forloop.counter}}">{{md.lapses_psc_remarks}}</label>
+                                                                </td>
+                                                                <td>
+                                                                    <label
+                                                                        id="lapses_sac_branch_head_name-{{forloop.counter}}">{{md.lapses_psc_branch_head_name}}</label>
+                                                                    <br>
+                                                                    (<label
+                                                                        id="lapses_sac_branch_head_id-{{forloop.counter}}">
+                                                                        {{md.lapses_psc_branch_head_id}}</label>)
+                                                                    <div hidden>
+                                                                        <label
+                                                                            id="lapses_sac_branch_head_sol_id-{{forloop.counter}}">
+                                                                            {{md.lapses_psc_branch_head_sol_id}}</label>
+                                                                        <label
+                                                                            id="lapses_sac_branch_head_desig-{{forloop.counter}}">
+                                                                            {{md.lapses_psc_branch_head_desig}}</label>
+                                                                    </div>
+                                                                </td>
+
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="form-group col-sm-12" style="padding-top: 10px">
+                                                    <label for="bal_on_npa">Present Branch Head <span
+                                                            style="color: red">*</span></label>
+                                                    <div class="row">
+                                                        <div class="col-md-5" id="branch_head_div">
+                                                            <form action="" method="POST" id="branch_head_form"
+                                                                class="form-inline">
+                                                                {% csrf_token %}
+                                                                <div class="row">
+
+                                                                    <div class="col-md-7">
+                                                                        {% for br in mom_br_head %}
+                                                                        <label style="font-weight: bold;"
+                                                                            id="sac_branch_head_name">{{br.psc_branch_head_name}}</label><br>
+                                                                        (<label style="font-weight: bold;"
+                                                                            id="sac_branch_head_id">{{br.psc_branch_head_id}}</label>)
+                                                                        <div hidden>
+                                                                            <label style="font-weight: bold;"
+                                                                                id="sac_branch_head_sol_id">{{br.psc_branch_head_sol_id}}</label>
+                                                                            <label style="font-weight: bold;"
+                                                                                id="sac_branch_head_desig">{{br.psc_branch_head_desig}}</label>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                    <!-- <div class="col-md-3">
+
+                                                        <a style="cursor: pointer;" id="sac_branch_head_btn"
+                                                            title="Add Employee Data"
+                                                            class="btn btn-primary" 
+                                                            onclick="openEmpDataModal(this.id)"
+                                                            ><i
+                                                                class="fa fa-search"></i>
+                                                        </a>
+                                                    </div> -->
+
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <!-- <div class="col-md-5" style="margin-left: -100px;">
+                                            <div class="row">
+                                                <div hidden class="col-md-6"><input  type="text"
+                                                        class="form-control "
+                                                        id="sac_branch_head_id" disabled value=""
+                                                        name="sac_branch_head_id"></div>
+                                                <div id="sac_branch_head_valid" class="col-md-6">
+                                                    <input required type="text"
+                                                        class="form-control "
+                                                        id="sac_branch_head_name" disabled value=""
+                                                        name="sac_branch_head_name"></div>
+                                                <div hidden class="col-md-6 mt-2"><input
+                                                         type="text"
+                                                        class="form-control"
+                                                        id="sac_branch_head_sol_id" disabled value=""
+                                                        name="sac_branch_head_sol_id"></div>
+                                                <div hidden class="col-md-6 mt-2"><input
+                                                         type="text"
+                                                        class="form-control"
+                                                        id="sac_branch_head_desig" disabled value=""
+                                                        name="sac_branch_head_desig"></div>
+                                            </div>
+
+                                        </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            {% if file_data %}
+                                            <div class="docTable p-1 mb-3"
+                                                style="border: 1px solid rgb(201, 201, 201); border-radius: 5px;">
+                                                <table class="table table-hover shadow-lg bg-white" id="myTable"
+                                                    style="border-radius: 5px;">
+                                                    <thead class="bg-white text-dark">
+                                                        <tr class="bg-primary text-white">
+                                                            <th class="col-md-3"
+                                                                style="border: 1px solid rgb(201, 201, 201);">File Name
+                                                            </th>
+                                                            <th class="col-md-3"
+                                                                style="border: 1px solid rgb(201, 201, 201);">Section
+                                                            </th>
+                                                            <th style="border: 1px solid rgb(201, 201, 201);">Action
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            {% endif %}
+                                            <div class="form-group col-sm-4"
+                                                style="padding: 10px 0px; margin-left: 90%;">
+                                                <button class="btn btn-primary"
+                                                    id="submit_button_confirm_sac">Submit</button>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="staffaddmodal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <div class="form-group col-sm-6" id="branch">
+                    <label for="reference_num">Sanction Reference Number</label>
+                    <input type="text" class="form-control" id="reference_num" name="reference_num">
+
+                    <i class="fa fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="emp_datamodal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emp_datamodalLabel">Add Employee</h5>
+            </div>
+            <div class="modal-body mt-2">
+                <div class="row">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="staff_no">Staff NO<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="staff_no" name="staff_no">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sol_id">Sol Id<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="sol_id" name="sol_id">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label for="staff_name">Staff Name<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="staff_name" name="staff_name">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label for="designation">Designation<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="designation" name="designation">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="staffdata_submitbtn" type="button" data-dismiss="modal"
+                    onclick="emp_saveData(clickedButtonId)" class="btn btn-primary"><i class="fa fa-plus"></i>
+                </button>
+                <button type="button" id="closemodal" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- submit confirm modal -->
+<div class="modal fade" id="pscModalsubmit1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <span>Are you sure to Submit?</span>
+                <div style="float:right">
+                    <button id="pscSubmitButton1" type="submit" value="Submitted"
+                        class="btn btn-success left ml-2">YES</button>
+                    <button type="button" class="btn btn-danger ml-2" id="cancelbuttonpsc"
+                        data-dismiss="modal">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="pscModalsubmit2" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <span>Are you sure to Submit?</span>
+                <div style="float:right">
+                    <button id="pscSubmitButton2" type="submit" value="Submitted"
+                        class="btn btn-success left ml-2">YES</button>
+                    <button type="button" class="btn btn-danger ml-2" id="cancelbuttonpsc"
+                        data-dismiss="modal">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sacModalsubmit" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <span>Are you sure to Submit?</span>
+                <div style="float:right">
+                    <button id="sacSubmitButton" type="submit" value="Submitted"
+                        class="btn btn-success left ml-2">YES</button>
+                    <button type="button" class="btn btn-danger ml-2" id="cancelbuttonsac"
+                        data-dismiss="modal">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="creditSanctionAODModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align: center;">
+                <h5 id="creditSanctionAODTitle">Credit Sanction AOD Details</h5>
+                {% if maker_role == 'edit1' %}
+                <button class="btn btn-primary" id="addAODButton"><i class="fa fa-plus"> AOD</i></button>
+                {% endif %}
+            </div>
+            <div class="modal-body mt-2">
+                <div class="row">
+                    <table class="table table-striped table-hover custom-margin pb-3" id="creditSanctionAODTable"
+                        style="border:1px solid;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="max-width: 5%;">AOD Date(s)</th>
+                                <!-- <th style="max-width: 5%;">File</th> -->
+                                {% if maker_role == 'edit1' %}
+                                <th style="max-width: 5%;">Action</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+
+                        <tbody id="aodTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if all_aod %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableBody = document.querySelector('#creditSanctionAODTable tbody');
+        let currentRowId = null;
+        let currentRefNo = null;
+        const allAOD = JSON.parse(JSON.stringify({{ all_aod| safe }})); // Use tojson to ensure proper JSON format
+    // console.log('allAOD', allAOD);
+
+    document.querySelectorAll('.addAOD').forEach(button => {
+        button.addEventListener('click', function () {
+            const row = this.closest('tr');
+            currentRowId = row.querySelector('[id^="cs_slno"]').textContent.trim();
+            currentRefNo = row.querySelector('[id^="cs_refno"]').textContent.trim();
+            document.getElementById('creditSanctionAODTitle').textContent = `Credit Sanction AOD Details for ${currentRefNo}`;
+            // console.log(currentRowId);
+            loadStoredAODData(currentRowId);
+        });
+    });
+
+    function loadStoredAODData(rowId) {
+        tableBody.innerHTML = ''; // Clear previous entries
+        // console.log(rowId);
+
+        // Get data from allAOD
+        const aodDataFromAllAOD = allAOD.find(aod => aod.borrowerAODNo === rowId);
+        // console.log('aodDataFromAllAOD', aodDataFromAllAOD);
+
+        if (aodDataFromAllAOD) {
+            const aodDates = [aodDataFromAllAOD.borrowerAODDate]; // Assuming each borrowerAODNo has a single date
+
+            aodDates.forEach((date, index) => {
+                const newRowId = `${rowId}-${index + 1}`;
+                const newRow = document.createElement('tr');
+                const section_data = JSON.parse(JSON.stringify({{ section_data| safe }})); // Use tojson to ensure proper JSON format
+        const isUploaded = section_data.includes(`CSFAOD${newRowId}`);
+
+        newRow.innerHTML = `
+                    <td>
+                        <input readonly type="text" class="form-control" name="csdAOD${newRowId}" id="csdAOD${newRowId}" value="${date}">
+                    </td>
+                    
+                `;
+        // <td>
+        //         <button disabled style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
+        //             onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}', this.id)">${isUploaded ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
+        //     </td>
+        tableBody.appendChild(newRow);
+    });
+        } else {
+        console.error('No data found for rowId:', rowId);
+    }
+    }
+});
+
+</script>
+{% endif %}
+<script>
+    function psc_lapses_getRowCount() {
+        // Select the tbody element
+        var tbody = document.querySelector('#psc_lapses_table tbody');
+        // Get the number of rows in the tbody
+        var rowCount = tbody.rows.length;
+        return rowCount;
+    }
+    function sac_lapses_getRowCount() {
+        // Select the tbody element
+        var tbody = document.querySelector('#sac_lapses_table tbody');
+        // Get the number of rows in the tbody
+        var rowCount = tbody.rows.length;
+        return rowCount;
+    }
+    review_type = '{{review_type}}'
+    $(document).ready(function () {
+        function fetchEmployeeData1(staffNoSelector) {
+            var staffNo = $(staffNoSelector).val();
+            //console.log('staffNo',staffNo);
+            $.ajax({
+                type: 'POST',
+                url: '{% url "fetch_employee_data" %}',
+                data: {
+                    'staff_no': staffNo,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('#staff_no').val(data.empId);
+                    $('#sol_id').val(data.solId);
+                    $('#staff_name').val(data.empName);
+                    $('#designation').val(data.refDesc);
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    // Handle error
+                }
+            });
+        }
+
+        function fetchEmployeeData(staffNoSelector) {
+            var staffNo = $(staffNoSelector).val();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "fetch_employee_data" %}',
+                data: {
+                    'staff_no': staffNo,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        // console.log(data.error);
+                    } else {
+                        // console.log('data');
+                        $('#staff_no').val(data.empId);
+                        $('#sol_id').val(data.solId);
+                        $('#staff_name').val(data.empName);
+                        $('#designation').val(data.refDesc);
+                        $('#role').val(data.workclass);
+
+                        $('#emp_datamodal').modal('show'); // Only show the modal if the data is successfully fetched
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    // console.log(xhr.status);
+                    if (xhr.status == '400') {
+                        alert('Please Enter Staff No')
+                    } else if (xhr.status == '404') {
+                        alert('Employee Data Not Found')
+                    }
+
+                    // console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+        $('#psc_branch_head_btn').click(function (event) {
+            event.preventDefault();
+            fetchEmployeeData('input[name="staff_no1"]');
+        });
+        $('#sac_branch_head_btn').click(function (event) {
+            event.preventDefault();
+            fetchEmployeeData('input[name="staff_no2"]');
+        });
+        $(document).on('click', '[id^="lapses_psc_branch_head_btn-"]', function (event) {
+            event.preventDefault();
+            var rowId = $(this).attr('id').split('-')[1];
+            fetchEmployeeData('input[name="psc_lap_staff-' + rowId + '"]');
+        });
+
+        // $(document).on('click', '[id^="lapses_sac_branch_head_btn-"]', function(event) {
+        //     event.preventDefault();
+        //     var rowId = $(this).attr('id').split('-')[1];
+        //     fetchEmployeeData('input[name="sac_lap_staff-' + rowId + '"]');
+        // });
+    });
+
+    function openEmpDataModal(buttonId) {
+        clickedButtonId = buttonId;
+        //console.log(clickedButtonId);
+    }
+
+    function emp_saveData(destiny) {
+        //console.log(destiny);
+        let staff_no = document.getElementById("staff_no").value;
+        let sol_id = document.getElementById("sol_id").value;
+        //console.log('sol_id',sol_id);
+        let staff_name = document.getElementById("staff_name").value;
+        let designation = document.getElementById("designation").value;
+        if (destiny == 'psc_branch_head_btn') {
+            $('#emp_datamodal').modal('hide');
+            document.getElementById('psc_branch_head_name').value = staff_name;
+            document.getElementById('psc_branch_head_id').value = staff_no;
+            document.getElementById('psc_branch_head_sol_id').value = sol_id;
+            document.getElementById('psc_branch_head_desig').value = designation;
+            document.getElementById("staff_no").value = '';
+            document.getElementById("sol_id").value = '';
+            document.getElementById("staff_name").value = '';
+            document.getElementById("designation").value = '';
+            document.getElementById("staff_no1").value = '';
+
+        }
+        if (destiny == 'sac_branch_head_btn') {
+            $('#emp_datamodal').modal('hide');
+            document.getElementById('sac_branch_head_name').value = staff_name;
+            document.getElementById('sac_branch_head_id').value = staff_no;
+            document.getElementById('sac_branch_head_sol_id').value = sol_id;
+            document.getElementById('sac_branch_head_desig').value = designation;
+            document.getElementById("staff_no").value = '';
+            document.getElementById("sol_id").value = '';
+            document.getElementById("staff_name").value = '';
+            document.getElementById("designation").value = '';
+            document.getElementById("staff_no2").value = '';
+
+        }
+        if (review_type == 'PSC1') {
+            var psc_table = document.querySelector('#psc_lapses_table tbody');
+            var psc_rowCount = psc_lapses_getRowCount();
+            if (destiny == 'lapses_psc_branch_head_btn-' + psc_rowCount + '') {
+                $('#emp_datamodal').modal('hide');
+                var table = document.querySelector('#psc_lapses_table tbody');
+                var rowCount = psc_lapses_getRowCount();
+                document.getElementById('lapses_psc_branch_head_name-' + rowCount + '').value = staff_name;
+                document.getElementById('lapses_psc_branch_head_id-' + rowCount + '').value = staff_no;
+                document.getElementById('lapses_psc_branch_head_sol_id-' + rowCount + '').value = sol_id;
+                document.getElementById('lapses_psc_branch_head_desig-' + rowCount + '').value = designation;
+                document.getElementById("staff_no").value = '';
+                document.getElementById("sol_id").value = '';
+                document.getElementById("staff_name").value = '';
+                document.getElementById("designation").value = '';
+                document.getElementById('psc_lap_staff-' + rowCount + '').value = '';
+            }
+        } else if (review_type == 'PSC2') {
+            var psc_table = document.querySelector('#psc_lapses_table tbody');
+            var psc_rowCount = psc_lapses_getRowCount();
+            if (destiny == 'lapses_psc_branch_head_btn-' + psc_rowCount + '') {
+                $('#emp_datamodal').modal('hide');
+                var table = document.querySelector('#psc_lapses_table tbody');
+                var rowCount = psc_lapses_getRowCount();
+                document.getElementById('lapses_psc_branch_head_name-' + rowCount + '').value = staff_name;
+                document.getElementById('lapses_psc_branch_head_id-' + rowCount + '').value = staff_no;
+                document.getElementById('lapses_psc_branch_head_sol_id-' + rowCount + '').value = sol_id;
+                document.getElementById('lapses_psc_branch_head_desig-' + rowCount + '').value = designation;
+                document.getElementById("staff_no").value = '';
+                document.getElementById("sol_id").value = '';
+                document.getElementById("staff_name").value = '';
+                document.getElementById("designation").value = '';
+                document.getElementById('psc_lap_staff-' + rowCount + '').value = '';
+            }
+        }
+        // else if (review_type == 'sac'){
+        //     var sac_table = document.querySelector('#sac_lapses_table tbody');
+        //     var sac_rowCount = sac_table.rows.length;
+        //     if (destiny == 'lapses_sac_branch_head_btn-'+ sac_rowCount +'') {
+        //         $('#emp_datamodal').modal('hide'); 
+        //         var table = document.querySelector('#sac_lapses_table tbody');
+        //         var rowCount = table.rows.length;
+        //         document.getElementById('lapses_sac_branch_head_name-'+ rowCount +'').value = staff_name;
+        //         document.getElementById('lapses_sac_branch_head_id-'+ rowCount +'').value = staff_no;
+        //         document.getElementById('lapses_sac_branch_head_sol_id-'+ rowCount +'').value = sol_id;
+        //         document.getElementById('lapses_sac_branch_head_desig-'+ rowCount +'').value = designation;
+        //         document.getElementById("staff_no").value = '';
+        //         document.getElementById("sol_id").value = '';
+        //         document.getElementById("staff_name").value = '';
+        //         document.getElementById("designation").value = '';
+        //         document.getElementById('sac_lap_staff-'+ rowCount +'').value = '';
+
+        //     }
+        // }
+    }
+</script>
+<!-- current date validation -->
+<script>
+    let today = new Date();
+    let year = today.getFullYear();
+    let month = (today.getMonth() + 1).toString().padStart(2, '0');
+    let day = today.getDate().toString().padStart(2, '0');
+    let formattedDate = `${day}-${month}-${year}`;
+    // document.getElementById("today_date").textContent = formattedDate;
+</script>
+<script>
+    document.addEventListener('input', function (event) {
+        // if (event.target.tagName === 'INPUT' && event.target.type === 'text') {
+        if ((event.target.tagName === 'INPUT' && event.target.type === 'text') || event.target.tagName === 'TEXTAREA') {
+
+            const value = event.target.value;
+
+            // Regular expressions to test for numbers and alphabets
+            const hasNumber = /\d/.test(value); // Checks if there is at least one number
+            const hasLetter = /[a-zA-Z]/.test(value); // Checks if there is at least one letter
+
+            if (hasNumber && hasLetter) {
+                event.target.setCustomValidity(''); // Reset the validation message
+                event.target.style.borderColor = ''; // Reset the border color
+            } else if (hasNumber && !hasLetter) {
+                event.target.setCustomValidity('Input must contain at least one letter.');
+                event.target.reportValidity();
+                event.target.style.borderColor = 'red'; // Highlight the input box with red color
+            } else {
+                event.target.setCustomValidity(''); // Reset the validation message
+                event.target.style.borderColor = ''; // Reset the border color
+            }
+        }
+    });
+</script>
+<script>
+    function addrow(a) {
+        if (a == 'psc_lapses_table_addrow') {
+            var table = document.querySelector('#psc_lapses_table tbody');
+            var rowCount = psc_lapses_getRowCount();
+            var row_cnt = rowCount + 1
+            //console.log('addrow',rowCount);
+            branch_head = $('#branch_head-' + (row_cnt - 1) + '').val()
+            lapses_psc_branch_head_name = $('#lapses_psc_branch_head_name-' + (row_cnt - 1) + '').val()
+            if (branch_head == '' || branch_head == null || lapses_psc_branch_head_name == '') {
+                alert('please fill all fields to add new row')
+            } else {
+
+                var row = table.insertRow(rowCount);
+                row.insertCell(0).innerHTML = `<td><textarea class="form-control ta-control"  cols="50" rows="3"
+                                                        type="text" id="branch_head-`+ row_cnt + `"></textarea>
+                                                </td>`;
+                row.insertCell(1).innerHTML = `   <td colspan="2">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6" id="lapses_head_div">
+                                                                <form action="" method="POST" id="lapses_head_form"
+                                                                    class="form-inline">
+                                                                    {% csrf_token %}
+                                                                    <div class="row">
+                    
+                                                                        <div class="col-md-7">
+                                                                            <input type="text" placeholder="Staff NO"
+                                                                            id="psc_lap_staff-`+ row_cnt + `"    name="psc_lap_staff-` + row_cnt + `" autocomplete="off" value=""
+                                                                                class="form-control">
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                    
+                                                                            <a style="cursor: pointer;" id="lapses_psc_branch_head_btn-`+ row_cnt + `"
+                                                                                title="Add Employee Data"
+                                                                                class="btn btn-primary no-loader" 
+                                                                                onclick="openEmpDataModal(this.id)"
+                                                                                ><i
+                                                                                    class="fa fa-search"></i>
+                                                                            </a>
+                                                                        </div>
+                    
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="col-md-6" >
+                                                                <div class="row" style="margin-left: -80px;">
+                                                                    <div class="col-md-8"><input required type="text"
+                                                                            class="form-control "
+                                                                            id="lapses_psc_branch_head_name-`+ row_cnt + `" disabled value=""
+                                                                            name="lapses_psc_branch_head_name-`+ row_cnt + `"></div>
+                                                                    <div  class="col-md-6">
+                                                                        <input required type="text"
+                                                                            class="form-control "
+                                                                            id="lapses_psc_branch_head_id-`+ row_cnt + `" disabled value=""
+                                                                            name="lapses_psc_branch_head_id-`+ row_cnt + `"></div>
+                                                                    <div hidden class="col-md-6 mt-2"><input
+                                                                            required type="text"
+                                                                            class="form-control"
+                                                                            id="lapses_psc_branch_head_sol_id-`+ row_cnt + `" disabled value=""
+                                                                            name="lapses_psc_branch_head_sol_id-`+ row_cnt + `"></div>
+                                                                    <div hidden class="col-md-6 mt-2"><input
+                                                                            required type="text"
+                                                                            class="form-control"
+                                                                            id="lapses_psc_branch_head_desig-`+ row_cnt + `" disabled value=""
+                                                                            name="lapses_psc_branch_head_desig-`+ row_cnt + `"></div>
+                                                                </div>
+                    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>`;
+                row.cells[1].colSpan = 2;
+                row.insertCell(2).innerHTML = `<td><button style="cursor: pointer;"  class="btn btn-light" 
+                                                onclick="psc_deleteRowlapses(` + row_cnt + `)" ><b>&minus;</b></button>
+                                                </td>`;
+
+
+
+
+
+                // for (i = 1; i <= rowCount; i++) {
+                //     $('#lapses_observed-' + (rowCount - i) + '').attr('disabled', false)
+                //     $('#branch_head-' + (rowCount - i) + '').attr('disabled', false)
+                // }
+
+            }
+        }
+        // if (a == 'sac_lapses_table_addrow') {
+        //     var table = document.querySelector('#sac_lapses_table tbody');
+        //     var rowCount = table.rows.length;
+        //     var row_cnt = rowCount + 1
+        //     branch_head = $('#branch_head-' + (row_cnt - 1) + '').val()
+        //     lapses_sac_branch_head_name = $('#lapses_sac_branch_head_name-' + (row_cnt - 1) + '').val()
+
+        //     if(branch_head == '' || branch_head == null || lapses_sac_branch_head_name == ''){
+        //         alert('please fill all fields to add new row')
+        //     }else{
+        //         var row = table.insertRow(rowCount);
+        //         row.insertCell(0).innerHTML = `<td><textarea class="form-control ta-control"  cols="50" rows="3"
+        //                                                 type="text" id="branch_head-`+ row_cnt + `"></textarea>
+        //                                         </td>`;
+        //         row.insertCell(1).innerHTML = `   <td colspan="2">
+        //                                             <div class="col-md-12">
+        //                                                 <div class="row">
+        //                                                     <div class="col-md-6" id="lapses_head_div">
+        //                                                         <form action="" method="POST" id="lapses_head_form"
+        //                                                             class="form-inline">
+        //                                                             {% csrf_token %}
+        //                                                             <div class="row">
+
+        //                                                                 <div class="col-md-7">
+        //                                                                     <input type="text" placeholder="Staff NO" id="sac_lap_staff-`+ row_cnt +`"
+        //                                                                         name="sac_lap_staff-`+ row_cnt +`" autocomplete="off" value=""
+        //                                                                         class="form-control">
+        //                                                                 </div>
+        //                                                                 <div class="col-md-3">
+
+        //                                                                     <a style="cursor: pointer;" id="lapses_sac_branch_head_btn-`+ row_cnt + `"
+        //                                                                         title="Add Employee Data"
+        //                                                                         class="btn btn-primary" 
+        //                                                                         onclick="openEmpDataModal(this.id)"
+        //                                                                         ><i
+        //                                                                             class="fa fa-search"></i>
+        //                                                                     </a>
+        //                                                                 </div>
+
+        //                                                             </div>
+        //                                                         </form>
+        //                                                     </div>
+        //                                                     <div class="col-md-6" >
+        //                                                         <div class="row" style="margin-left: -80px;">
+        //                                                             <div class="col-md-8"><input required type="text"
+        //                                                                     class="form-control "
+        //                                                                     id="lapses_sac_branch_head_name-`+ row_cnt + `" disabled value=""
+        //                                                                     name="lapses_sac_branch_head_name-`+ row_cnt + `"></div>
+        //                                                             <div hidden class="col-md-6">
+        //                                                                 <input required type="text"
+        //                                                                     class="form-control "
+        //                                                                     id="lapses_sac_branch_head_id-`+ row_cnt + `" disabled value=""
+        //                                                                     name="lapses_sac_branch_head_id-`+ row_cnt + `"></div>
+        //                                                             <div hidden class="col-md-6 mt-2"><input
+        //                                                                     required type="text"
+        //                                                                     class="form-control"
+        //                                                                     id="lapses_sac_branch_head_sol_id-`+ row_cnt + `" disabled value=""
+        //                                                                     name="lapses_sac_branch_head_sol_id-`+ row_cnt + `"></div>
+        //                                                             <div hidden class="col-md-6 mt-2"><input
+        //                                                                     required type="text"
+        //                                                                     class="form-control"
+        //                                                                     id="lapses_sac_branch_head_desig-`+ row_cnt + `" disabled value=""
+        //                                                                     name="lapses_sac_branch_head_desig-`+ row_cnt + `"></div>
+        //                                                         </div>
+
+        //                                                     </div>
+        //                                                 </div>
+        //                                             </div>
+        //                                         </td>`;
+        //         row.cells[1].colSpan = 2;
+        //         row.insertCell(2).innerHTML = `<td><button style="cursor: pointer;"  class="btn btn-light" 
+        //                                         onclick="sac_deleteRowlapses(` + row_cnt + `)" ><b>&minus;</b></button>
+        //                                         </td>`;
+
+
+
+
+
+        //         // for (i = 1; i <= rowCount; i++) {
+        //         //     $('#lapses_observed-' + (rowCount - i) + '').attr('disabled', false)
+        //         //     $('#branch_head-' + (rowCount - i) + '').attr('disabled', false)
+        //         // }
+        //     }
+        // }
+
+    }
+</script>
+
+<script>
+    function psc_deleteRowlapses(row_cnt) {
+        table = document.getElementById('psc_lapses_table')
+        table.deleteRow(row_cnt)
+    }
+    // function sac_deleteRowlapses(row_cnt) {
+    //     table = document.getElementById('sac_lapses_table')
+    //     table.deleteRow(row_cnt)
+    // }
+</script>
+
+<script>
+    let basicdetails_dataset = []
+    let lapses_branch_head_dataset = []
+    let present_br_head_dataset = []
+
+    function lapses_branch_head(review_type) {
+        if (review_type == 'PSC1') {
+            var table = document.querySelector('#psc_lapses_table tbody');
+            var rowCount = table.rows.length;
+            //console.log(rowCount);
+            row_cnt = rowCount + 1
+            for (let a = 1; a < row_cnt; a++) {
+                branch_head = $('#branch_head-' + (a) + '').val()
+                lapses_psc_branch_head_name = $('#lapses_psc_branch_head_name-' + (a) + '').val()
+                lapses_psc_branch_head_id = $('#lapses_psc_branch_head_id-' + (a) + '').val()
+                lapses_psc_branch_head_sol_id = $('#lapses_psc_branch_head_sol_id-' + (a) + '').val()
+                lapses_psc_branch_head_desig = $('#lapses_psc_branch_head_desig-' + (a) + '').val()
+                var rowData = {
+                    'lapses_psc_remarks': branch_head,
+                    'lapses_psc_branch_head_name': lapses_psc_branch_head_name,
+                    'lapses_psc_branch_head_id': lapses_psc_branch_head_id,
+                    'lapses_psc_branch_head_sol_id': lapses_psc_branch_head_sol_id,
+                    'lapses_psc_branch_head_desig': lapses_psc_branch_head_desig,
+                }
+                lapses_branch_head_dataset.push(rowData);
+            }
+            //console.log(lapses_branch_head_dataset); 
+        } else if (review_type == 'PSC2') {
+            var table = document.querySelector('#psc_lapses_table tbody');
+            var rowCount = table.rows.length;
+            //console.log(rowCount);
+            row_cnt = rowCount + 1
+            for (let a = 1; a < row_cnt; a++) {
+                branch_head = $('#branch_head-' + (a) + '').val()
+                lapses_psc_branch_head_name = $('#lapses_psc_branch_head_name-' + (a) + '').val()
+                lapses_psc_branch_head_id = $('#lapses_psc_branch_head_id-' + (a) + '').val()
+                lapses_psc_branch_head_sol_id = $('#lapses_psc_branch_head_sol_id-' + (a) + '').val()
+                lapses_psc_branch_head_desig = $('#lapses_psc_branch_head_desig-' + (a) + '').val()
+                var rowData = {
+                    'lapses_psc_remarks': branch_head,
+                    'lapses_psc_branch_head_name': lapses_psc_branch_head_name,
+                    'lapses_psc_branch_head_id': lapses_psc_branch_head_id,
+                    'lapses_psc_branch_head_sol_id': lapses_psc_branch_head_sol_id,
+                    'lapses_psc_branch_head_desig': lapses_psc_branch_head_desig,
+                }
+                lapses_branch_head_dataset.push(rowData);
+            }
+            //console.log(lapses_branch_head_dataset); 
+        }
+        else if (review_type == 'sac') {
+            var table = document.querySelector('#sac_lapses_table tbody');
+            var rowCount = table.rows.length;
+            row_cnt = rowCount + 1
+            //console.log(row_cnt);
+
+            for (let a = 1; a < row_cnt; a++) {
+                branch_head = document.getElementById('branch_head-' + (a) + '').textContent;
+                lapses_sac_branch_head_name = document.getElementById('lapses_sac_branch_head_name-' + (a) + '').textContent;
+                lapses_sac_branch_head_id = document.getElementById('lapses_sac_branch_head_id-' + (a) + '').textContent;
+                lapses_sac_branch_head_sol_id = document.getElementById('lapses_sac_branch_head_sol_id-' + (a) + '').textContent;
+                lapses_sac_branch_head_desig = document.getElementById('lapses_sac_branch_head_desig-' + (a) + '').textContent;
+                var rowData = {
+                    'lapses_sac_remarks': branch_head,
+                    'lapses_sac_branch_head_name': lapses_sac_branch_head_name,
+                    'lapses_sac_branch_head_id': lapses_sac_branch_head_id,
+                    'lapses_sac_branch_head_sol_id': lapses_sac_branch_head_sol_id,
+                    'lapses_sac_branch_head_desig': lapses_sac_branch_head_desig,
+                }
+                lapses_branch_head_dataset.push(rowData);
+            }
+            //console.log(lapses_branch_head_dataset); 
+            // preventDefault()
+        }
+    }
+
+
+
+    function present_br_head(review_type) {
+        if (review_type == 'PSC1') {
+            var psc_branch_head_name = $('#psc_branch_head_name').val()
+            var psc_branch_head_id = $('#psc_branch_head_id').val()
+            var psc_branch_head_sol_id = $('#psc_branch_head_sol_id').val()
+            var psc_branch_head_desig = $('#psc_branch_head_desig').val()
+            var rowData = {
+                'psc_branch_head_name': psc_branch_head_name,
+                'psc_branch_head_id': psc_branch_head_id,
+                'psc_branch_head_sol_id': psc_branch_head_sol_id,
+                'psc_branch_head_desig': psc_branch_head_desig,
+            }
+            present_br_head_dataset.push(rowData)
+        } else if (review_type == 'PSC2') {
+            var psc_branch_head_name = $('#psc_branch_head_name').val()
+            var psc_branch_head_id = $('#psc_branch_head_id').val()
+            var psc_branch_head_sol_id = $('#psc_branch_head_sol_id').val()
+            var psc_branch_head_desig = $('#psc_branch_head_desig').val()
+            var rowData = {
+                'psc_branch_head_name': psc_branch_head_name,
+                'psc_branch_head_id': psc_branch_head_id,
+                'psc_branch_head_sol_id': psc_branch_head_sol_id,
+                'psc_branch_head_desig': psc_branch_head_desig,
+            }
+            present_br_head_dataset.push(rowData)
+        } else if (review_type == 'sac') {
+            var sac_branch_head_name = document.getElementById('sac_branch_head_name').textContent;
+            var sac_branch_head_id = document.getElementById('sac_branch_head_id').textContent;
+            var sac_branch_head_sol_id = document.getElementById('sac_branch_head_sol_id').textContent;
+            var sac_branch_head_desig = document.getElementById('sac_branch_head_desig').textContent;
+            var rowData = {
+                'sac_branch_head_name': sac_branch_head_name,
+                'sac_branch_head_id': sac_branch_head_id,
+                'sac_branch_head_sol_id': sac_branch_head_sol_id,
+                'sac_branch_head_desig': sac_branch_head_desig,
+            }
+            present_br_head_dataset.push(rowData)
+        }
+        //console.log(present_br_head_dataset); 
+        // preventDefault()
+
+    }
+</script>
+<script>
+    function validateLapsesTable(review_type) {
+        if (review_type == 'PSC1') {
+            let allAreFilled = true;
+            document.getElementById("psc_table_valid").querySelectorAll("[required]").forEach(function (i) {
+                if (!allAreFilled) return;
+                if (!i.value) { allAreFilled = false; return allAreFilled; }
+            })
+            if (!allAreFilled) {
+                alert('Fill all the fields in PSC account Lapses observed Table');
+                let allAreFilled = false;
+                flag3 = false
+                return allAreFilled
+            }
+            else {
+                flag3 = true
+                return allAreFilled
+            }
+        }
+        else if (review_type == 'PSC2') {
+            let allAreFilled = true;
+            document.getElementById("psc_table_valid").querySelectorAll("[required]").forEach(function (i) {
+                if (!allAreFilled) return;
+                if (!i.value) { allAreFilled = false; return allAreFilled; }
+            })
+            if (!allAreFilled) {
+                alert('Fill all the fields in PSC account Lapses observed Table');
+                let allAreFilled = false;
+                flag3 = false
+                return allAreFilled
+            }
+            else {
+                flag3 = true
+                return allAreFilled
+            }
+        }
+        // else if(review_type == 'sac'){
+        //     let allAreFilled = true;
+        //     document.getElementById("sac_table_valid").querySelectorAll("[required]").forEach(function (i) {
+        //         if (!allAreFilled) return;
+        //         if (!i.value) { allAreFilled = false; return allAreFilled; }
+        //     })
+        //     if (!allAreFilled) {
+        //         alert('Fill all the fields in SAC account Lapses observed Table');
+        //         let allAreFilled = false;
+        //         flag3 = false
+        //         return allAreFilled
+        //     }
+        //     else {
+        //         flag3 = true
+        //         return allAreFilled
+        //     }
+        // }
+    };
+
+    function validateBranchHead(review_type) {
+        if (review_type == 'PSC1') {
+            let allAreFilled = true;
+            document.getElementById("psc_branch_head_valid").querySelectorAll("[required]").forEach(function (i) {
+                if (!allAreFilled) return;
+                if (!i.value) { allAreFilled = false; return allAreFilled; }
+            })
+            if (!allAreFilled) {
+                alert('Add the Present Branch Head');
+                let allAreFilled = false;
+                flag3 = false
+                return allAreFilled
+            }
+            else {
+                flag3 = true
+                return allAreFilled
+            }
+        } else if (review_type == 'PSC2') {
+            let allAreFilled = true;
+            document.getElementById("psc_branch_head_valid").querySelectorAll("[required]").forEach(function (i) {
+                if (!allAreFilled) return;
+                if (!i.value) { allAreFilled = false; return allAreFilled; }
+            })
+            if (!allAreFilled) {
+                alert('Add the Present Branch Head');
+                let allAreFilled = false;
+                flag3 = false
+                return allAreFilled
+            }
+            else {
+                flag3 = true
+                return allAreFilled
+            }
+        }
+        // else if(review_type == 'sac'){
+        //     let allAreFilled = true;
+        //     document.getElementById("sac_branch_head_valid").querySelectorAll("[required]").forEach(function (i) {
+        //         if (!allAreFilled) return;
+        //         if (!i.value) { allAreFilled = false; return allAreFilled; }
+        //     })
+        //     if (!allAreFilled) {
+        //         alert('Add the Present Branch Head');
+        //         let allAreFilled = false;
+        //         flag3 = false
+        //         return allAreFilled
+        //     }
+        //     else {
+        //         flag3 = true
+        //         return allAreFilled
+        //     }
+        // }
+    };
+</script>
+<script>
+    let pk = $('#crnvalue').val()
+    let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    let mom_id = $('#mom_id').val()
+    let flagsubmit = false;
+
+    $('#submit_button_confirm_psc1').on('click', function (e) {
+        e.preventDefault()
+        valid1 = validateLapsesTable('PSC1')
+        valid2 = validateBranchHead('PSC1')
+
+        if (valid1 == true && valid2 == true) {
+            flagsubmit = true
+            $('#pscModalsubmit1').modal('show')
+        }
+    })
+    $('#submit_button_confirm_psc2').on('click', function (e) {
+        e.preventDefault()
+        valid1 = validateLapsesTable('PSC2')
+        valid2 = validateBranchHead('PSC2')
+
+        if (valid1 == true && valid2 == true) {
+            flagsubmit = true
+            $('#pscModalsubmit2').modal('show')
+        }
+    })
+    $('#submit_button_confirm_sac').on('click', function (e) {
+        e.preventDefault()
+        // valid1 = validateLapsesTable('sac')
+        // valid2 = validateBranchHead('sac')
+
+        // if (valid1 == true && valid2 == true) {
+        flagsubmit = true
+        $('#sacModalsubmit').modal('show')
+        // }
+    })
+    $('#pscSubmitButton1').on('click', function (e) {
+
+        $('#pscSubmitButton1').attr('disabled', true);
+        lapses_branch_head(review_type);
+        present_br_head(review_type);
+        let lapses_branch_head_datasets = lapses_branch_head_dataset;
+        let present_br_head_datasets = present_br_head_dataset;
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_review/' + mom_id + '/' + review_type + '/' + pk,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'dd_select': 'yes',
+                'pk': pk,
+                'review_type': review_type,
+                'mom_id': mom_id,
+                'json_lapses_heads': JSON.stringify(lapses_branch_head_datasets),
+                'json_present_head': JSON.stringify(present_br_head_datasets),
+                'lapses_no_remarks': ''
+
+
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_lapses/PSC1/" + mom_id;
+
+            }
+        });
+    })
+
+    $('#pscSubmitButton2').on('click', function (e) {
+
+        $('#pscSubmitButton2').attr('disabled', true);
+        lapses_branch_head(review_type);
+        present_br_head(review_type);
+        let lapses_branch_head_datasets = lapses_branch_head_dataset;
+        let present_br_head_datasets = present_br_head_dataset;
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_review/' + mom_id + '/' + review_type + '/' + pk,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'dd_select': 'yes',
+                'pk': pk,
+                'review_type': review_type,
+                'mom_id': mom_id,
+                'json_lapses_heads': JSON.stringify(lapses_branch_head_datasets),
+                'json_present_head': JSON.stringify(present_br_head_datasets),
+                'lapses_no_remarks': ''
+
+
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_lapses/PSC2/" + mom_id;
+
+            }
+        });
+    })
+
+    $('#sacSubmitButton').on('click', function (e) {
+
+        $('#sacSubmitButton').attr('disabled', true);
+        lapses_branch_head(review_type);
+        present_br_head(review_type);
+        let lapses_branch_head_datasets = lapses_branch_head_dataset;
+        let present_br_head_datasets = present_br_head_dataset;
+        // console.log(review_type);
+        // preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_review/' + mom_id + '/' + review_type + '/' + pk,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'dd_select': 'yes',
+                'pk': pk,
+                'review_type': review_type,
+                'mom_id': mom_id,
+                'json_lapses_heads': JSON.stringify(lapses_branch_head_datasets),
+                'json_present_head': JSON.stringify(present_br_head_datasets),
+                'lapses_no_remarks': ''
+
+
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_lapses/" + review_type + "/" + mom_id;
+
+            }
+        });
+    })
+
+</script>
+
+<script>
+    function preventInitialSpaceOrSpecialChars(inputElement) {
+        // Define the regex pattern for space or special characters at the beginning
+        const invalidPattern = /^[\s\W_]/;
+
+        // Add event listener for input event
+        inputElement.addEventListener('input', function () {
+            // Check if the input value matches the invalid pattern
+            if (invalidPattern.test(inputElement.value)) {
+                // Remove the invalid characters
+                inputElement.value = inputElement.value.replace(invalidPattern, '');
+            }
+        });
+    }
+
+    // Function to apply the validation to all inputs of specific types
+    function applyValidation() {
+        // Select all input elements of type text, email, and password
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
+
+        // Apply the validation function to each input element
+        inputs.forEach(input => preventInitialSpaceOrSpecialChars(input));
+    }
+
+    // Call the applyValidation function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', applyValidation);
+</script>
+<script>
+
+    // Wait for the document to be fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // Select all buttons with the class 'deletefile' and hide them
+        var deleteButtons = document.querySelectorAll('.deletefile');
+        deleteButtons.forEach(function (button) {
+            button.style.display = 'none'; // Hide the button
+        });
+    });
+    // Call the function whenever needed, such as after adding rows to the table
+    // checkTableRowCount();
+</script>
+
+<!-- msg fadeOut -->
+<script>
+    var roles = "{{ roles }}";
+
+    $(document).ready(function () {
+        // setTimeout(function () {
+        //     $('.message').fadeOut('slow');
+        // }, 3000);
+        $('.del-msg').on('click', function () {
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+
+    document.getElementById("cancelbuttonpsc").addEventListener("click", function () {
+        $('#pscModalsubmit').modal('hide');
+    });
+    document.getElementById("cancelbuttonsac").addEventListener("click", function () {
+        $('#sacModalsubmit').modal('hide');
+    });
+    document.getElementById("closemodal").addEventListener("click", function () {
+        $('#emp_datamodal').modal('hide');
+        window.location.reload();
+    });
+</script>
+{% endblock %}

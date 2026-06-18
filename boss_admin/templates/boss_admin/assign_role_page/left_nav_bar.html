@@ -1,0 +1,201 @@
+
+{% load filters %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="left-nav-bar"  style="margin-top:-14px;height:552px;">
+        <ul>
+          <li><a href="{% url 'home_page' %}" class="button-custom button-custom-hover" {% if request.path == '/home_page' %}class="backgroud-highligter" {% endif %}>Home</a></li>
+            
+          {% with request.session.new_roles|my_filter as roles %}
+              {% if 'ad001appadmin' in roles %}
+             
+             <li><a href="{% url 'select_auditor' %}"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/select_auditor' or request.path == '/app_admin' or request.path == '/add_branch' or request.path == '/add_employee'%}
+             class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">App Admin</a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">                              
+              <a href="{% url 'app_admin' %}" {% if request.path == '/app_admin' %}
+              class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Assign Role</a>    
+              <a href="{% url 'select_auditor' %}"  {% if request.path == '/select_auditor' %}
+               class="backgroud-highligter" {% endif %} >Audit
+              </a>  
+              <a href="{% url 'add_branch' %}"  {% if request.path == '/add_branch' %}
+               class="backgroud-highligter" {% endif %} >Branch Management
+              </a>
+              <a href="{% url 'add_employee' %}"  {% if request.path == '/add_employee' %}
+               class="backgroud-highligter" {% endif %} >User Management
+              </a>
+            </div> 
+          </li>
+          {% else %}
+          <li><a href="#" disabled style="color: black;" class="nav-link dropdown-toggle button-custom button" id="navbarDropdownadmin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/app_admin' or request.path == '/asset_export' %}
+             {% endif %}>App Admin
+            </a>
+          </li>
+          {% endif %}
+          {% endwith %}
+
+          {% with request.session.new_roles|my_filter as roles %}
+          {% if 'ad001branchadmin' in roles %}
+             <li><a href="{% url 'role_assign_page' %}" {% if request.path == '/role_assign' %}
+                          class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover ">Branch Admin
+             </a></li>
+             {% else %}
+             <li><a href="#" disabled style="color: black;" id="navbarDropdownadmin" {% if request.path == '/role_assign' %}
+               {% endif %}>Branch Admin
+            </a></li>
+             {% endif %}
+             {% endwith %}
+             
+             {% with request.session.new_roles|my_filter as roles %}
+              {% if 'ad001finance' in roles %}
+            <li><a href="{% url 'finance_assets_from_branch' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/finance_assets_from_branch' or request.path == '/asset_dataloader' %}
+             class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">Finance
+           </a>
+           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="{% url 'asset_dataloader' %}" {% if request.path == '/asset_dataloader' %}
+            class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover" >Finance
+            </a>                  
+            <a href="{% url 'finance_assets_from_branch' %}" {% if request.path == '/finance_assets_from_branch' %}
+            class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover" >Additional Assets at Branch</a>       
+          </div> 
+          
+          </li>
+          {% else %}
+          <li><a href="#" disabled style="color: black;" class="nav-link dropdown-toggle button-custom button" id="navbarDropdownadmin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/asset_dataloader' %}
+             {% endif %}>Finance</a></li>
+          {% endif %}
+          {% endwith %}
+          
+         
+          {% with request.session.new_roles|my_filter as roles %}
+              {% if 'ad001appadmin' in roles and 'ad001finance' in roles and 'it001admin' in roles %}
+            <li><a href="{% url 'assign_escalation' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+             class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover" >Utilities
+            </a>
+          
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                               
+              <a href="{% url 'assign_escalation' %}" {% if request.path == '/assign_escalation' %}
+             class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Escalation</a>
+              <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+             class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Data Export</a>   
+              <!-- <a href="{% url 'it_recon_assets' %}" class="button-custom button-custom-hover"
+              {% if request.path == '/it_recon_assets' %}
+            class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+         
+            </div>        
+          </li>
+         {% elif 'ad001appadmin' in roles and 'ad001finance' in roles %}
+         <li><a href="{% url 'assign_escalation' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+         class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover" >Utilities
+        </a>
+      
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                           
+          <a href="{% url 'assign_escalation' %}" {% if request.path == '/assign_escalation' %}
+         class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Escalation</a>
+          <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+         class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Data Export</a>   
+          <!-- <a href="#" class="button-custom button-custom" disabled id="navbarDropdownadmin"
+          {% if request.path == '/it_recon_assets' %}
+        class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+     
+        </div>        
+      </li>
+      {% elif 'ad001appadmin' in roles and 'it001admin' in roles %}
+      <li><a href="{% url 'assign_escalation' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+       class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">Utilities
+      </a>
+    
+      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                         
+        <a href="{% url 'assign_escalation' %}" {% if request.path == '/assign_escalation' %}
+       class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Escalation</a>
+        <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+       class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Data Export</a>   
+        <!-- <a href="{% url 'it_recon_assets' %}" class="button-custom button-custom-hover "
+        {% if request.path == '/it_recon_assets' %}
+      class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+   
+      </div>        
+    </li>
+    {% elif 'ad001finance' in roles and 'it001admin' in roles %}
+    <li><a href="{% url 'asset_export' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+     class="backgroud-highligter" {% endif %}  class="nav-link dropdown-toggle button-custom button-custom-hover">Utilities
+    </a>
+  
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                       
+      <a href="#" disabled style="color: black;" id="navbarDropdownadmin" {% if request.path == '/assign_escalation' %}
+     class="backgroud-highligter" {% endif %} class="button-custom button-custom">Escalation</a>
+      <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+     class="backgroud-highligter" {% endif %} class="button-custom button-custom">Data Export</a>   
+      <!-- <a href="{% url 'it_recon_assets' %}" class="button-custom button-custom-hover "
+      {% if request.path == '/it_recon_assets' %}
+    class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+ 
+    </div>        
+  </li>
+      {% elif 'ad001finance' in roles %}
+      <li><a href="{% url 'asset_export' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+       class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">Utilities
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+        <a href="#" disabled style="color: black;" id="navbarDropdownadmin" {% if request.path == '/assign_escalation' %}
+       class="backgroud-highligter" {% endif %} class="button-custom button-custom">Escalation</a>
+        <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+       class="backgroud-highligter" {% endif %} class="button-custom button-custom">Data Export</a>   
+        <!-- <a href="#" class="button-custom button-custom" disabled id="navbarDropdownadmin"
+        {% if request.path == '/it_recon_assets' %}
+     class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+
+      </div>        
+    </li>
+    {% elif 'it001admin' in roles %}
+    <li><a href="{% url 'it_recon_assets' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets'  %}
+     class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">Utilities
+    </a>
+
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      
+      <a href="#" disabled style="color: black;" class="button-custom button-custom" id="navbarDropdownadmin" {% if request.path == '/assign_escalation' %}
+     class="backgroud-highligter" {% endif %}>Escalation</a>
+      <a href="#" disabled style="color: black;" class="button-custom button-custom" id="navbarDropdownadmin" {% if request.path == '/asset_export/' %}
+     class="backgroud-highligter" {% endif %}>Data Export</a>   
+      <!-- <a href="{% url 'it_recon_assets' %}" class="button-custom button-custom-hover"
+      {% if request.path == '/it_recon_assets' %}
+   class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+
+    </div>        
+    </li>
+    {% elif 'ad001appadmin' in roles %}
+    <li><a href="{% url 'assign_escalation' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' or request.path == '/asset_export/' or request.path == '/it_recon_assets' %}
+     class="backgroud-highligter" {% endif %} class="nav-link dropdown-toggle button-custom button-custom-hover">Utilities
+    </a>
+
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      
+      <a href="{% url 'assign_escalation' %}" {% if request.path == '/assign_escalation' %}
+     class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Escalation</a>
+      <a href="{% url 'asset_export' %}" {% if request.path == '/asset_export/' %}
+     class="backgroud-highligter" {% endif %} class="button-custom button-custom-hover">Data Export</a>   
+      <!-- <a href="#" class="button-custom button-custom" disabled id="navbarDropdownadmin"
+      {% if request.path == '/it_recon_assets' %}
+   class="backgroud-highligter" {% endif %}>IT Recon Reports</a> -->
+
+    </div>        
+    </li>
+    {% else %}
+    <li><a href="#" disabled style="color: black;" class="nav-link dropdown-toggle button-custom button-custom" id="navbarDropdownadmin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/assign_escalation' %}
+       {% endif %}>Utilities
+    </a>
+
+      {% endif %}
+      {% endwith %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

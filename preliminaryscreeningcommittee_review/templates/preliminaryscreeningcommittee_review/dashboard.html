@@ -1,0 +1,2312 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+{% with request.session.new_roles|my_filter as roles %}
+{% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker2' in roles or 'psc001checker2' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles  or 'sac001maker3' in roles or 'sac001checker3' in roles %}<!-- custom styling -->
+
+<style>
+    .fa-stack[data-count]:after {
+        font-size: 50%;
+        margin-top: -5px;
+        ;
+    }
+    table tbody tr:nth-child(even) {
+        background-color: transparent;
+        /* Set even row background color to transparent */
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: transparent;
+        /* Set odd row background color to transparent */
+    }
+
+
+    .fa-eye:before {
+        margin-right: 10px;
+    }
+
+    .fa-edit:before {
+        margin-left: 10px;
+    }
+
+    body {
+        font-size: .9rem;
+    }
+
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+    }
+
+    /* textarea.ta-n-control {
+        border: 1px solid black;
+    } */
+
+    .in-control {
+        border: none;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        /* Collapse borders so adjacent cells share borders */
+    }
+
+    table th,
+    table td {
+        border: 1px solid rgb(0, 0, 0);
+        /* Add borders to table cells */
+        /* padding: 8px; */
+    font-weight: bold;
+        /* Add padding to cells for better spacing */
+    }
+
+    #staffaccountability_table tr {
+        background-color: #ffffff;
+    }
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+      
+
+        th, td {
+            font-size: 85%;
+            /* font-weight: bold; */
+        }
+        /* .btn-primary{
+            font-size: 85%;
+        } */
+</style>
+
+<div class="container-fluid p-1">
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-success" data-dismiss="alert">&times;</button>
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-danger" data-dismiss="alert">&times;</button>
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <!-- action buttons -->
+    <div class="row p-1 pt-2">
+        <div class="col-md-7">
+            <div class="row">
+                    <div class="btn-group col-sm-10" role="group" aria-label="Basic radio toggle button group" >
+                    {% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles %}
+                        <input class="btn-check" type="radio" checked style="width:16px; height:16px; margin-top: 8px;"
+                            value="PSC"  name="exception" required id="psc_radio">
+                        <label class="btn btn-outline-primary" for="psc_radio" 
+                            style="font-size: 15px; font-weight: bold;">Preliminary Screening Committee</label>
+                    {% else %}
+                        <input class="btn-check" type="radio" checked style="width:16px; height:16px; margin-top: 8px;"
+                                value="PSC" onclick="toggleTable('psc_table');" name="exception" required id="psc_radio">
+                        <label class="btn btn-outline-primary" for="psc_radio" 
+                        style="font-size: 15px; font-weight: bold;">Preliminary Screening Committee</label>
+                        <input class="btn-check" type="radio" style="width:16px; height:16px; margin-top: 8px;"
+                            value="SAC" onclick="toggleTable('sac_table');" name="exception" required id="sac_radio">
+                        <label class="btn btn-outline-primary" for="sac_radio"
+                            style="font-size: 15px; font-weight: bold;">Staff Accountability Committee</label>
+                    {% endif %}
+                    </div>
+            </div>
+        </div>
+        <div class="col-md-5" >
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-md-2" >
+                                {% if 'psc001checker1' in roles or 'psc001checker2' in roles or 'psc001checker3' in roles or 'sac001checker3' in roles %}        
+                                <div class="col-md-1"  id="psc_modal_div">
+                                    <span class="fa-stack fa-lg psc_count" data-count="">
+                                        <a class="nav-link no-loader" data-toggle="modal" data-toggle="tooltip" title="View Notifications"
+                                            data-target="#notifications_PSC_modal" type="submit" id="show-hidden-notification">
+                                            <i class="fa fa-bell-o fa-fw" aria-hidden="true"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                <div class="col-md-1" style=" display: none; " id="sac_modal_div">
+                                    <span class="fa-stack fa-lg sac_count" data-count="">
+                                        <a class="nav-link no-loader" data-toggle="modal" data-toggle="tooltip" title="View Notifications"
+                                            data-target="#notifications_SAC_modal" type="submit" id="show-hidden-notification">
+                                            <i class="fa fa-bell-o fa-fw" aria-hidden="true"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                {% elif 'psc001maker1' in roles or 'psc001maker2' in roles or 'psc001maker3' in roles or 'sac001maker3' in roles %}        
+                                <div class="col-md-1"></div>
+                                {% elif 'momconvener' in roles %}
+                                <div class="col-md-1"></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7" style="display: none;" id="psc_search">
+                        <form action="{% url 'dashboard' %}" method="post" class="form-inline">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                                    <div class="input-group">
+                                        <input type="text" required placeholder="Search" autocomplete="off" class="form-control" id="search_psc" name="search_psc">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-7" id="sac_search">
+                        <form action="{% url 'dashboard' %}" method="post" class="form-inline">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                                    <div class="input-group">
+                                        <input type="text" required placeholder="Search" autocomplete="off" class="form-control" id="search_sac"
+                                        name="search_sac">                                        
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-1" style="display: none;" id="psc_filter">
+                        <button class="btnGet btn btn-outline-secondary" type="button" value="" data-toggle="modal" data-toggle="tooltip" title="Filter"
+                            data-target="#psc_filter_modal" ><i class="fa fa-filter"></i></button>
+                    </div>
+                    <div class="col-md-1" id="sac_filter">
+                        <button class="btnGet btn btn-outline-secondary" type="button" value="" data-toggle="modal"
+                        data-toggle="tooltip" title="Filter"
+                            data-target="#sac_filter_modal" ><i class="fa fa-filter"></i></button>
+                    </div>  
+                    
+                    <div class="col-md-1">
+                        <div style="display: none;"  id="psc_export">
+                                <button class="btnGet btn btn-outline-primary" type="button" value="" data-toggle="modal"
+                                data-toggle="tooltip" title="Export" style="color: green;"
+                                data-target="#psc_exportmodal" ><i class="fa fa-file-excel-o"></i></button>
+                        </div>
+                        <div id="sac_export">
+                            <button class="btnGet btn btn-outline-primary" type="button" value="" data-toggle="modal"
+                            data-toggle="tooltip" title="Export" style="color: green;"
+                            data-target="#sac_exportmodal" ><i class="fa fa-file-excel-o"></i></button>
+                        </div>
+                    </div>   
+                </div>
+        </div>       
+    </div>
+    <div id="PSCDloading-icon" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner-border text-white" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id="PSCDloading-text" style="display: none; position: fixed; top: 0.1; left: 0.1; width: 100%; height: 100%; color: black; display: flex; justify-content: center; align-items: center;">
+        <span id="PSCDloading-text"><h1><strong>Loading .... </strong></h1></span>    
+    </div>
+    <!-- psc viewall table -->
+    <div class="row pt-1">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                
+                
+                
+                <table class="table table-hover bg-white" id="psc_table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="max-width: 2%;">PSC Srl Num</th>
+                            <th>Branch Code</th>
+                            <th>Customer ID</th>
+                            <th>Borrower Name</th>
+                            <th>Total Exposure</th>
+                            <th>Creation Date</th>
+                            <th>PSC status</th>
+                            <th>Current Role</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    {% if psccustomer_data %}
+                    <tbody id="myTable">
+                        {% for data in psccustomer_data %}
+                        <tr id="row-{{data.id}}">
+                            <td hidden>{{data.id}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id}}</td>
+                            <td style="width: 2%;">{{data.branch_code|default:''}}</td>
+                            <td style="width: 2%;">{{data.cust_id}}</td>
+                            <td style="width: 2%;">{{data.borrower_name}}</td>
+                            <td style="width: 2%;">{{data.total_exposure}}</td>
+                            <td style="width: 3%;">{{data.creation_date|date:'d-m-Y'}}</td>
+                            <td style="width: 2%;">{{data.status|default:''}}</td>
+                            <td style="width: 2%;">{{data.current_role|default:''}}</td>
+                            <td style="width: 2%;">
+                                <button id="btn3" href="" class="btn" onclick="openPSCModal('{{data.cust_id}}')"><i class="fa fa-eye"></i></button>
+                                {% if data.current_role == 'Convener' or data.status == 'Convened' %}
+                                <a 
+                                style="cursor: pointer; color: red;" 
+                                id="pdf_export"  class="no-loader "
+                                onclick="downloadWithLoader(`{% url 'psc_review_export' data.psc_review_id 'yes' %}`, `{{data.psc_rec_id}}`); return false;"
+                            >
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                            {% comment %}
+                            <a 
+                                style="cursor: pointer; color: red;" 
+                                id="pdf_export" class="no-loader "
+                                href="{% url 'psc_review_export' data.psc_review_id 'yes' %}"
+                            >
+                                PDF
+                            </a>
+                            {% endcomment %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="12" style="text-align: center;">No Records</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+                
+                
+                
+                
+            </div>
+            <div class="table-responsive">
+                <!-- <table class="table table-hover bg-white" id="sac_table"
+                    style="display: none;">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>SAC Srl Num </th>
+                            <th>PSC Srl Num </th>
+                            <th>Branch Code </th>
+                            <th>Customer ID </th>
+                            <th>Borrower Name </th>
+                            <th>Facility Number </th>
+                            <th>Sanction Limit </th>
+                            <th>Region Name </th>
+                            <th>NPA Date </th>
+                            <th>NPA Tag </th>
+                            <th>SAC status </th>
+                            <th>Current Role</th>
+                            <th>Action </th>
+
+                        </tr>
+                    </thead>
+                    {% if sac_data %}
+                    <tbody id="myTable">
+                        {% for data in sac_data %}
+                        <tr id="row-{{data.id}}">
+                            <td hidden>{{data.id}}</td>
+                            <td style="width: 2%;">{{data.sac_rec_id}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__psc_rec_id}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__branch_code}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__cust_id}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__borrower_name}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__facility_num}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__sanc_limit}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__region_name}}</td>
+                            <td style="width: 3%;">{{data.psc_rec_id__npa_date|date:'d-m-Y'}}</td>
+                            <td style="width: 2%;">{{data.psc_rec_id__nap_tag}}</td>
+                            <td style="width: 2%;">{{data.status|default:''}}</td>
+                            <td style="width: 2%;" >{{data.current_role|default:''}}</td>
+                            <td  style="width: 2%;">
+                                {% if not data.status %}
+                                {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                                <div style="padding-right: 25%;">
+                                    <a style="cursor: pointer; " href="{% url 'sac_review' data.id  %}" id="create_button"><i
+                                        class="fa fa-pencil"></i>
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div>
+                                
+                                </div>
+                                {% endif %}
+                                    
+                                {% elif data.status == 'Submitted' or data.status == 'Re-submitted'  %}
+                                <div>
+                                    <a style="cursor: pointer; " href="{% url 'sac_update' data.id 'view' %}" id="view_button"><i
+                                            class="fa fa-eye"></i>
+                                    </a>
+                                </div>
+                                {% else %}
+                                
+                                    {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                                        {% if data.status == 'Approved' and not data.current_role == 'RO Maker' %}
+                                        <div>
+                                            <a style="cursor: pointer; " href="{% url 'sac_update' data.id 'view' %}" id="view_button"><i
+                                                    class="fa fa-eye"></i>
+                                            </a>
+                                        </div>
+                                        {% elif data.status == 'Rejected' or data.status == 'Draft' %}
+                                            {% if data.current_role == 'RO Maker' %}
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <a style="cursor: pointer;" href="{% url 'sac_update' data.id 'edit2' %}" id="edit_button"><i
+                                                                class="fa fa-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div>
+                                                <a style="cursor: pointer; " href="{% url 'sac_update' data.id 'view' %}" id="view_button"><i
+                                                        class="fa fa-eye"></i>
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        {% elif data.status == 'Convened' %}
+                                        <div></div>
+                                        {% else %}
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="{% url 'sac_update' data.id 'edit2' %}" id="edit_button"><i
+                                                            class="fa fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% elif 'sac001maker3' in roles or 'sac001checker3' in roles %}
+                                        {% if data.status == 'Approved' and not data.current_role == 'HO Maker' %}
+                                        <div>
+                                            <a style="cursor: pointer; " href="{% url 'sac_update' data.id 'view' %}" id="view_button"><i
+                                                    class="fa fa-eye"></i>
+                                            </a>
+                                        </div>
+                                        {% elif data.status == 'Rejected' or data.status == 'Draft' %}
+                                            {% if data.current_role == 'HO Maker' %}
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <a style="cursor: pointer;" href="{% url 'sac_update' data.id 'edit3' %}" id="edit_button"><i
+                                                                class="fa fa-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div>
+                                                <a style="cursor: pointer; " href="{% url 'sac_update' data.id 'view' %}" id="view_button"><i
+                                                        class="fa fa-eye"></i>
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        {% elif data.status == 'Convened' %}
+                                        <div></div>
+                                        {% else %}
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="{% url 'sac_update' data.id 'edit3' %}" id="edit_button"><i
+                                                            class="fa fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="13" style="text-align: center;">No Records</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                   
+
+
+                </table> -->
+                <table class="table table-hover bg-white"  id="sac_table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="max-width: 2%;">SAC Srl Num</th>
+                            <th>Branch Code</th>
+                            <th>Customer ID</th>
+                            <th>Borrower Name</th>
+                            <th>Total Exposure</th>
+                            <th>Creation Date</th>
+                            <th>SAC status</th>
+                            <th>Current Role</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    {% if saccustomer_data %}
+                    <tbody id="myTable">
+                        {% for data in saccustomer_data %}
+                        <tr id="row-{{data.id}}">
+                            <td hidden>{{data.id}}</td>
+                            <td style="width: 2%;">{{data.sac_rec_id}}</td>
+                            <td style="width: 2%;">{{data.branch_code|default:''}}</td>
+                            <td style="width: 2%;">{{data.cust_id}}</td>
+                            <td style="width: 2%;">{{data.borrower_name}}</td>
+                            <td style="width: 2%;">{{data.sac_details.total_exposure}}</td>
+                            <td style="width: 3%;">{{data.creation_date|date:'d-m-Y'}}</td>
+                            <td style="width: 2%;">{{data.sac_details.status|default:''}}</td>
+                            <td style="width: 2%;">{{data.sac_details.current_role|default:''}}</td>
+                            <td style="width: 2%;">
+                                <button id="btn3"  href="" class="btn" onclick="openSACModal('{{data.cust_id}}')" ><i class="fa fa-eye"></i></button>
+                                {% if data.sac_details.current_role == 'Convener' or data.sac_details.status == 'Convened' %}
+                                
+                                <a style="cursor: pointer; color: red;" class="no-loader "
+                                onclick="downloadWithLoader(`{% url 'sac_review_export' data.sac_review_id 'yes' %}`, `{{data.sac_rec_id}}` ); return false;" id="pdf_export">
+                                    <i class="fa fa-file-pdf-o"></i>
+                                </a>
+                                {% endif %}
+                            </td>    
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="12" style="text-align: center;">No Records</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function downloadWithLoader(url, id_data) {
+            // Show loader
+            document.getElementById("PSCDloading-icon").style.display = "flex";
+            document.getElementById("PSCDloading-text").style.display = "flex";
+    
+            try {
+                // Fetch the file data
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch file');
+                let aaaa = "PSCFORM"
+                // Create a downloadable link dynamically
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `${id_data}.pdf`;
+                a.click();
+    
+                // Clean up the object URL
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Failed to download file. Please try again.');
+            } finally {
+                // Hide loader
+                hideLoading();
+            }
+        }
+    
+        function hideLoading() {
+            document.getElementById("PSCDloading-icon").style.display = "none";
+            document.getElementById("PSCDloading-text").style.display = "none";
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            hideLoading(); // Hide loader initially on page load
+            
+        });
+    </script>
+
+<!-- pagination -->
+    <div id="psc_pagination" style="display: none;">
+        <div>
+            <div class="row">
+                <div class="col-md-11" >
+                    {% if psccustomer_data.has_other_pages %}
+                    <ul class="pagination">
+                        {% if psccustomer_data.has_previous %}
+                        <li><a href="?page={{ psccustomer_data.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in psccustomer_data.paginator.page_range %}
+                        {% if psccustomer_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > psccustomer_data.number|add:'-5' and i < psccustomer_data.number|add:'5' %} 
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if psccustomer_data.has_next %}
+                            <li><a href="?page={{ psccustomer_data.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="col-md-1">
+                    <span class="current" style="color: #8a2895">
+                        Page {{ psccustomer_data.number }} of {{ psccustomer_data.paginator.num_pages }}.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="rows_count"></div>
+    </div>
+    <div id="sac_pagination">
+        <div>
+            <div class="row">
+                <div class="col-md-11">
+                    {% if saccustomer_data.has_other_pages %}
+                    <ul class="pagination">
+                        {% if saccustomer_data.has_previous %}
+                        <li><a href="?page={{ saccustomer_data.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in saccustomer_data.paginator.page_range %}
+                        {% if saccustomer_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > saccustomer_data.number|add:'-5' and i < saccustomer_data.number|add:'5' %} 
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if saccustomer_data.has_next %}
+                            <li><a href="?page={{ saccustomer_data.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="col-md-1">
+                    <span class="current" style="color: #8a2895">
+                        Page {{ saccustomer_data.number }} of {{ saccustomer_data.paginator.num_pages }}.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="rows_count"></div>
+    </div>
+</div>
+<!-- modals of notification -->
+<div class="modal fade" id="viewPscAccountsModal" role="dialog">
+    <div class="modal-dialog"  style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>PSC Table</strong></h3>
+                    <div class="col-md-12 mt-2 mb-2">
+                        <div class="row">
+                            <div style="padding-right: 25%;"  class="col-md-6">
+                                <label for="fPSCNo">PSC Srl No</label>
+                                <input name="fPSCNo" value="" readonly  id="fPSCNo"  class="form-control">
+                            </div>
+                            <div style="padding-left: 25%;"  class="col-md-6">
+                                <label for="fCustId">Customer ID</label>
+                                <input name="fCustId" value="" readonly  id="fCustId"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fBorrower">Borrower Name</label>
+                                <input name="fBorrower" value="" readonly  id="fBorrower"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fTotalExposure">Total Exposure</label>
+                                <input name="fTotalExposure" value="" readonly  id="fTotalExposure"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fBranchCode">Branch Code</label>
+                                <input name="fBranchCode" value="" readonly  id="fBranchCode"  class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover bg-white"  id="fPSCTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Facility Number</th>
+                                <th>Branch Code</th>
+                                <th>Sanction Limit</th>
+                                <th>Region Name</th>
+                                <th>NPA Date</th>
+                                <th>NPA Tag</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                    <div class="col-md-3" style="margin-left: 90%; padding-left: 3%;">
+                        <button type="button" id="cancelbutton12" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewSacAccountsModal" role="dialog">
+    <div class="modal-dialog"  style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>SAC Table</strong></h3>
+                    <div class="col-md-12 mt-2 mb-2">
+                        <div class="row">
+                            <div style="padding-right: 25%;"  class="col-md-6">
+                                <label for="fSACNo">SAC Srl No</label>
+                                <input name="fSACNo" value="" readonly  id="fSACNo"  class="form-control">
+                            </div>
+                            <div style="padding-left: 25%;"  class="col-md-6">
+                                <label for="fSCustId">Customer ID</label>
+                                <input name="fSCustId" value="" readonly  id="fSCustId"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fSBorrower">Borrower Name</label>
+                                <input name="fSBorrower" value="" readonly  id="fSBorrower"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fSTotalExposure">Total Exposure</label>
+                                <input name="fSTotalExposure" value="" readonly  id="fSTotalExposure"  class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fSBranchCode">Branch Code</label>
+                                <input name="fSBranchCode" value="" readonly  id="fSBranchCode"  class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover bg-white"  id="fSACTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Facility Number</th>
+                                <th>Branch Code</th>
+                                <th>Sanction Limit</th>
+                                <th>Region Name</th>
+                                <th>NPA Date</th>
+                                <th>NPA Tag</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                    <div class="col-md-3" style="margin-left: 90%; padding-left: 3%;">
+                        <button type="button" id="cancelbutton122" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notifications_SAC_modal" role="dialog">
+    <div class="modal-dialog" style="max-width: 50%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>SAC Pending Approval</strong></h3>
+                    <table class="table table-striped table-hover custom-margin pb-3" id="SAC_approve_table"
+                        style="border:1px solid;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>SAC No.</th>
+                                <th>Staff Name(ID)</th>
+                                <th>SAC Status</th>
+                                <th>Submit/ReSubmit Date</th>
+                                <th width="2%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if saccustomer_data %}
+                            {% for data in saccustomer_data %}
+                            {% if data.sac_details.status == 'Submitted' or data.sac_details.status == 'Re-submitted' %}
+                            {% if not current_emp_data == data.last_modified_user %}
+                            {% if 'psc001checker2' in roles and data.sac_details.current_role == 'RO Checker' %}
+                            <tr>
+                                <td>{{ data.sac_rec_id}}</td>
+                                <td>{{data.last_modified_user}}</td>
+                                <td>{{data.sac_details.status}}</td>
+                                <td>{{data.last_modified_date|date:'d-m-Y H:i:s'}}</td>
+                                <td style="padding-right: 20px;">
+                                    <a style="cursor: pointer; " href="{% url 'sac_update' data.sac_review_id 'approve2' %}" id="edit_button"><i
+                                        class="fa fa-check no-loader"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% elif 'sac001checker3' in roles and data.sac_details.current_role == 'HO Checker' %}
+                            <tr>
+                                <td>{{ data.sac_rec_id}}</td>
+                                <td>{{data.last_modified_user}}</td>
+                                <td>{{data.sac_details.status}}</td>
+                                <td>{{data.last_modified_date|date:'d-m-Y H:i:s'}}</td>
+                                <td style="padding-right: 20px;">
+                                    <a style="cursor: pointer; " href="{% url 'sac_update' data.sac_review_id 'approve3' %}" id="edit_button"><i
+                                        class="fa fa-check no-loader"></i>
+                                    </a>
+                                </td>
+                            </tr>  
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    <div class="col-md-3" style="margin-left: 80%;">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="notifications_PSC_modal" role="dialog">
+    <div class="modal-dialog" style="max-width: 50%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2">
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>PSC Pending Approval</strong></h3>
+                    <table class="table table-striped table-hover custom-margin pb-3" id="PSC_approve_table" 
+                        style="border:1px solid;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>PSC No.</th>
+                                <th>Staff Name(ID)</th>
+                                <th>PSC Status</th>
+                                <th>Submit/ReSubmit Date</th>
+                                <th width="2%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if psccustomer_dataApproval %}
+                            {% for data in psccustomer_dataApproval %}
+                            {% if data.status == 'Submitted' or data.status == 'Re-submitted' %}
+                            {% if not current_emp_data == data.last_modified_user %}
+                            {% if 'psc001checker1' in roles and data.current_role == 'BO Checker' %}
+                            <tr>
+                                <td>{{ data.psc_rec_id}}</td>
+                                <td>{{data.last_modified_user}}</td>
+                                <td>{{data.status}}</td>
+                                <td>{{data.last_modified_date|date:'d-m-Y H:i:s'}}</td>
+                                <td style="padding-right: 20px;">
+                                    <a style="cursor: pointer; " href="{% url 'psc_update' data.psc_review_id 'approve1' %}" id="edit_button"><i
+                                        class="fa fa-check no-loader"></i>
+                                     </a>
+                                </td>
+                            </tr>
+                            {% elif 'psc001checker2' in roles and data.current_role == 'RO Checker' %}
+                            <tr>
+                                <td>{{ data.psc_rec_id}}</td>
+                                <td>{{data.last_modified_user}}</td>
+                                <td>{{data.status}}</td>
+                                <td>{{data.last_modified_date|date:'d-m-Y H:i:s'}}</td>
+                                <td style="padding-right: 20px;">
+                                    <a style="cursor: pointer; " href="{% url 'psc_update' data.psc_review_id 'approve2' %}" id="edit_button"><i
+                                        class="fa fa-check no-loader"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% elif 'psc001checker3' in roles or 'sac001checker3' in roles and data.current_role == 'HO Checker' %}
+                            <tr>
+                                <td>{{ data.psc_rec_id}}</td>
+                                <td>{{data.last_modified_user}}</td>
+                                <td>{{data.status}}</td>
+                                <td>{{data.last_modified_date|date:'d-m-Y H:i:s'}}</td>
+                                <td style="padding-right: 20px;">
+                                    <a style="cursor: pointer; " href="{% url 'psc_update' data.psc_review_id 'approve3' %}" id="edit_button"><i
+                                        class="fa fa-check no-loader"></i>
+                                    </a>
+                                </td>
+                            </tr>  
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    <div class="col-md-3" style="margin-left: 80%;">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modals for filter, export -->
+<form id="pscfilter_form" method='POST' action="{% url 'dashboard' %}">
+<div class="modal fade" id="psc_filter_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel">PSC Filter</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_zone" id="psc_zone">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% elif 'psc001maker3' in roles or 'psc001checker3' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_zone" id="psc_zone">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_HO_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% else %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone">Branch Code<span style="color: red">*</span></label>
+                        <input type="text" readonly name="psc_zone" value="{{request.session.branch_code}}" class="form-control">
+                    </div>
+                    {% endif %}
+                    <div class="form-group col-sm-6 branch" id="status">
+                        <label for="psc_review_status">Review Status <span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_review_status" id="psc_review_status">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Re-submitted">Re-submitted</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Convened">Convened</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="pscfilter_button" type="submit" value="rejected"
+                        class="btn btn-primary  ml-2">Submit</button>
+
+                    <button type="button" class="btn btn-outline-secondary ml-2" id="cancelbutton1"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<form id="sacfilter_form" method='POST' action="{% url 'dashboard' %}">
+<div class="modal fade" id="sac_filter_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel">SAC Filter</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="sac_zone">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_zone_filter" id="sac_zone_filter">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% elif 'sac001maker3' in roles or 'sac001checker3' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="sac_zone">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_zone_filter" id="sac_zone_filter">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_HO_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="form-group col-sm-6 branch" id="status">
+                        <label for="sac_review_status">Review Status <span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_review_status" id="sac_review_status">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Re-submitted">Re-submitted</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Convened">Convened</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="sacfilter_button" type="submit" value="rejected"
+                        class="btn btn-primary  ml-2">Submit</button>
+
+                    <button type="button" class="btn btn-outline-secondary ml-2" id="cancelbutton1"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<iframe src="exportPSCFRAME" name="exportPSCFRAME" style="display: none;"></iframe>
+<form id="pscexport_form" class="no-loader"  method='POST' action="{% url 'dashboard' %}" target="exportPSCFRAME">
+<div class="modal fade no-loader" id="psc_exportmodal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel1">PSC Export</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone_export">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_zone_export" id="psc_zone_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% elif 'psc001maker3' in roles or 'psc001checker3' in roles  %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone_export">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_zone_export" id="psc_zone_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_HO_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% else %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="psc_zone_export">Branch Code<span style="color: red">*</span></label>
+                        <input type="text" readonly name="psc_zone_export" value="{{request.session.branch_code}}" class="form-control">
+                    </div>
+                    {% endif %}
+                    <div class="form-group col-sm-6 branch" id="status">
+                        <label for="psc_review_status_export">Review Status <span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="psc_review_status_export" id="psc_review_status_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Re-submitted">Re-submitted</option>
+                            <option value="Convened">Convened</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="pscexport_button" type="submit" value="rejected"
+                    class="no-loader btn btn-primary  ml-2">Submit</button>
+
+                    <button type="button" class="no-loader  btn btn-outline-secondary ml-2" id="cancelbutton1"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<iframe src="exportSACFRAME" name="exportSACFRAME" style="display: none;"></iframe>
+<form id="sacexport_form" class="no-loader"  method='POST' action="{% url 'dashboard' %}" target="exportSACFRAME">
+<div class="modal fade no-loader" id="sac_exportmodal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel1">SAC Export</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    {% if 'psc001maker2' in roles or 'psc001checker2' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="sac_zone_export">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_zone_export" id="sac_zone_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% elif 'sac001maker3' in roles or 'sac001checker3' in roles %}
+                    <div class="form-group col-sm-6 zone" id="zone">
+                        <label for="sac_zone_export">Branch Code<span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_zone_export" id="sac_zone_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            {% for region in branch_code_HO_data %}
+                            <option value="{{region.sl_no}}">{{region.branch_code}}-{{region.branch_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group col-sm-6 branch" id="status">
+                        <label for="sac_review_status_export">Review Status <span style="color: red">*</span></label>
+                        <select class="form-control" required autocomplete="off" name="sac_review_status_export" id="sac_review_status_export">
+                            <option value=""  selected hidden>Choose Options</option>
+                            <option value="all">All</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Re-submitted">Re-submitted</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Convened">Convened</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="sacexport_button" type="submit" value="rejected"
+                        class="btn btn-primary no-loader  ml-2">Submit</button>
+
+                    <button type="button" class="btn btn-outline-secondary no-loader ml-2" id="cancelbutton1"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<!-- msg fadeOut -->
+<script>
+        var roles = "{{ roles }}";
+        
+    $(document).ready(function () {
+        // setTimeout(function () {
+        //     $('.message').fadeOut('slow');
+        // }, 3000);
+        $('.del-msg').on('click', function () {
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('a').forEach(function(links){
+            links.addEventListener('click', function(e){
+                if(links.classList.contains('no-loader')){
+                    var loader = document.getElementById('loader');
+                    if (loader) loader.style.display = 'none';
+                    return;  
+                }
+                var loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'block'
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none'
+
+    });
+</script>
+
+<script>
+    document.getElementById('pscexport_button').addEventListener('click', function () {
+         $('#psc_exportmodal').modal('hide');
+        // window.location.reload();
+    });
+    document.getElementById('exportPSCFRAME').addEventListener('load', function(){
+        var loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
+    })
+    document.getElementById('exportSACFRAME').addEventListener('load', function(){
+        var loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
+    })
+</script>
+<script>
+    function reloadPage() {
+        location.reload();
+    }
+
+    function openPSCModalold(cust_id) {
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            url: '{% url "get_psc_data" %}', // URL to your Django view
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                cust_id: cust_id
+            },
+            success: function(response) {
+                customer_data = response.data.customer_data;
+                psc_data = response.data.psc_data;
+                branch_code = response.data.branch_code;
+                roles = response.data.roles; // Fetch roles from the response
+
+                fPSCNo = customer_data[0].psc_rec_id;
+                fCustId = customer_data[0].cust_id;
+                fBorrower = customer_data[0].borrower_name;
+                fTotalExposure = customer_data[0].total_exposure;
+                fBranchCode = customer_data[0].branch_code_id__branch_code;
+
+                $('#viewPscAccountsModal').modal('show');
+                $(document).on('click', function(e) {
+                    if ($(e.target).hasClass('modal')) {
+                        reloadPage();
+                    }
+                });
+                function formatRupee(amount) {
+                    const x = amount.toString().split('.');
+                    let lastThree = x[0].slice(-3);
+                    const otherNumbers = x[0].slice(0, -3);
+                    if (otherNumbers !== '') {
+                        lastThree = ',' + lastThree;
+                    }
+                    const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+                    return x.length > 1 ? formatted + '.' + x[1] : formatted;
+                }
+                $('#fPSCNo').val(fPSCNo);
+                $('#fCustId').val(fCustId);
+                $('#fBorrower').val(fBorrower);
+                $('#fTotalExposure').val(formatRupee(fTotalExposure));
+                $('#fBranchCode').val(fBranchCode);
+
+                const tbody = document.querySelector('#fPSCTable tbody');
+
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    const year = date.getFullYear();
+                    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero
+                    const day = ('0' + date.getDate()).slice(-2); // Add leading zero
+                    return `${day}-${month}-${year}`;
+                }
+
+                // Sort psc_data so that accounts meeting the criteria come first
+                psc_data.sort((a, b) => {
+                    const aMeetsCriteria = a.branch_code_id__branch_code == branch_code;
+                    const bMeetsCriteria = b.branch_code_id__branch_code == branch_code;
+
+                    if (aMeetsCriteria && !bMeetsCriteria) return -1;
+                    if (!aMeetsCriteria && bMeetsCriteria) return 1;
+                    return 0;
+                });
+
+                let topAccountHandled = false;
+
+                psc_data.forEach(data => {
+                    const newRow = document.createElement('tr');
+                    var empApiTable = document.getElementById('fPSCTable');
+                    var tbody = empApiTable.getElementsByTagName('tbody')[0];
+                    rowCount_sd = tbody.rows.length;
+
+                    let action = '';
+
+                    if (!data.status) {
+                        if (roles.includes('psc001maker1') || roles.includes('psc001checker1')) {
+                            if (!topAccountHandled) {
+                                action = `
+                                    <div style="padding-right: 25%;">
+                                        <a style="cursor: pointer;" href="../psc_review/${data.id}" id="create_button"><i class="fa fa-pencil"></i></a>
+                                    </div>
+                                `;
+                                topAccountHandled = true; // Mark the top account as handled
+                            } else {
+                                action = `<div></div>`;
+                            }
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    } else if (data.status == 'Submitted' || data.status == 'Re-submitted') {
+                        if (!topAccountHandled) {
+                            action = `
+                                <div>
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                </div>
+                            `;
+                            topAccountHandled = true; // Mark the top account as handled
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    
+                    } else {
+                        if (roles.includes('psc001maker1') || roles.includes('psc001checker1')) {
+                            if (data.status == 'Approved' && data.current_role != 'BO Maker') {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                           
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            } else if (data.status == 'Rejected' || data.status == 'Draft') {
+                                if (data.current_role == 'BO Maker') {
+                                    if (!topAccountHandled) {
+                                        action = `
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit1" id="edit_button"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </div>
+                                        `;
+                                        topAccountHandled = true; // Mark the top account as handled
+                                    } else {
+                                        action = `<div></div>`;
+                                    }
+                                } else {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="edit_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                }
+                            } else if (data.status == 'Convened') {
+                                action = `<div>
+                                           <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>`;
+                            }
+                            
+                        } else if (roles.includes('psc001maker2') || roles.includes('psc001checker2')) {
+                            if (data.status == 'Approved' && data.current_role != 'RO Maker') {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            } else if (data.status == 'Rejected' || data.status == 'Draft') {
+                                if (data.current_role == 'RO Maker') {
+                                    if (!topAccountHandled) {
+                                        action = `
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit2" id="edit_button"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </div>
+                                        `;
+                                        topAccountHandled = true; // Mark the top account as handled
+                                    } else {
+                                        action = `<div></div>`;
+                                    }
+                                } else {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                }
+                            } else if (data.status == 'Convened') {
+                                action = `<div>
+                                           <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>`;
+                            } else {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <a style="cursor: pointer;" href="../psc_update/${data.id}/edit2" id="edit_button"><i class="fa fa-edit"></i></a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            }
+                        } else if (roles.includes('sac001maker3') || roles.includes('sac001checker3') || roles.includes('psc001maker3') || roles.includes('psc001checker3')) {
+                            if (data.status == 'Approved' && data.current_role != 'HO Maker') {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            } else if (data.status == 'Rejected' || data.status == 'Draft') {
+                                if (data.current_role == 'HO Maker') {
+                                    if (!topAccountHandled) {
+                                        action = `
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit3" id="edit_button"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </div>
+                                        `;
+                                        topAccountHandled = true; // Mark the top account as handled
+                                    } else {
+                                        action = `<div></div>`;
+                                    }
+                                } else {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                }
+                            } else if (data.status == 'Convened') {
+                                action = `<div>
+                                           <a style="cursor: pointer;" href="../psc_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>                                            
+                                        </div>`;
+                            } else {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <a style="cursor: pointer;" href="../psc_update/${data.id}/edit3" id="edit_button"><i class="fa fa-edit"></i></a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            }
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    }
+
+                    newRow.innerHTML = `
+                    <td id="facility_no-` + rowCount_sd + `"> ${data.facility_num} </td>
+                    <td style="white-space: nowrap;" id="branch_code-` + rowCount_sd + `"> ${data.branch_code_id__branch_code}</td>
+                    <td id="sanction_limit-` + rowCount_sd + `"> ${formatRupee(data.sanc_limit)}</td>
+                    <td id="region_name-` + rowCount_sd + `"> ${data.region_name}</td>                                                      
+                    <td id="npa_date-` + rowCount_sd + `"> ${formatDate(data.npa_date)}</td>                                                      
+                    <td id="npa_tag-` + rowCount_sd + `"> ${data.nap_tag}</td>
+                    <td  rowspan="{{forloop.counter}}"  id="action-` + rowCount_sd + `">${action}</td>
+                `;
+                    tbody.appendChild(newRow);
+                });
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+
+    function openSACModal(cust_id) {
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            url: '{% url "get_sac_data" %}', // URL to your Django view
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                cust_id: cust_id
+            },
+            success: function(response) {
+                customer_data = response.data.customer_data;
+                sac_data = response.data.sac_data;
+                branch_code = response.data.branch_code;
+                roles = response.data.roles; // Fetch roles from the response
+                // console.log('sac_data',sac_data);
+                fPSCNo = customer_data[0].sac_rec_id;
+                fCustId = customer_data[0].cust_id;
+                fBorrower = customer_data[0].borrower_name;
+                fTotalExposure = customer_data[0].sac_details.total_exposure;
+                fBranchCode = customer_data[0].branch_code_id__branch_code;
+
+                $('#viewSacAccountsModal').modal('show');
+                $(document).on('click', function(e) {
+                    if ($(e.target).hasClass('modal')) {
+                        reloadPage();
+                    }
+                });
+                function formatRupee(amount) {
+                    const x = amount.toString().split('.');
+                    let lastThree = x[0].slice(-3);
+                    const otherNumbers = x[0].slice(0, -3);
+                    if (otherNumbers !== '') {
+                        lastThree = ',' + lastThree;
+                    }
+                    const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+                    return x.length > 1 ? formatted + '.' + x[1] : formatted;
+                }
+                $('#fSACNo').val(fPSCNo);
+                $('#fSCustId').val(fCustId);
+                $('#fSBorrower').val(fBorrower);
+                $('#fSTotalExposure').val(formatRupee(fTotalExposure));
+                $('#fSBranchCode').val(fBranchCode);
+
+                const tbody = document.querySelector('#fSACTable tbody');
+
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    const year = date.getFullYear();
+                    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero
+                    const day = ('0' + date.getDate()).slice(-2); // Add leading zero
+                    return `${day}-${month}-${year}`;
+                }
+
+                // Sort sac_data so that accounts meeting the criteria come first
+                // sac_data.sort((a, b) => {
+                //     const aMeetsCriteria = a.branch_code_id__branch_code == branch_code;
+                //     const bMeetsCriteria = b.branch_code_id__branch_code == branch_code;
+
+                //     if (aMeetsCriteria && !bMeetsCriteria) return -1;
+                //     if (!aMeetsCriteria && bMeetsCriteria) return 1;
+                //     return 0;
+                // });
+
+                let topAccountHandled = false;
+
+                sac_data.forEach(data => {
+                    const newRow = document.createElement('tr');
+                    var empApiTable = document.getElementById('fSACTable');
+                    var tbody = empApiTable.getElementsByTagName('tbody')[0];
+                    rowCount_sd = tbody.rows.length;
+                    // console.log('sac_data',data.status);
+                    let action = '';
+
+                    if (!data.status) {
+                        if (roles.includes('psc001maker2') || roles.includes('psc001checker2')) {
+                            if (!topAccountHandled) {
+                                action = `
+                                    <div style="padding-right: 25%;">
+                                        <a style="cursor: pointer;" href="../sac_review/${data.id}" id="create_button"><i class="fa fa-pencil"></i></a>
+                                    </div>
+                                `;
+                                topAccountHandled = true; // Mark the top account as handled
+                            } else {
+                                action = `<div></div>`;
+                            }
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    } else if (data.status === 'Submitted' || data.status === 'Re-submitted') {
+                        if (!topAccountHandled) {
+                            action = `
+                                <div>
+                                    <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                </div>
+                            `;
+                            topAccountHandled = true; // Mark the top account as handled
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    } else {
+                        if (roles.includes('psc001maker2') || roles.includes('psc001checker2')) {
+                            if (data.status === 'Approved' && data.current_role !== 'RO Maker') {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            } else if (data.status === 'Rejected' || data.status === 'Draft') {
+                                if (data.current_role === 'RO Maker') {
+                                    if (!topAccountHandled) {
+                                        action = `
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="../sac_update/${data.id}/edit2" id="edit_button"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </div>
+                                        `;
+                                        topAccountHandled = true; // Mark the top account as handled
+                                    } else {
+                                        action = `<div></div>`;
+                                    }
+                                } else {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                }
+                            } else if (data.status === 'Convened') {
+                                action = `<div>
+                                           <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>`;
+                            } else {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <a style="cursor: pointer;" href="../sac_update/${data.id}/edit2" id="edit_button"><i class="fa fa-edit"></i></a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            }
+                        } else if (roles.includes('sac001maker3') || roles.includes('sac001checker3') ) {
+                            if (data.status === 'Approved' && data.current_role !== 'HO Maker') {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            } else if (data.status === 'Rejected' || data.status === 'Draft') {
+                                if (data.current_role === 'HO Maker') {
+                                    if (!topAccountHandled) {
+                                        action = `
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <a style="cursor: pointer;" href="../sac_update/${data.id}/edit3" id="edit_button"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </div>
+                                        `;
+                                        topAccountHandled = true; // Mark the top account as handled
+                                    } else {
+                                        action = `<div></div>`;
+                                    }
+                                } else {
+                                    action = `
+                                        <div>
+                                            <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>
+                                        </div>
+                                    `;
+                                }
+                            } else if (data.status === 'Convened') {
+                                action = `<div>
+                                        <a style="cursor: pointer;" href="../sac_update/${data.id}/view" id="view_button"><i class="fa fa-eye"></i></a>        
+                                        </div>`;
+                            } else {
+                                if (!topAccountHandled) {
+                                    action = `
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <a style="cursor: pointer;" href="../sac_update/${data.id}/edit3" id="edit_button"><i class="fa fa-edit"></i></a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    topAccountHandled = true; // Mark the top account as handled
+                                } else {
+                                    action = `<div></div>`;
+                                }
+                            }
+                        } else {
+                            action = `<div></div>`;
+                        }
+                    }
+
+                   
+
+
+                    newRow.innerHTML = `
+                    <td id="facility_no-` + rowCount_sd + `"> ${data.psc_rec_id__facility_num} </td>
+                    <td style="white-space: nowrap;" id="branch_code-` + rowCount_sd + `"> ${data.psc_rec_id__branch_code_id__branch_code}</td>
+                    <td id="sanction_limit-` + rowCount_sd + `"> ${formatRupee(data.psc_rec_id__sanc_limit)}</td>                                                      
+                    <td id="region_name-` + rowCount_sd + `"> ${data.psc_rec_id__region_name}</td>
+                    <td id="npa_date-` + rowCount_sd + `"> ${formatDate(data.psc_rec_id__npa_date)}</td>                                                      
+                    <td id="npa_tag-` + rowCount_sd + `"> ${data.psc_rec_id__nap_tag}</td>
+                    <td id="action-` + rowCount_sd + `">${action}</td>
+                `;
+                    tbody.appendChild(newRow);
+                });
+                // <td id="action-` + rowCount_sd + `">${action}</td>
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+
+    function openPSCModal(cust_id) {
+    let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+        url: '{% url "get_psc_data" %}',
+        method: 'POST',
+        headers: {
+            "X-CSRFToken": csrftoken
+        },
+        data: {
+            cust_id: cust_id
+        },
+        success: function (response) {
+            customer_data = response.data.customer_data;
+            psc_data = response.data.psc_data;
+            branch_code = response.data.branch_code;
+            roles = response.data.roles;
+
+            fPSCNo = customer_data[0].psc_rec_id;
+            fCustId = customer_data[0].cust_id;
+            fBorrower = customer_data[0].borrower_name;
+            fTotalExposure = customer_data[0].total_exposure;
+            fBranchCode = customer_data[0].branch_code_id__branch_code;
+
+            $('#viewPscAccountsModal').modal('show');
+            $(document).on('click', function (e) {
+                if ($(e.target).hasClass('modal')) {
+                    reloadPage();
+                }
+            });
+
+            function formatRupee(amount) {
+                const x = amount.toString().split('.');
+                let lastThree = x[0].slice(-3);
+                const otherNumbers = x[0].slice(0, -3);
+                if (otherNumbers !== '') {
+                    lastThree = ',' + lastThree;
+                }
+                const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+                return x.length > 1 ? formatted + '.' + x[1] : formatted;
+            }
+
+            $('#fPSCNo').val(fPSCNo);
+            $('#fCustId').val(fCustId);
+            $('#fBorrower').val(fBorrower);
+            $('#fTotalExposure').val(formatRupee(fTotalExposure));
+            $('#fBranchCode').val(fBranchCode);
+
+            const tbody = document.querySelector('#fPSCTable tbody');
+            tbody.innerHTML = ''; // Clear previous rows
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                const day = ('0' + date.getDate()).slice(-2);
+                return `${day}-${month}-${year}`;
+            }
+
+            psc_data.sort((a, b) => {
+                const aMeets = a.branch_code_id__branch_code == branch_code;
+                const bMeets = b.branch_code_id__branch_code == branch_code;
+                return (aMeets === bMeets) ? 0 : aMeets ? -1 : 1;
+            });
+
+            const actionRowspanCount = psc_data.length;
+            let topAccountHandled = false
+
+            // Find first eligible row for action
+            const firstActionData = psc_data.find(data => true); // Simplified logic
+
+            let actionHTML = '';
+            
+            // Loop to render rows
+            psc_data.forEach((data, index) => {
+                const newRow = document.createElement('tr');
+                var empApiTable = document.getElementById('fPSCTable');
+                var tbody = empApiTable.getElementsByTagName('tbody')[0];
+                rowCount_sd = tbody.rows.length;
+                let action = ""
+                if(!topAccountHandled){
+                    const roleMaker1 = roles.includes('psc001maker1')
+                    const roleChecker1 = roles.includes('psc001checker1')
+                    const roleMaker2 = roles.includes('psc001maker2')
+                    const roleChecker2 = roles.includes('psc001checker2')
+                    const roleMaker3 = roles.includes('sac001maker3')
+                    const roleChecker3 = roles.includes('sac001checker3')
+                    
+                    if (!data.status){
+                        if (roleMaker1 || roleChecker1){
+                            action = `
+                            <a style="cursor: pointer;" href="../psc_review/${data.id}" id="create_button"><i class="fa fa-pencil"></i></a>
+                            `;
+                        }
+                    } else if (['Submitted', 'Re-Submitted'].includes(data.status)){
+                        action = `
+                            <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                            `;
+                    } else{
+                        const status = data.status;
+                        const currentRole = data.current_role;
+                        if((roleMaker1 || roleChecker1)){
+                            if (status == 'Approved' && currentRole != 'BO Maker'){
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `;
+                            } else if((status == 'Rejected' || status == 'Draft') && currentRole == 'BO Maker') {
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit1" ><i class="fa fa-edit"></i></a>
+                                    `;
+                            } else{
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `; 
+                            } 
+                        } else if((roleMaker2 || roleChecker2)){
+                            if (status == 'Approved' && currentRole != 'RO Maker'){
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `;
+                            } else if((status == 'Rejected' || status == 'Draft' || status == 'Approved') && currentRole == 'RO Maker') {
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit2" ><i class="fa fa-edit"></i></a>
+                                    `;
+                            } else{
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `; 
+                            } 
+                        } else if((roleMaker3 || roleChecker3)){
+                            if (status == 'Approved' && currentRole != 'HO Maker'){
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `;
+                            } else if((status == 'Rejected' || status == 'Draft' || status == 'Approved') && currentRole == 'HO Maker') {
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/edit3" ><i class="fa fa-edit"></i></a>
+                                    `;
+                            } else{
+                                action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `; 
+                            } 
+                        } else if (status == 'Convened'){
+                            action = `
+                                    <a style="cursor: pointer;" href="../psc_update/${data.id}/view" ><i class="fa fa-eye"></i></a>
+                                    `;      
+                        }
+                    }
+                    if (action != ''){
+                        actionHTML = `
+                            <td id="action-0" rowspan="${actionRowspanCount}" style="text-align:center">${action}</td>
+                        `
+                        topAccountHandled = true;
+                    }
+
+                }
+
+
+                newRow.innerHTML = `
+                    <td id="facility_no-${rowCount_sd}">${data.facility_num}</td>
+                    <td style="white-space: nowrap;" id="branch_code-${rowCount_sd}">${data.branch_code_id__branch_code}</td>
+                    <td id="sanction_limit-${rowCount_sd}">${formatRupee(data.sanc_limit)}</td>
+                    <td id="region_name-${rowCount_sd}">${data.region_name}</td>
+                    <td id="npa_date-${rowCount_sd}">${formatDate(data.npa_date)}</td>
+                    <td id="npa_tag-${rowCount_sd}">${data.nap_tag}</td>
+                    ${index === 0 ? actionHTML : ''}
+                `;
+
+                tbody.appendChild(newRow);
+            });
+        },
+        error: function (error) {
+            console.log('Error:', error);
+        }
+    });
+}
+
+    function openSACModal123(cust_id) {
+                let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+                $.ajax({
+                    url: '{% url "get_sac_data" %}', // URL to your Django view
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: {
+                        cust_id: cust_id
+                    },
+                    success: function (response) {
+                        customer_data = response.data.customer_data;
+                        sac_data = response.data.sac_data || [];
+                        branch_code = response.data.branch_code;
+                        roles = response.data.roles || [];
+
+                        fPSCNo = customer_data[0].sac_rec_id;
+                        fCustId = customer_data[0].cust_id;
+                        fBorrower = customer_data[0].borrower_name;
+                        fTotalExposure = customer_data[0].sac_details.total_exposure;
+                        fBranchCode = customer_data[0].branch_code_id__branch_code;
+
+                        $('#viewSacAccountsModal').modal('show');
+                        $(document).on('click', function (e) {
+                            if ($(e.target).hasClass('modal')) {
+                                reloadPage();
+                            }
+                        });
+
+                        function formatRupee(amount) {
+                            if (amount === null || amount === undefined || amount === '') return '';
+                            const x = amount.toString().split('.');
+                            let lastThree = x[0].slice(-3);
+                            const otherNumbers = x[0].slice(0, -3);
+                            if (otherNumbers !== '') lastThree = ',' + lastThree;
+                            const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+                            return x.length > 1 ? formatted + '.' + x[1] : formatted;
+                        }
+
+                        function formatDate(dateString) {
+                            if (!dateString) return '';
+                            const date = new Date(dateString);
+                            if (isNaN(date)) return '';
+                            const year = date.getFullYear();
+                            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                            const day = ('0' + date.getDate()).slice(-2);
+                            return `${day}-${month}-${year}`;
+                        }
+
+                        $('#fSACNo').val(fPSCNo);
+                        $('#fSCustId').val(fCustId);
+                        $('#fSBorrower').val(fBorrower);
+                        $('#fSTotalExposure').val(formatRupee(fTotalExposure));
+                        $('#fSBranchCode').val(fBranchCode);
+
+                        const table = document.getElementById('fSACTable');
+                        const tbody = table.querySelector('tbody');
+                        if (tbody) tbody.innerHTML = '';
+
+                        // --- Determine the single action (link + icon) from the first eligible row ---
+                        function computeActionForRow(row) {
+                            // Returns { link, icon } or null if no action should be shown
+                            if (!row) return null;
+
+                            // Roles sets
+                            const hasROPermissions = roles.includes('psc001maker2') || roles.includes('psc001checker2');
+                            const hasHOPermissions = roles.includes('sac001maker3') || roles.includes('sac001checker3');
+
+                            // No status yet
+                            if (!row.status) {
+                                if (hasROPermissions) {
+                                    return { link: `../sac_review/${row.id}`, icon: 'fa-pencil' };
+                                }
+                                // No permitted action
+                                return null;
+                            }
+
+                            // Submitted / Re-submitted — view
+                            if (row.status === 'Submitted' || row.status === 'Re-submitted') {
+                                return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                            }
+
+                            // RO level logic
+                            if (hasROPermissions) {
+                                if (row.status === 'Approved' && row.current_role !== 'RO Maker') {
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else if (row.status === 'Rejected' || row.status === 'Draft') {
+                                    if (row.current_role === 'RO Maker') {
+                                        return { link: `../sac_update/${row.id}/edit2`, icon: 'fa-edit' };
+                                    }
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else if (row.status === 'Convened') {
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else {
+                                    // Default for RO
+                                    return { link: `../sac_update/${row.id}/edit2`, icon: 'fa-edit' };
+                                }
+                            }
+
+                            // HO level logic
+                            if (hasHOPermissions) {
+                                if (row.status === 'Approved' && row.current_role !== 'HO Maker') {
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else if (row.status === 'Rejected' || row.status === 'Draft') {
+                                    if (row.current_role === 'HO Maker') {
+                                        return { link: `../sac_update/${row.id}/edit3`, icon: 'fa-edit' };
+                                    }
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else if (row.status === 'Convened') {
+                                    return { link: `../sac_update/${row.id}/view`, icon: 'fa-eye' };
+                                } else {
+                                    // Default for HO
+                                    return { link: `../sac_update/${row.id}/edit3`, icon: 'fa-edit' };
+                                }
+                            }
+
+                            // Fallback: no permitted action
+                            return null;
+                        }
+
+                        // Find first eligible action row
+                        let firstActionIndex = -1;
+                        let firstAction = null;
+
+                        for (let i = 0; i < sac_data.length; i++) {
+                            const candidate = computeActionForRow(sac_data[i]);
+                            if (candidate && candidate.link) {
+                                firstActionIndex = i;
+                                firstAction = candidate;
+                                break;
+                            }
+                        }
+
+                        // Build the single Action cell (rowspan across all rows)
+                        const actionRowspanCount = sac_data.length;
+                        let actionCellHTML = '';
+                        if (firstAction && actionRowspanCount > 0) {
+                            actionCellHTML = `
+                                <td id="action-0" rowspan="${actionRowspanCount}" style="text-align:center; vertical-align: middle;">
+                                    <a style="cursor: pointer;" href="${firstAction.link}" id="action_button">
+                                        <i class="fa ${firstAction.icon}"></i>
+                                    </a>
+                                </td>
+                            `;
+                        } else if (actionRowspanCount > 0) {
+                            // If nothing eligible, still render a single empty cell to maintain columns
+                            actionCellHTML = `
+                                <td id="action-0" rowspan="${actionRowspanCount}" style="text-align:center; vertical-align: middle;">
+                                    <!-- no permitted action -->
+                                </td>
+                            `;
+                        }
+
+                        // --- Render rows; insert the Action cell only in the first row ---
+                        sac_data.forEach((data, index) => {
+                            const newRow = document.createElement('tr');
+                            const currentTBody = table.getElementsByTagName('tbody')[0];
+                            const rowCount_sd = currentTBody.rows.length;
+
+                            newRow.innerHTML = `
+                                <td id="facility_no-${rowCount_sd}">${data.psc_rec_id__facility_num || ''}</td>
+                                <td style="white-space: nowrap;" id="branch_code-${rowCount_sd}">${data.psc_rec_id__branch_code_id__branch_code || ''}</td>
+                                <td id="sanction_limit-${rowCount_sd}">${formatRupee(data.psc_rec_id__sanc_limit)}</td>
+                                <td id="region_name-${rowCount_sd}">${data.psc_rec_id__region_name || ''}</td>
+                                <td id="npa_date-${rowCount_sd}">${formatDate(data.psc_rec_id__npa_date)}</td>
+                                <td id="npa_tag-${rowCount_sd}">${data.psc_rec_id__nap_tag || ''}</td>
+                                ${index === 0 ? actionCellHTML : ''}
+                            `;
+
+                            currentTBody.appendChild(newRow);
+                        });
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            }
+
+
+function url(name, ...args) {
+    let pattern = `{% url '${name}'`;
+    args.forEach(arg => pattern += ` '${arg}'`);
+    pattern += ' %}';
+    return pattern;
+}
+
+
+document.getElementById("cancelbutton12").addEventListener("click", function () {
+        $('#viewPscAccountsModal').modal('hide');
+        window.location.reload();
+    });
+document.getElementById("cancelbutton122").addEventListener("click", function () {
+        $('#viewSacAccountsModal').modal('hide');
+        window.location.reload();
+    });
+</script>
+
+<!-- notifications count -->
+<script>
+    if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+
+    function countRows(a) {
+        var table = document.getElementById(a);
+        var tbody = table.getElementsByTagName("tbody")[0];
+        var rows = tbody.getElementsByTagName("tr");
+        return rows.length;
+    }
+
+    var rowCountsac = countRows('SAC_approve_table');
+    var rowCountpsc = countRows('PSC_approve_table');
+    // Update the data-count attribute of the span element with the row count
+    document.querySelector(".sac_count").setAttribute("data-count", rowCountsac);
+    document.querySelector(".psc_count").setAttribute("data-count", rowCountpsc);
+        // Your logic here
+}
+</script>
+
+<!-- show hide filters of psc & sac -->
+<script>
+      if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
+{% if 'psc001maker1' in roles or 'psc001checker1' in roles  %}
+<script>
+        var pscTable = document.getElementById('psc_table');
+        var sacTable = document.getElementById('sac_table');
+        if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+        var pscnotify = document.getElementById('psc_modal_div');
+        var sacnotify = document.getElementById('sac_modal_div');
+        }    
+        var pscfilter = document.getElementById('psc_filter')
+        var sacfilter = document.getElementById('sac_filter')
+        var pscexport = document.getElementById('psc_export')
+        var sacexport = document.getElementById('sac_export')
+        var pscsearch = document.getElementById('psc_search')
+        var sacsearch = document.getElementById('sac_search')
+        var pscpagination = document.getElementById('psc_pagination')
+        var sacpagination = document.getElementById('sac_pagination')
+
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+                pscnotify.style.display = 'block';
+                sacnotify.style.display = 'none';
+            }
+            pscfilter.style.display = 'block';
+            sacfilter.style.display = 'none';
+            pscexport.style.display = 'block';
+            sacexport.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+          
+</script>
+
+{% else %}
+<script>
+    // Function to toggle between PSC and SAC tables
+    function toggleTable(tableId) {
+        var pscTable = document.getElementById('psc_table');
+        var sacTable = document.getElementById('sac_table');
+        if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+        var pscnotify = document.getElementById('psc_modal_div');
+        var sacnotify = document.getElementById('sac_modal_div');
+        }    
+        var pscfilter = document.getElementById('psc_filter')
+        var sacfilter = document.getElementById('sac_filter')
+        var pscexport = document.getElementById('psc_export')
+        var sacexport = document.getElementById('sac_export')
+        var pscsearch = document.getElementById('psc_search')
+        var sacsearch = document.getElementById('sac_search')
+        var pscpagination = document.getElementById('psc_pagination')
+        var sacpagination = document.getElementById('sac_pagination')
+        if (tableId === 'psc_table') {
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+                pscnotify.style.display = 'block';
+                sacnotify.style.display = 'none';
+            }
+            pscfilter.style.display = 'block';
+            sacfilter.style.display = 'none';
+            pscexport.style.display = 'block';
+            sacexport.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+            // Store the current state in local storage
+            localStorage.setItem('selectedTable', 'psc');
+        } else if (tableId === 'sac_table') {
+            pscTable.style.display = 'none';
+            sacTable.style.display = 'table';
+            if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+                pscnotify.style.display = 'none';
+                sacnotify.style.display = 'block';
+            }
+            pscfilter.style.display = 'none';
+            sacfilter.style.display = 'block';
+            pscexport.style.display = 'none';
+            sacexport.style.display = 'block';
+            pscsearch.style.display = 'none';
+            sacsearch.style.display = 'block';
+            pscpagination.style.display = 'none';
+            sacpagination.style.display = 'block';
+            localStorage.setItem('selectedTable', 'sac');
+        } else{
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            if (roles.includes('psc001checker1') || roles.includes('psc001checker2') || roles.includes('psc001checker3') || roles.includes('sac001checker3')) {
+                pscnotify.style.display = 'block';
+                sacnotify.style.display = 'none';
+            }
+            pscfilter.style.display = 'block';
+            sacfilter.style.display = 'none';
+            pscexport.style.display = 'block';
+            sacexport.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+        }
+    }
+
+    // Function to retrieve the selected table from local storage
+    function retrieveSelectedTable() {
+        var selectedTable = localStorage.getItem('selectedTable');
+        if (selectedTable === 'psc') {
+            toggleTable('psc_table');
+            $('#psc_radio').prop('checked', true);
+        } else if (selectedTable === 'sac') {
+            toggleTable('sac_table');
+            $('#sac_radio').prop('checked', true);
+        } else{
+            toggleTable('psc_table');
+            $('#psc_radio').prop('checked', true);
+        }
+    }
+
+    // Call the function to retrieve the selected table on page load
+    window.onload = retrieveSelectedTable;
+</script>
+
+{% endif %}
+<script>
+    function convertmoney() {
+        const toIndianCurrency = (num) => {
+            const curr = num.toLocaleString('en-IN', {
+                // style: 'currency',
+                currency: 'INR'
+            });
+            return curr;
+        };
+        $("#psc_table > tbody > tr").each(function () {
+            var row = $(this).closest("tr")[0];
+            var psca = row.cells[5].innerHTML;
+            psct = toIndianCurrency(parseFloat(psca))
+            row.cells[5].innerHTML = psct
+        });
+        $("#sac_table > tbody > tr").each(function () {
+            var row = $(this).closest("tr")[0];
+            var saca = row.cells[5].innerHTML;
+            sact = toIndianCurrency(parseFloat(saca))
+            row.cells[5].innerHTML = sact
+        });
+        
+        var fTotalExposure = $('#fTotalExposure').val()
+        tt1 = toIndianCurrency(parseFloat(fTotalExposure))
+        $('#fTotalExposure').val(tt1)
+
+    }
+    convertmoney();
+</script>
+
+{% endif %}
+{% endwith %}
+{% endblock %}

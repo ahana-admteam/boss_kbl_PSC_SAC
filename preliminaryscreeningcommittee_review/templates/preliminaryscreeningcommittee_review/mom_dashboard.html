@@ -1,0 +1,1687 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+{% with request.session.new_roles|my_filter as roles %}
+{% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker2' in roles or 'psc001checker2' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles or 'momconvener' in roles or 'sac001maker3' in roles or 'sac001checker3' in roles %}<!-- custom styling -->
+<style>
+    .fa-stack[data-count]:after {
+        font-size: 50%;
+        margin-top: -5px;
+        ;
+    }
+
+    .fa-trash:before {
+        margin-right: 10px;
+    }
+
+    .fa-edit:before {
+        margin-left: 10px;
+    }
+
+    body {
+        font-size: .9rem;
+    }
+
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+    }
+
+    /* textarea.ta-n-control {
+        border: 1px solid black;
+    } */
+
+    .in-control {
+        border: none;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        /* Collapse borders so adjacent cells share borders */
+    }
+
+    table th,
+    table td {
+        border: 1px solid rgb(0, 0, 0);
+        /* Add borders to table cells */
+        padding: 8px;
+        font-weight: bold;
+        /* Add padding to cells for better spacing */
+    }
+
+    #staffaccountability_table tr {
+        background-color: #ffffff;
+    }
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: transparent;
+        /* Set even row background color to transparent */
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: transparent;
+        /* Set odd row background color to transparent */
+    }
+
+</style>
+<div class="container-fluid" style="padding: 0px 20px;" >
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-danger" data-dismiss="alert">&times;</button>
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-success" data-dismiss="alert">&times;</button>
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <!-- action buttons -->
+    <div class="row p-1 pt-2">
+        <div class="col-md-6" style="padding-left: 2%;">
+            <div class="row">
+                
+                    
+                    <div class="btn-group col-sm-12" role="group" aria-label="Basic radio toggle button group" >
+                        <input class="btn-check" type="radio" checked style="width:16px; height:16px; margin-top: 8px;"
+                            value="PSC" onclick="toggleTable('PSC_MOM_Table');" name="exception" required id="psc_radio">
+                        <label class="btn btn-outline-primary" for="psc_radio" 
+                            style="font-size: 15px; font-weight: bold;">Preliminary Screening Committee</label>
+                        <input class="btn-check" type="radio" style="width:16px; height:16px; margin-top: 8px;"
+                            value="SAC" onclick="toggleTable('SAC_MOM_Table');"  name="exception" required id="sac_radio">
+                        <label class="btn btn-outline-primary" for="sac_radio"
+                            style="font-size: 15px; font-weight: bold;">Staff Accountability Committee</label>
+                    </div>
+                
+            </div>
+        </div>
+        <div class="col-md-6" style="padding-left: 11%;">
+            <div class="row">
+                
+                <div class="col-md-4">
+                    {% if 'psc001checker3' in roles or 'sac001checker3' in roles %}
+            <div class="row">
+                <div class="col-md-12" style="padding-left: 25%;">
+                    <div style="display: none;"  id="psc_add_mom">
+                        <button id="btn3"  href="" class="btn  btn-primary" data-toggle="modal"
+                        data-target="#addPSCMOMmodal"><i class="fa fa-plus"> MOM</i></button>
+                    </div>
+                   
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="padding-left: 25%;">
+                    
+                    <div  id="sac_add_mom">
+                        <button id="btn3"  href="" class="btn btn-primary" data-toggle="modal"
+                        data-target="#addSACMOMmodal"><i class="fa fa-plus"> MOM</i></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            {% else %}
+            <div class="row"></div>
+            {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="col-md-11" style="display: none;" id="psc_search">
+                        <form action="{% url 'mom_dashboard' %}" method="post" class="form-inline">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                                    <div class="input-group">
+                                        <input required type="text" autocomplete="off" placeholder="Search" class="form-control" id="pscsearch_mom" name="pscsearch_mom">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-11" id="sac_search">
+                        <form action="{% url 'mom_dashboard' %}" method="post" class="form-inline">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                                    <div class="input-group">
+                                        <input required type="text" autocomplete="off" placeholder="Search" class="form-control" id="sacsearch_mom"
+                                        name="sacsearch_mom">                                        
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div id="PSCDloading-icon" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner-border text-white" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id="PSCDloading-text" style="display: none; position: fixed; top: 0.1; left: 0.1; width: 100%; height: 100%; color: black; display: flex; justify-content: center; align-items: center;">
+        <span id="PSCDloading-text"><h1><strong>Loading .... </strong></h1></span>    
+    </div>
+    <!-- PSC MOM Table -->
+    <div class="row p-1">
+        <div class="col-md-12">
+            <table height="400" class="table table-responsive table-hover shadow-lg bg-white" id="PSC_MOM_Table">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="white-space: nowrap;">Meeting ID(PSC)</th>
+                        <th style="white-space: nowrap;">MOM Type</th>
+                        <th style="white-space: nowrap;">Created Date</th>
+                        <th>MOM Date</th>
+                        <th style="text-align: center;">Present</th>
+                        <th style="width: 1%; text-align: center;">Active</th>
+                        <th style="width: 8%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                {% for p_data in PSCmom_data %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{p_data.meeting_id}}</td>
+                        <td style="white-space: nowrap;">{{p_data.review_type}}</td>
+                        <td>{{p_data.mom_creation_date|date:'d-m-Y'}}</td>
+                        <td style="white-space: nowrap;">{{p_data.mom_date|date:'d-m-Y'}}</td>
+                        <td>
+                            <div class="row">
+                                {% for aud_index in p_data.audience %}
+                                    <div class="col-md-4 mb-2">
+                                        <div>{{ aud_index.slno }}) {{ aud_index.staffName }} - {{aud_index.staffNo }}</div>
+                                        <div>{{ aud_index.designation }}</div>
+                                        <div>{{ aud_index.role }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        {% if p_data.active %}
+                        <td style="width: 1%;text-align: center;">True</td>
+                        {% else %}
+                        <td style="width: 1%;text-align: center;">False</td>
+                        {% endif %}
+                        <td>
+                            <div class="row mt-4 mb-4">
+                                {% if 'momconvener' in roles %}
+                                {% if p_data.review_type == 'PSC1' or p_data.review_type == 'PSC2' %}
+                                <!-- Leave it empty for now, will be filled dynamically -->
+                                {% if today|date:"Y-m-d" >=  p_data.mom_date|date:"Y-m-d"  %}
+                                    {% if p_data.active %}
+                                    <div  id="add_row1_container" class="col-md-6">
+                                        <a data-toggle="tooltip" title="View Lapses" style="cursor: pointer;" id="add_row1" href="{% url 'mom_lapses' p_data.review_type p_data.id %}"><i class="fa fa-edit"></i></a>
+                                    </div>
+                                    <div class="col-md-5" style=" margin-right: 5px;">
+                                        <a style="cursor: pointer; color: red;" class="no-loader " data-toggle="tooltip" title="PDF Export" id="add_row" onclick="downloadWithLoader(`{% url 'mom_lapse_export' p_data.id 'before' %}`, `PSC_MOM_LAPSE` ); return false;"  ><i class="fa fa-file-pdf-o"></i>
+                                        </a>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-md-12" style="padding-right: 20%;">
+                                        <a style="cursor: pointer; color: red;" class="no-loader " data-toggle="tooltip" title="PDF Export" id="add_row" onclick="downloadWithLoader(`{% url 'mom_lapse_export' p_data.id 'after' %}`, `PSC_MOM_LAPSE` ); return false;"  ><i class="fa fa-file-pdf-o"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                
+                                {% endif %}
+                                {% endif %}
+                                {% elif 'psc001checker3' in roles or 'sac001checker3' in roles and p_data.active %}
+                                {% if today|date:"Y-m-d" ==  p_data.mom_date|date:"Y-m-d"  %}
+                                <button id="btn3"  href="" class="btn" onclick="openModal({{p_data.id}})" >Edit</button>
+                                {% endif %}
+                                
+                            </div>
+                            
+                        </td>
+                    {% endif %}
+                    {% endfor %}
+                    </tr>
+                    
+                </tbody>
+            </table>
+            <table height="400" class="table table-responsive table-hover shadow-lg bg-white" id="SAC_MOM_Table">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="white-space: nowrap;">Meeting ID(SAC)</th>
+                        <th style="white-space: nowrap;">MOM Created Date</th>
+                        <th>MOM Date</th>
+                        <th style="text-align: center;">Present</th>
+                        <th style="width: 1%;text-align: center;">Active</th>
+                        <th style="width: 8%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                     {% for s_data in SACmom_data %}
+                     <tr>
+                        <td style="white-space: nowrap;">{{s_data.meeting_id}}</td>
+                        <td>{{s_data.mom_creation_date|date:'d-m-Y'}}</td>
+                        <td style="white-space: nowrap;">{{s_data.mom_date|date:'d-m-Y'}}</td>
+                        <td>
+                            <div class="row">
+                                {% for aud_index in s_data.audience %}
+                                    <div class="col-md-4 mb-2">
+                                        <div>{{ aud_index.slno }}) {{ aud_index.staffName }} - {{ aud_index.staffNo }}</div>
+                                        <div>{{ aud_index.designation }}</div>
+                                        <div>{{ aud_index.role }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        {% if s_data.active %}
+                        <td style="width: 1%;text-align: center;">True</td>
+                        {% else %}
+                        <td style="width: 1%;text-align: center;">False</td>
+                        {% endif %}
+                        <td>
+                           
+                            <div class="row mt-4 mb-4">
+                                {% if 'momconvener' in roles %}
+                                {% if s_data.review_type == 'sac' %}
+                                <!-- Leave it empty for now, will be filled dynamically -->
+                                {% if today|date:"Y-m-d" >=  s_data.mom_date|date:"Y-m-d"  %}
+                                    {% if s_data.active %}
+                                    <div  id="add_row1_container" class="col-md-6">
+                                        <a data-toggle="tooltip" title="View Lapses" style="cursor: pointer;" id="add_row1" href="{% url 'mom_lapses' 'sac' s_data.id %}"><i class="fa fa-edit"></i></a>
+                                    </div>
+                                    <div class="col-md-5" style=" margin-right: 5px;">
+                                        <a style="cursor: pointer; color: red;" class="no-loader " data-toggle="tooltip" title="PDF Export" id="add_row" onclick="downloadWithLoader(`{% url 'mom_lapse_export' s_data.id 'before' %}`, `SAC_MOM_LAPSE` ); return false;"  ><i class="fa fa-file-pdf-o"></i>
+                                        </a>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-md-12" style="padding-right: 20%;">
+                                        <a style="cursor: pointer; color: red;" class="no-loader " data-toggle="tooltip" title="PDF Export" id="add_row" onclick="downloadWithLoader(`{% url 'mom_lapse_export' s_data.id 'after' %}`, `SAC_MOM_LAPSE` ); return false;"  ><i class="fa fa-file-pdf-o"></i>
+                                        </a>
+                                        
+                                        
+                                    </div>
+                                    {% endif %}
+                                
+                                {% endif %}
+                                {% endif %}
+                                {% elif 'psc001checker3' in roles or 'sac001checker3' in roles and s_data.active %}
+                                {% if today|date:"Y-m-d" ==  s_data.mom_date|date:"Y-m-d"  %}
+                                <button id="btn3"  href="" class="btn" onclick="openModal({{s_data.id}})" >Edit</button>
+                                {% endif %}
+                                
+                            </div>
+                        </td>
+                    {% endif %}
+                    {% endfor %}
+                    </tr>
+                    
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function downloadWithLoader(url, id_data) {
+            // Show loader
+            document.getElementById("PSCDloading-icon").style.display = "flex";
+            document.getElementById("PSCDloading-text").style.display = "flex";
+    
+            try {
+                // Fetch the file data
+                const response = await fetch(url);
+                // console.log('response',response);
+                
+                if (!response.ok) throw new Error('Failed to fetch file');
+                let aaaa = "PSCFORM"
+                // Create a downloadable link dynamically
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `${id_data}.pdf`;
+                a.click();
+    
+                // Clean up the object URL
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                alert('Failed to download file. Please try again.');
+            } finally {
+                // Hide loader
+                hideLoading();
+            }
+        }
+    
+        function hideLoading() {
+            document.getElementById("PSCDloading-icon").style.display = "none";
+            document.getElementById("PSCDloading-text").style.display = "none";
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            hideLoading(); // Hide loader initially on page load
+            
+        });
+    </script>
+
+    <!-- pagination -->
+     <div id="psc_momPagination">
+        <div>
+            <div class="row">
+                <div class="col-md-10">
+                    {% if PSCmom_data.has_other_pages %}
+                    <ul class="pagination">
+                        {% if PSCmom_data.has_previous %}
+                        <li><a href="?page={{ PSCmom_data.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in PSCmom_data.paginator.page_range %}
+                        {% if PSCmom_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > PSCmom_data.number|add:'-5' and i < PSCmom_data.number|add:'5' %} 
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if PSCmom_data.has_next %}
+                            <li><a href="?page={{ PSCmom_data.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-2" style="padding-left: 8%;">
+                    <span class="current" style="color: #95a4f2">
+                        Page {{ PSCmom_data.number }} of {{ PSCmom_data.paginator.num_pages }}.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="rows_count"></div>
+    </div>
+     <div id="sac_momPagination">
+        <div>
+            <div class="row">
+                <div class="col-md-10">
+                    {% if SACmom_data.has_other_pages %}
+                    <ul class="pagination">
+                        {% if SACmom_data.has_previous %}
+                        <li><a href="?page={{ SACmom_data.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in SACmom_data.paginator.page_range %}
+                        {% if SACmom_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > SACmom_data.number|add:'-5' and i < SACmom_data.number|add:'5' %} 
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if SACmom_data.has_next %}
+                            <li><a href="?page={{ SACmom_data.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-2" style="padding-left: 8%;">
+                    <span class="current" style="color: #95a4f2">
+                        Page {{ SACmom_data.number }} of {{ SACmom_data.paginator.num_pages }}.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="rows_count"></div>
+    </div>
+</div>
+
+<!-- modal to enter data of addPSCMOMmodal facility -->
+<div class="modal fade" id="addPSCMOMmodal" role="dialog">
+    <div class="modal-dialog" style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2" >
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>Generate PSC MOM</strong></h3>
+                    <div class="col-md-12">
+                        <div class="row">
+                            
+                            <!-- <div class="col-md-6">
+                                <label for="psc_meeting_id">Meeting ID<span style="color: red">*</span></label>
+                                <input readonly name="psc_meeting_id" id="psc_meeting_id" type="text" class="form-control">
+                            </div> -->
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row mt-3">
+                                    <div class="row">
+                                        <div class="col-md-12" id="mom_members_div">
+                                            <form action="" method="POST" id="mom_members_form" class="form-inline">
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <label for="psc_meeting_date">Meeting Date<span style="color: red">*</span></label>
+                                                        <input name="psc_meeting_date" onkeydown="return false" id="psc_meeting_date" required type="text" placeholder="dd-mm-yyyy" class="flp form-control">
+                                                    </div>
+                                                    <div class="col-md-4" style="padding-left: 2px;">
+                                                        <label for="psc_mom_type">MOM Type<span style="color: red">*</span></label>
+                                                        <select class="form-control" required autocomplete="off" name="psc_mom_type" id="psc_mom_type">
+                                                            <option value=""  selected hidden>Choose Options</option>
+                                                            <option value="PSC1">PSC1</option>
+                                                            <option value="PSC2">PSC2</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3 mt-3">
+                                                        <input type="text" placeholder="Staff NO" id="staff_no1" name="staff_no1"
+                                                            autocomplete="off" value=""  style="margin-left: 10%;" class="form-control mt-1">
+                                                    </div>
+                                                    <div class="col-md-1 mt-3">
+                                                        <a style="cursor: pointer;" id="psc_mom_members_btn"
+                                                            title="Add Employee Data" class="btn button no-loader btn-primary mt-1"
+                                                             onclick="openEmpDataModal(this.id)"
+                                                            ><i class="fa fa-search"></i>
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body" >
+                        <div class="row">
+                            <table class="table table-striped table-hover custom-margin pb-3" id="psc_emp_api_table"
+                                style="border:1px solid;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Staff No.</th>
+                                        <th>Name</th>
+                                        <th>Designation</th>
+                                        <th>Dept & Work Class</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add_data" type="button" data-dismiss="modal"
+                onclick="senddatatobackend('psc')" class="btn btn-primary">Submit</i>
+                </button>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editMOMmodal" role="dialog">
+    <div class="modal-dialog" style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2" >
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>Edit MOM</strong></h3>
+                    <div class="col-md-12">
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" name="" id="edit_mom_id" hidden>
+                                <label for="meeting_date">Meeting Date<span style="color: red">*</span></label>
+                                <input name="meeting_date" value="{{data.mom_date|date:'Y-m-d'}}" readonly  id="meeting_date"  type="date" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="meeting_id">Meeting ID<span style="color: red">*</span></label>
+                                <input readonly name="meeting_id" readonly id="meeting_id" value="{{data.meeting_id}}" type="text" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="momGenerationDate">Meeting Generation Date<span style="color: red">*</span></label>
+                                <input readonly name="momGenerationDate" readonly id="momGenerationDate" value="{{data.mom_creation_date|date:'Y-m-d'}}" type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row mt-3">
+                                    <div class="row">
+                                        <div class="col-md-8" id="mom_members_div">
+                                            <form action="" method="POST" id="mom_members_form" class="form-inline">
+                                                {% csrf_token %}
+                                                <div class="row">
+
+                                                    <div class="col-md-7">
+                                                        <input type="text" placeholder="Staff NO" id="staff_edit" name="staff_edit"
+                                                            autocomplete="off" value="" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-3">
+
+                                                        <a style="cursor: pointer;" id="edit_mom_members_btn"
+                                                            title="Add Employee Data" class="btn no-loader btn-primary"
+                                                             onclick="openEmpDataModal(this.id)"
+                                                            ><i class="fa fa-search"></i>
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body mt-2">
+                        <div class="row">
+                            <table class="table table-striped table-hover custom-margin pb-3" id="edit_api_table"
+                                style="border:1px solid;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Staff No.</th>
+                                        <th>Name</th>
+                                        <th>Designation</th>
+                                        <th>Dept & Work Class</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tr>
+                                        
+                                    </tr>
+                                </tbody>
+                                
+                            </table>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add_data" type="button" data-dismiss="modal"
+                onclick="editdatatobackend()" class="btn btn-primary">Submit</i>
+                </button>
+                <button type="button" id="cancelbutton12" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal to enter data of addPSCMOMmodal facility -->
+<div class="modal fade" id="addSACMOMmodal" role="dialog">
+    <div class="modal-dialog" style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <div class="modal-body mt-2" >
+                <div class="row">
+                    <h3 class="text-center text-dark col-12"> <strong>Generate SAC MOM</strong></h3>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                              
+                            </div>
+                            <!-- <div class="col-md-6">
+                                <label for="sac_meeting_id">Meeting ID<span style="color: red">*</span></label>
+                                <input readonly name="sac_meeting_id" id="sac_meeting_id" type="text" class="form-control">
+                            </div> -->
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row mt-3">
+                                    <div class="row">
+                                        <div class="col-md-12" id="mom_members_div">
+                                            <form action="" method="POST" id="mom_members_form" class="form-inline">
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-md-6" style="padding-right: 200px;">
+                                                        <label for="sac_meeting_date">Meeting Date<span style="color: red">*</span></label>
+                                                        <input name="sac_meeting_date" id="sac_meeting_date" type="text"  oninput="checkMeetingIdForMonth(this,'sac');" placeholder="dd-mm-yyyy"  class="flp form-control">
+                                                    </div>
+                                                    <div class="col-md-5 mt-3" style="padding-left: 200px;">
+                                                        <input type="text" placeholder="Staff NO" id="staff_no2" name="staff_no2"
+                                                        autocomplete="off" value="" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-1 mt-3">
+                                                        <a style="cursor: pointer;" id="sac_mom_members_btn"
+                                                        title="Add Employee Data" class="btn no-loader btn-primary"
+                                                         onclick="openEmpDataModal(this.id)"
+                                                        ><i class="fa fa-search"></i>
+                                                        </a>
+                                                    </div>
+
+                                                </div>
+                                                
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body mt-2">
+                        <div class="row">
+                            <table class="table table-striped table-hover custom-margin pb-3" id="sac_emp_api_table"
+                                style="border:1px solid;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Staff No.</th>
+                                        <th>Name</th>
+                                        <th>Designation</th>
+                                        <th>Dept & Work Class</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add_data" type="button" data-dismiss="modal"
+                onclick="senddatatobackend('sac')" class="btn btn-primary">Submit</i>
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal to enter data of Details of securities and value -->
+<div class="modal fade" id="emp_datamodal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emp_datamodalLabel">Add Employee</h5>
+            </div>
+            <div class="modal-body mt-2">
+                <div class="row">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="staff_no">Staff NO<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="staff_no" name="staff_no">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sol_id">Sol Id<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="sol_id" name="sol_id">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label for="staff_name">Staff Name<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="staff_name" name="staff_name">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label for="designation">Designation<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="designation" name="designation">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label for="role">Work Class<span style="color: red">*</span></label>
+                            <input readonly type="text" class="form-control" id="role" name="role">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="staffdata_submitbtn" type="button" data-dismiss="modal"
+                onclick="api_emp_data(clickedButtonId)" class="btn btn-primary"><i class="fa fa-plus"></i>
+                </button>
+                <button id="emplookupClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<form id="psc_mom_modal" method='POST' action="">
+    <div class="modal fade" id="mom_export" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectremarksLabel1">PSC Export</h5>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row modal_data">
+                        <div class="form-group col-sm-6 zone" id="zone">
+                            <label for="psc_zone_export">Region<span style="color: red">*</span></label>
+                            <select class="form-control" required autocomplete="off" name="psc_zone_export" id="psc_zone_export">
+                                <option value=""  selected hidden>Choose Options</option>
+                                <option value="all">All</option>
+                                {% for region in region_data_psc %}
+                                <option value="{{region.region_name}}">{{region.region_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-sm-6 branch" id="status">
+                            <label for="psc_review_status_export">Review Status <span style="color: red">*</span></label>
+                            <select class="form-control" required autocomplete="off" name="psc_review_status_export" id="psc_review_status_export">
+                                <option value=""  selected hidden>Choose Options</option>
+                                <option value="all">All</option>
+                                <option value="Submitted">Submitted</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mt-2" style="float:right">
+                        <button id="pscexport_button" type="submit" value="rejected"
+                            class="btn btn-primary  ml-2">Submit</button>
+    
+                        <button type="button" class="btn btn-outline-secondary ml-2" id="cancelbutton1"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+        if (window.history.replaceState) {
+  window.history.replaceState(null, null, window.location.href);
+}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('a').forEach(function(links){
+            links.addEventListener('click', function(e){
+                if(links.classList.contains('no-loader')){
+                    var loader = document.getElementById('loader');
+                    if (loader) loader.style.display = 'none';
+                    return;  
+                }
+                var loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'block'
+            });
+        });
+    });
+</script>
+{% if 'sac001checker3' in roles or 'psc001checker3' in roles  %}
+<script>
+
+            function toggleTable(tableId) {
+        var pscTable = document.getElementById('PSC_MOM_Table');
+        var sacTable = document.getElementById('SAC_MOM_Table');
+        var pscsearch = document.getElementById('psc_search')
+        var sacsearch = document.getElementById('sac_search')
+        var pscaddmom = document.getElementById('psc_add_mom')
+        var sacaddmom = document.getElementById('sac_add_mom')
+        var pscpagination = document.getElementById('psc_momPagination')
+        var sacpagination = document.getElementById('sac_momPagination')
+        if (tableId === 'PSC_MOM_Table') {
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscaddmom.style.display = 'block';           
+            sacaddmom.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+            // Store the current state in local storage
+            localStorage.setItem('selectedTable', 'psc');
+        } else if (tableId === 'SAC_MOM_Table') {
+            pscTable.style.display = 'none';
+            sacTable.style.display = 'table';
+            pscsearch.style.display = 'none';
+            sacsearch.style.display = 'block';
+            pscaddmom.style.display = 'none';           
+            sacaddmom.style.display = 'block';
+            pscpagination.style.display = 'none';
+            sacpagination.style.display = 'block';
+            localStorage.setItem('selectedTable', 'sac');
+        } else{
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+        }
+    }
+
+    // Function to retrieve the selected table from local storage
+    function retrieveSelectedTable() {
+        var selectedTable = localStorage.getItem('selectedTable');
+            
+        if (selectedTable === 'psc') {
+            toggleTable('PSC_MOM_Table');
+            $('#psc_radio').prop('checked', true);
+            
+        } else if (selectedTable === 'sac') {
+            toggleTable('SAC_MOM_Table');
+            $('#sac_radio').prop('checked', true);
+        } else{
+            toggleTable('PSC_MOM_Table');
+            $('#psc_radio').prop('checked', true);
+        }
+    }
+
+    // Call the function to retrieve the selected table on page load
+    window.onload = retrieveSelectedTable;
+  </script>
+{% elif 'momconvener' in roles %}
+<script>
+    // Function to toggle between PSC and SAC tables
+    function toggleTable(tableId) {
+        var pscTable = document.getElementById('PSC_MOM_Table');
+        var sacTable = document.getElementById('SAC_MOM_Table');
+        var pscsearch = document.getElementById('psc_search')
+        var sacsearch = document.getElementById('sac_search')
+        var pscpagination = document.getElementById('psc_momPagination')
+        var sacpagination = document.getElementById('sac_momPagination')
+        if (tableId === 'PSC_MOM_Table') {
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+            // Store the current state in local storage
+            localStorage.setItem('selectedTable', 'psc');
+        } else if (tableId === 'SAC_MOM_Table') {
+            pscTable.style.display = 'none';
+            sacTable.style.display = 'table';
+            pscsearch.style.display = 'none';
+            sacsearch.style.display = 'block';
+            pscpagination.style.display = 'none';
+            sacpagination.style.display = 'block';
+            localStorage.setItem('selectedTable', 'sac');
+        } else{
+            pscTable.style.display = 'table';
+            sacTable.style.display = 'none';
+            pscsearch.style.display = 'block';
+            sacsearch.style.display = 'none';
+            pscpagination.style.display = 'block';
+            sacpagination.style.display = 'none';
+            
+        }
+    }
+
+    // Function to retrieve the selected table from local storage
+    function retrieveSelectedTable() {
+        var selectedTable = localStorage.getItem('selectedTable');
+            
+        if (selectedTable === 'psc') {
+            toggleTable('PSC_MOM_Table');
+            $('#psc_radio').prop('checked', true);
+            
+        } else if (selectedTable === 'sac') {
+            toggleTable('SAC_MOM_Table');
+            $('#sac_radio').prop('checked', true);
+        } else{
+            toggleTable('PSC_MOM_Table');
+            $('#psc_radio').prop('checked', true);
+        }
+    }
+
+    // Call the function to retrieve the selected table on page load
+    window.onload = retrieveSelectedTable;
+</script>
+{% endif %}
+
+<script type="text/javascript" src="{% static '/js/js/validations.js' %}"></script>
+<script>
+function setMinDateForDateInputs() {
+    var currentDate = new Date().toISOString().split('T')[0];
+    var dateFields = document.querySelectorAll('input[type="date"]');
+    dateFields.forEach(function (field) {
+        field.setAttribute('min', currentDate);
+    });
+}
+setMinDateForDateInputs();
+</script>
+
+<script>
+    function reloadPage() {
+        location.reload();
+    }
+function openModal(p_data_id) {
+    let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+        url:  '{% url "get_mom_data" %}', // URL to your Django view
+        method: 'POST',
+        headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+        data: {
+            p_data_id: p_data_id
+        },
+        success: function(response) {
+            // Populate the modal with the MOM data returned in the response
+            response_id = response.mom_edit[0]['id']
+            response_meeting_id = response.mom_edit[0]['meeting_id']
+            response_mom_creation_date = response.mom_edit[0]['mom_creation_date__date']
+            response_mom_date = response.mom_edit[0]['mom_date__date']
+            response_audience = response.mom_edit[0]['audience']
+            // console.log(response);
+            // console.log(response.mom_edit);
+            // console.log(data_response);
+            $('#editMOMmodal').modal('show');
+            $(document).on('click', function (e) {
+            if ($(e.target).hasClass('modal')) {
+                reloadPage();
+            }
+        });
+            $('#meeting_date').val(response_mom_date)
+            $('#meeting_id').val(response_meeting_id)
+            $('#momGenerationDate').val(response_mom_creation_date)
+            $('#edit_mom_id').val(response_id)
+            // Example: $('#modal-body').html(response);
+            // Get reference to the table body
+            const tbody = document.querySelector('#edit_api_table tbody');
+
+            // Loop through the response data
+            response_audience.forEach(data => {
+                // Create a new table row
+                const newRow = document.createElement('tr');
+                var empApiTable = document.getElementById('edit_api_table');
+                var tbody = empApiTable.getElementsByTagName('tbody')[0];
+                rowCount_sd = tbody.rows.length;
+                // Populate the row with data
+               
+                newRow.innerHTML = `
+                    <td id="sd_staff_no-` + rowCount_sd + `"> ${data.staffNo} </td>
+                    <td style="white-space: nowrap;" id="sd_staff_name-` + rowCount_sd + `"> ${data.staffName}</td>
+                    <td id="sd_designation-` + rowCount_sd + `"> ${data.designation}</td>
+                    <td id="sd_role-` + rowCount_sd + `"> ${data.role}</td>
+                    <td width="5%" style="text-align: center;">
+                        <a href="#" class="delete-row" data-row="${rowCount_sd}" onclick="deletesv_Row(this)">
+                            <span style="font-weight: 900; font-size: 20px;">-</span>
+                        </a>
+                    </td>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+                `;
+
+                // Append the row to the table body
+                tbody.appendChild(newRow);
+            });
+        },
+        error: function(xhr, errmsg, err) {
+            console.log(errmsg);
+        }
+    });
+}
+
+
+
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('editMOMmodal').style.display = "none";
+    }
+</script>
+
+<script>
+function setMaxDateForDateInputs_month(id) {
+    var currentDate = new Date();
+    var nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
+    var nextMonthLastDay = nextMonth.toISOString().split('T')[0];
+    var dateFields = document.getElementById(id);
+    dateFields.setAttribute('max', nextMonthLastDay);
+    
+}
+
+// setMaxDateForDateInputs_month('psc_meeting_date');
+// setMaxDateForDateInputs_month('sac_meeting_date');
+
+    function checkMeetingIdForMonth(date,type) {
+    var selectedDate = date.value
+    var dateComponents = selectedDate.split('-');
+    var selectedDate = dateComponents[2] + '-' + dateComponents[1] + '-' + dateComponents[0];
+    // var selectedMonth = selectedDate.split('-')[1] + '/' + selectedDate.split('-')[2]; // Extract month/year from selected date
+    if(type=='psc'){
+        var tableRows = document.querySelectorAll("#PSC_MOM_Table tbody tr");
+        tableRows.forEach(function(row) {
+            var momDate = row.cells[2].innerText; // Get MOM date from table
+            
+            // var momMonth = momDate.split('-')[1] + '/' + momDate.split('-')[2]; // Extract month/year from MOM date
+            
+
+            if (momDate === selectedDate) {
+                // var meetingId = row.cells[0].innerText;
+                alert("MOM has been generated for the selected date already. Please choose a different date.");
+                date.value = ''
+            }
+            
+        });
+    } else if(type == "sac"){
+        var tableRows = document.querySelectorAll("#SAC_MOM_Table tbody tr");
+        tableRows.forEach(function(row) {
+            // console.log(row);
+
+            var momDate = row.cells[2].innerText; // Get MOM date from table
+            var mom_active = row.cells[4].innerText;
+            
+            var momMonth = momDate.split('-')[1] + '/' + momDate.split('-')[2]; // Extract month/year from MOM date
+            // console.log(selectedDate,momDate,momMonth,selectedMonth);
+        // preventDefault()
+
+        if (mom_active == 'True' && momDate === selectedDate) {
+                // var meetingId = row.cells[0].innerText;
+                alert("MOM has been generated for the selected date already. Please choose a different date.");
+                date.value = ''
+            }
+            
+        });
+    }
+
+   
+}
+
+</script>
+<!-- meeting id auto generate -->
+<script>
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     var meetingDateInput = document.getElementById('psc_meeting_date');
+    //     var meetingIdInput = document.getElementById('psc_meeting_id');
+
+    //     meetingDateInput.addEventListener('change', function() {
+    //         var selectedDate = new Date(this.value);
+    //         if (!isNaN(selectedDate.getTime())) {
+    //             i=0;
+    //             var formattedMeetingId = ((i+1)+'/' +selectedDate.getMonth() + 1).toString().padStart(2, '0') + '/' + selectedDate.getFullYear().toString() + '-' + (selectedDate.getFullYear() + 1).toString().substring(2);
+    //             meetingIdInput.value = formattedMeetingId;
+    //         }
+    //     });
+    // });
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     var meetingDateInput = document.getElementById('sac_meeting_date');
+    //     var meetingIdInput = document.getElementById('sac_meeting_id');
+
+    //     meetingDateInput.addEventListener('change', function() {
+    //         var selectedDate = new Date(this.value);
+    //         if (!isNaN(selectedDate.getTime())) {
+    //             var formattedMeetingId = (selectedDate.getMonth() + 1).toString().padStart(2, '0') + '/' + selectedDate.getFullYear().toString() + '-' + (selectedDate.getFullYear() + 1).toString().substring(2);
+    //             meetingIdInput.value = formattedMeetingId;
+    //         }
+    //     });
+    // });
+    function openEmpDataModal(buttonId) {
+        clickedButtonId = buttonId;
+    }
+</script>
+
+<!-- fetch emp api data -->
+<script>
+    $(document).ready(function () {
+     
+        $('#psc_mom_members_btn').click(function (event) {
+            event.preventDefault();
+            console.log('data stack error');
+            let staff_no1 = document.getElementById("staff_no1").value.trim();
+            let isDuplicate = false;
+            
+            // Loop through table rows to check for duplicate staff_no1
+            $('#psc_emp_api_table tbody tr').each(function () {
+                let existingStaffNo = $(this).find('td:first').text().trim();
+                //console.log('existingStaffNo,staff_no1',existingStaffNo,staff_no1);
+                if (existingStaffNo === staff_no1.substring(1)) {
+                    isDuplicate = true;
+                    return false;  // Exit loop if duplicate is found
+                }
+            });
+
+            if (isDuplicate) {
+                // Display error message
+                alert('Staff No. ' + staff_no1 + ' already exists.');
+                return;  // Prevent further execution if duplicate is found
+                document.getElementById("staff_no1").value = '';
+
+            } else {
+                // Proceed with adding new employee data if no duplicate is found
+                fetchEmployeeData('input[name="staff_no1"]');
+            }
+        });
+
+        $('#sac_mom_members_btn').click(function (event) {
+            event.preventDefault();
+            
+            let staff_no2 = document.getElementById("staff_no2").value.trim();
+            let isDuplicate = false;
+            
+            // Loop through table rows to check for duplicate staff_no1
+            $('#sac_emp_api_table tbody tr').each(function () {
+                let existingStaffNo = $(this).find('td:first').text().trim();
+                //console.log('existingStaffNo,staff_no1',existingStaffNo,staff_no2);
+
+                if (existingStaffNo === staff_no2.substring(1)) {
+                    isDuplicate = true;
+                    return false;  // Exit loop if duplicate is found
+                }
+            });
+
+            if (isDuplicate) {
+                // Display error message
+                alert('Staff No. ' + staff_no2 + ' already exists.');
+                return;  // Prevent further execution if duplicate is found
+                document.getElementById("staff_no2").value = '';
+
+            } else {
+                // Proceed with adding new employee data if no duplicate is found
+                fetchEmployeeData('input[name="staff_no2"]');
+            }
+        });
+        
+        $('#edit_mom_members_btn').click(function (event) {
+            event.preventDefault();
+            
+            let staff_edit = document.getElementById("staff_edit").value.trim();
+            let isDuplicate = false;
+            
+            // Loop through table rows to check for duplicate staff_no1
+            $('#edit_api_table tbody tr').each(function () {
+                let existingStaffNo = $(this).find('td:first').text().trim();
+                if (existingStaffNo === staff_edit.substring(1)) {
+                    isDuplicate = true;
+                    return false;  // Exit loop if duplicate is found
+                }
+            });
+            if (isDuplicate) {
+                // Display error message
+                alert('Staff No. ' + staff_edit + ' already exists.');
+                return;  // Prevent further execution if duplicate is found
+                document.getElementById("staff_edit").value = '';
+            } else {
+                // Proceed with adding new employee data if no duplicate is found
+                fetchEmployeeData('input[name="staff_edit"]');
+            }
+        });
+    });
+    function fetchEmployeeData(staffNoSelector) {
+    var staffNo = $(staffNoSelector).val();
+
+    $.ajax({
+        type: 'POST',
+        url: '{% url "fetch_employee_data" %}',
+        data: {
+            'staff_no': staffNo,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function (data) {
+            if (data.error) {
+                // //console.log(data.error);
+            } else {
+                // console.log('data');
+                $('#staff_no').val(data.empId);
+                $('#sol_id').val(data.solId);
+                $('#staff_name').val(data.empName);
+                $('#designation').val(data.refDesc);
+                $('#role').val(data.workclass);
+                $('#emp_datamodal').modal('show'); // Only show the modal if the data is successfully fetched
+            }
+        },
+        error: function (xhr, errmsg, err) {
+            // console.log(xhr.status);
+            if(xhr.status == '400'){
+                alert('Please Enter Staff No')
+            } else if(xhr.status == '404'){
+                alert('Employee Data Not Found')
+            }
+            
+            // console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+}
+  
+    function api_emp_data(destiny) {
+        // console.log('destiny',destiny);
+        let staff_no = document.getElementById("staff_no").value;
+        let sol_id = document.getElementById("sol_id").value;
+        let staff_name = document.getElementById("staff_name").value;
+        let designation = document.getElementById("designation").value;
+        let role = document.getElementById("role").value;
+        if (destiny == 'psc_mom_members_btn') {
+            $('#emp_datamodal').modal('hide'); 
+            let staffdata_table = document.getElementById("psc_emp_api_table");
+            let rowCount_sd = staffdata_table.rows.length;
+            // console.log(rowCount_sd);
+            $('#psc_emp_api_table tbody').append(
+                `
+                <tr>
+                <td id="sd_staff_no-` + rowCount_sd + `">` + staff_no + `</td>
+                <td style="white-space: nowrap;" id="sd_staff_name-` + rowCount_sd + `">` + staff_name + `</td>
+                <td id="sd_designation-` + rowCount_sd + `">` + designation + `</td>
+                <td id="sd_role-` + rowCount_sd + `">` + role + `</td>
+                </tr>
+                `
+
+            );
+            document.getElementById("staff_no").value = '';
+            document.getElementById("sol_id").value = '';
+            document.getElementById("staff_name").value = '';
+            document.getElementById("designation").value = '';
+            document.getElementById("role").value = '';
+            // document.getElementsByClassName("staff_no1").value = '';
+            document.getElementById("staff_no1").value = '';
+            } else if(destiny == 'sac_mom_members_btn') {
+                $('#emp_datamodal').modal('hide'); 
+                let staffdata_table = document.getElementById("sac_emp_api_table");
+                let rowCount_sd = staffdata_table.rows.length;
+                // console.log(rowCount_sd);
+                $('#sac_emp_api_table tbody').append(
+                    `<tr>
+                    <td id="sd_staff_no-` + rowCount_sd + `">` + staff_no + `</td>
+                    <td style="white-space: nowrap;" id="sd_staff_name-` + rowCount_sd + `">` + staff_name + `</td>
+                    <td id="sd_designation-` + rowCount_sd + `">` + designation + `</td>
+                    <td id="sd_role-` + rowCount_sd + `">` + role + `</td>
+                    </tr>`
+
+                );
+                document.getElementById("staff_no").value = '';
+                document.getElementById("sol_id").value = '';
+                document.getElementById("staff_name").value = '';
+                document.getElementById("designation").value = '';
+                document.getElementById("role").value = '';
+                document.getElementById("staff_no2").value = '';
+
+            } else if(destiny == 'edit_mom_members_btn'){
+                $('#emp_datamodal').modal('hide'); 
+                var empApiTable = document.getElementById('edit_api_table');
+                var tbody = empApiTable.getElementsByTagName('tbody')[0];
+                var rowCount_sd = tbody.rows.length;
+                // console.log(rowCount_sd);
+                $('#edit_api_table tbody').append(
+                    `<tr>
+                    <td id="sd_staff_no-` + rowCount_sd + `">` + staff_no + `</td>
+                    <td style="white-space: nowrap;" id="sd_staff_name-` + rowCount_sd + `">` + staff_name + `</td>
+                    <td id="sd_designation-` + rowCount_sd + `">` + designation + `</td>
+                    <td id="sd_role-` + rowCount_sd + `">` + role + `</td>
+                    <td width="5%" style="text-align: center;">
+                    <a href="#" class="delete-row" data-row="${rowCount_sd}" onclick="deletesv_Row(this)">
+                        <span style="font-weight: 900; font-size: 20px;">-</span>
+                    </a>
+                    </td>
+                    </tr>`
+
+                );
+                document.getElementById("staff_no").value = '';
+                document.getElementById("sol_id").value = '';
+                document.getElementById("staff_name").value = '';
+                document.getElementById("designation").value = '';
+                document.getElementById("role").value = '';
+                document.getElementById("staff_edit").value = '';
+
+            }
+        }
+
+
+        function deletesv_Row(button) {
+        // Get the row containing the button
+        var row = button.parentNode.parentNode;
+
+        // Get the table
+        var table = document.getElementById("edit_api_table");
+
+        // Find the index of the row
+        var rowIndex = row.rowIndex;
+
+        // Remove the row from the table
+        table.deleteRow(rowIndex);
+    }
+</script>
+
+<!-- format data & send mom data to backend -->
+<script>
+    function formatDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // Month is zero-based, so we add 1
+        var year = date.getFullYear();
+
+        day = String(day).padStart(2, '0');
+        month = String(month).padStart(2, '0');
+
+        return `${day}-${month}-${year}`;
+    }
+        
+
+    function senddatatobackend1(rev_type) {
+            if(rev_type == 'PSC1' || rev_type == 'PSC2'){
+                // var meetingId = document.getElementById('psc_meeting_id').value;
+                var momGenerationDate = new Date().toISOString(); // Get current date as MOM generation date
+                var momDate = document.getElementById('psc_meeting_date').value;
+                var psc_mom_type = document.getElementById('psc_mom_type').value;
+                var empApiTable = document.getElementById('psc_emp_api_table');
+
+            }else if (rev_type == 'sac'){
+                // var meetingId = document.getElementById('sac_meeting_id').value;
+                var momGenerationDate = new Date().toISOString(); // Get current date as MOM generation date
+                var momDate = document.getElementById('sac_meeting_date').value;
+                var psc_mom_type = 'sac'
+                var empApiTable = document.getElementById('sac_emp_api_table');
+            }
+                
+                var momGenerationDate = formatDate(new Date(momGenerationDate));
+                var momDate = formatDate(new Date(momDate));
+                var tbody = empApiTable.getElementsByTagName('tbody')[0];
+
+                var psc_audience_datajson = []; // Initialize an array to store all the data
+
+                for (var i = 0; i < tbody.rows.length; i++) {
+                    var row = tbody.rows[i];
+                    var slno = i + 1; // Adjusting index to start from 1
+                    var staffNo = row.cells[0].innerHTML;
+                    var staffName = row.cells[1].innerHTML;
+                    var designation = row.cells[2].innerHTML;
+                    var role = row.cells[3].innerHTML;
+
+                    // Create an object for each row and push it to the array
+                    var rowData = {
+                        'slno': slno,
+                        'staffNo': staffNo,
+                        'staffName': staffName,
+                        'designation': designation,
+                        'role': role
+                    };
+                    psc_audience_datajson.push(rowData);
+                }
+
+                // console.log(rev_type,empApiTable,tbody.rows.length);
+                // console.log(psc_audience_datajson);
+                // preventDefault()
+                let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/screeningcommittee/mom_generate/'+psc_mom_type,
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: {
+                        // 'meetingId' :meetingId,
+                        'momGenerationDate' :momGenerationDate,
+                        'momDate' :momDate,
+                        'mom_type': psc_mom_type,
+                        'mom_recipients': JSON.stringify(psc_audience_datajson),
+                    },
+                    success: function (data) {
+
+                        $('#success').show();
+                        window.location.href = "/screeningcommittee/mom_dashboard";
+                    }
+                });
+            }
+
+            function senddatatobackend(rev_type) {
+    let momGenerationDate = new Date().toISOString(); // Get current date as MOM generation date
+    let momDate, psc_mom_type, empApiTable;
+
+    if (rev_type == 'psc') {
+        momDate = document.getElementById('psc_meeting_date').value;
+        psc_mom_type = document.getElementById('psc_mom_type').value;
+        empApiTable = document.getElementById('psc_emp_api_table');
+            // Check if required fields are entered
+    if (!momDate) {
+        alert("Please enter the meeting date.");
+        return; // Stop execution if field is missing
+    }
+    if (!psc_mom_type) {
+        alert("Please select MOM type.");
+        return; // Stop execution if field is missing
+    }
+    if (!empApiTable || empApiTable.getElementsByTagName('tbody')[0].rows.length === 0) {
+        alert("Employee data table is empty.");
+        return; // Stop execution if table is empty
+    }
+    } else if (rev_type == 'sac') {
+        momDate = document.getElementById('sac_meeting_date').value;
+        psc_mom_type = 'sac';
+        empApiTable = document.getElementById('sac_emp_api_table');
+            // Check if required fields are entered
+    if (!momDate) {
+        alert("Please enter the meeting date.");
+        return; // Stop execution if field is missing
+    }
+    // if (!psc_mom_type) {
+    //     alert("Please select MOM type.");
+    //     return; // Stop execution if field is missing
+    // }
+    if (!empApiTable || empApiTable.getElementsByTagName('tbody')[0].rows.length === 0) {
+        alert("Employee data table is empty.");
+        return; // Stop execution if table is empty
+    }
+    }
+
+
+
+    momGenerationDate = formatDate(new Date(momGenerationDate));
+    momDate = formatDate(new Date(momDate));
+    let tbody = empApiTable.getElementsByTagName('tbody')[0];
+
+    let psc_audience_datajson = []; // Initialize an array to store all the data
+
+    for (let i = 0; i < tbody.rows.length; i++) {
+        let row = tbody.rows[i];
+        let slno = i + 1; // Adjusting index to start from 1
+        let staffNo = row.cells[0].innerHTML;
+        let staffName = row.cells[1].innerHTML;
+        let designation = row.cells[2].innerHTML;
+        let role = row.cells[3].innerHTML;
+
+        // Create an object for each row and push it to the array
+        let rowData = {
+            'slno': slno,
+            'staffNo': staffNo,
+            'staffName': staffName,
+            'designation': designation,
+            'role': role
+        };
+        psc_audience_datajson.push(rowData);
+    }
+
+    let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    $.ajax({
+        type: 'POST',
+        url: '/screeningcommittee/mom_generate/' + psc_mom_type,
+        headers: {
+            "X-CSRFToken": csrftoken
+        },
+        data: {
+            'momGenerationDate': momGenerationDate,
+            'momDate': momDate,
+            'mom_type': psc_mom_type,
+            'mom_recipients': JSON.stringify(psc_audience_datajson),
+        },
+        success: function (data) {
+            $('#success').show();
+            window.location.href = "/screeningcommittee/mom_dashboard";
+        }
+    });
+}
+
+    
+    function editdatatobackend() {
+    var meetingId = document.getElementById('meeting_id').value;
+        var momGenerationDate = document.getElementById('momGenerationDate').value;
+        var momDate = document.getElementById('meeting_date').value;
+        var id = document.getElementById('edit_mom_id').value;
+        var edit_api_table = document.getElementById('edit_api_table');
+
+        var tbody = edit_api_table.getElementsByTagName('tbody')[0];
+
+        var edit_audience_datajson = []; // Initialize an array to store all the data
+
+        for (var i = 1; i < tbody.rows.length; i++) {
+                    var row = tbody.rows[i];
+                    var slno = i ; // Adjusting index to start from 1
+                    var staffNo = row.cells[0].innerHTML;
+                    var staffName = row.cells[1].innerHTML;
+                    var designation = row.cells[2].innerHTML;
+                    var role = row.cells[3].innerHTML;
+
+                    // Create an object for each row and push it to the array
+                    var rowData = {
+                        'slno': slno,
+                        'staffNo': staffNo,
+                        'staffName': staffName,
+                        'designation': designation,
+                        'role': role
+                    };
+                    edit_audience_datajson.push(rowData);
+                    // console.log(edit_audience_datajson);
+                }
+
+
+    // Here you can do whatever you want with the tableData array, like sending it to a server for saving
+
+    // For demonstration, let's log the table data to the console
+    let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_edit/'+id,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'meetingId' :meetingId,
+                'momGenerationDate' :momGenerationDate,
+                'momDate' :momDate,
+                'mom_recipients': JSON.stringify(edit_audience_datajson),
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_dashboard";
+            }
+        });}
+
+    document.getElementById("cancelbutton12").addEventListener("click", function () {
+        $('#editMOMmodal').modal('hide');
+        window.location.reload();
+    });
+
+    document.getElementById("emplookupClose").addEventListener("click", function () {
+        $('#emp_datamodal').modal('hide');
+        document.getElementById("staff_no1").value = '';
+        document.getElementById("staff_no2").value = '';
+        document.getElementById("staff_edit").value = '';
+        });
+</script>
+
+
+<!-- msg fadeOut -->
+<script>
+    var roles = "{{ roles }}";
+    
+$(document).ready(function () {
+    // setTimeout(function () {
+    //     $('.message').fadeOut('slow');
+    // }, 3000);
+    $('.del-msg').on('click', function () {
+        $('.del-msg').parent().attr('style', 'display:none;');
+    })
+});
+</script>
+
+
+{% endif %}
+{% endwith %}
+{% endblock %}

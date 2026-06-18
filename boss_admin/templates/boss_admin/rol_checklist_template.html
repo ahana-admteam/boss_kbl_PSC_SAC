@@ -1,0 +1,237 @@
+{% include 'boss_admin/base.html' %}
+{% block content %}
+<html>
+    <head>
+        
+        <!-- <title>Jana Small Finanace Bank</title> -->
+        <title>Bank Project</title>
+        <style>
+            .title1{
+                justify-content: center;
+                font-family: 'Dancing Script', cursive;
+                text-shadow: 2px 2px 7px red;
+                font-style:italic;
+                text-align: center;
+                font-weight:bold;
+                font-size: 35px;
+
+            }
+            td{
+                padding: 5px;
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            table{
+                table-layout:unset;
+                padding-top:30px;
+                padding: 5px 5px;
+                border-radius: 10px;
+                border-collapse: collapse;
+            }
+            th{
+                height: 50px;
+                border: 1px solid black;
+                border-collapse: collapse;
+            } 
+            th {
+                background-color: #7e5a8f;
+                color: #ffffff;
+                font-size: 15px;
+                text-align: center;
+                
+                padding: 1rem;
+                
+                text-transform: uppercase;
+            } 
+        </style>
+    </head>
+    <body onload="header()"> 
+    
+        <br>
+        <div style="width: 98%;justify-content: center;margin:20px 10px;">
+        <div style="padding-top: 81px;text-align: center;" ><span id='title' class="title1" ></span></div>
+            <form action='' method="post">
+                {% csrf_token %}
+        <div id="metaData" style="padding-top:10px;"></div>
+        <div id="showTable" class="showTable" style="margin-top: -18px;"></div>
+        <div style="display: flex;justify-content: center;align-items: center; height: 100px;"><input type="submit" style="background-color: lightgreen;"  value="Submit Data" /></div>
+            </form>
+        </div>
+    
+    </body>  
+
+
+<script>
+    function PrimaryTable(array){
+        var table = document.createElement("table");
+        table.className = "table shadow";
+        var col = Object.keys(array[0]); 
+        var tr = table.insertRow(-1);
+        col.forEach(function(key){
+            var th = document.createElement("th");  
+            th.textContent = key;
+            tr.appendChild(th);
+        });
+
+    array.forEach(function(obj){
+        var data_row = table.insertRow(-1);
+        col.forEach(function(key){
+            var tabCell = data_row.insertCell(-1);
+            var div = document.createElement("input");
+            div.textContent = obj[key];
+            div.style.outline = 'None';
+            div.style.border= 'None';
+            div.style.justifyContent = 'center'
+            div.style.height = '20px'
+            div.maxlength = "30";
+            div.name = key;
+            div.className = "form-control";
+            div.autocomplete = "off";
+            tabCell.appendChild(div)
+            })
+        })
+
+
+    var divContainer = document.getElementById("metaData");
+    divContainer.innerHTML = "";
+    divContainer.appendChild(table);
+
+}
+
+
+    function SecondaryTable(array){
+        var table = document.createElement("table");
+        table.className = "table shadow";
+        //create header columns
+        var col = Object.keys(array[0]); //array of keys
+        //write keys onto the header cell
+        var tr = table.insertRow(-1);
+        col.forEach(function(key){
+            var th = document.createElement("th");  
+            th.textContent = key;
+            tr.appendChild(th);
+        });
+
+    //create rows to hold the rest of the data
+    array.forEach(function(obj){
+        //for each obj in the main array, create a row
+        var data_row = table.insertRow(-1);
+        //for each header in the col array, populate data
+        
+        col.forEach(function(key){
+            var tabCell = data_row.insertCell(-1);
+            if (key==="Methods"){
+                obj["Methods"]["Method"].forEach(function(e){
+                    var div2 = document.createElement("input");
+                    div2.name = key;
+                    div2.value = e["id"];
+                    div2.hidden = "true";
+                    var div = document.createElement("div");
+                    div.textContent = e["id"];
+                    div.style.padding = '5px';
+                    tabCell.appendChild(div2);
+                    tabCell.appendChild(div);
+                })
+            }
+            else if(key==="Yes/No"){
+                obj["Yes/No"]["Yes/No"].forEach(function(e){
+                    var div = document.createElement("input");
+                    div.maxLength='3';
+                    div.textContent = e["id"];
+                    {#div.style.outline = 'None';#}
+                    div.style.width = '55px';
+                    {#div.style.border= 'None';#}
+                    div.name = key;
+                    div.className = "form-control";
+                    div.autocomplete = "off";
+                    tabCell.appendChild(div)
+                })
+            }
+            else if(key==="Remarks"){
+                obj["Remarks"]["Remark"].forEach(function(e){
+                    var div = document.createElement("textarea");
+                    div.textContent = e["id"];
+                    div.style.width = '200px';
+                    div.style.height = '100px';
+                    {#div.style.outline = 'None';#}
+                    {#div.style.border= 'None';#}
+                    div.name = key;
+                    div.className = "form-control";
+                    div.autocomplete = "off";
+                    tabCell.appendChild(div)
+                })
+            }
+            else if (Array.isArray(obj[key])){ 
+                obj[key].forEach(function(e){
+                    var div2 = document.createElement("input");
+                    div2.name = key;
+                    div2.value = e["id"];
+                    div2.hidden = "true";
+                    var div = document.createElement("div");
+                    div.textContent =  e.id;
+                    {#div.style.color = "blue";#}
+                    tabCell.appendChild(div2);
+                    tabCell.appendChild(div);
+                })
+            }
+            else{
+                var div = document.createElement("div");
+                    div.textContent =  obj[key];
+                    {#div.style.color = "blue";#}
+                    var div2 = document.createElement("input");
+                    div2.name = key;
+                    div2.value = obj[key];
+                    div2.hidden = "true";
+                    tabCell.appendChild(div2);
+                    tabCell.appendChild(div);
+                {#tabCell.textContent = obj[key];#}
+            }
+                })
+            });
+
+
+    var divContainer = document.getElementById("showTable");
+    divContainer.innerHTML = "";
+    divContainer.appendChild(table);
+
+}
+
+
+var donut = JSON.parse('{{objects|safe}}'); 
+var metadata = JSON.parse('{{objects|safe}}');
+var meta_data = metadata['meta_data']
+
+var new_data = donut['data']
+PrimaryTable(meta_data)
+SecondaryTable(new_data);
+function header(){
+    var title = donut['header']
+    document.getElementById("title").innerHTML=title['title']
+}
+
+function submit(){
+    console.log("testing");
+    {#var string = document.documentElement.innerHTML;#}
+    {#console.log(string);#}
+    {#var myTab = document.getElementById('showTable')#}
+    {#var new__data = $('#showTable').tableToJSON();#}
+    {#console.log(new__data)#}
+    {#console.log(myTab)#}
+    {#var myRows = { myRows: [] };#}
+    {##}
+    {#var $th = $('table th');#}
+    {#$('table tbody tr').each(function(i, tr){#}
+    {#    var obj = {}, $tds = $(tr).find('td');#}
+    {#    $th.each(function(index, th){#}
+    {#        obj[$(th).text()] = $tds.eq(index).text();#}
+    {#    });#}
+    {#    myRows.myRows.push(obj);#}
+    {#});#}
+    {#console.log(JSON.stringify(myRows));#}
+}
+
+
+</script>
+
+</html>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+    <div class="container" style="margin-top: 130px;">
+    <div class="row shadow-lg p-2" style="background-color: black;border-radius: 10px;">
+        <div class="col-md-12">
+        <h3 style="border-bottom: 2px solid white;color: white">All LOGS</h3>
+        </div>
+        <div class="col-md-12 table-responsive mt-2" style="height: 500px">
+        {% for i in data %}
+       <p style="margin-bottom:0;font-size:15px;color:{% if "INFO" in i %}green{% elif "WARNING" in i %}indianred{% elif "CRITICAL" in i %}darkred{% else %}white{% endif %};">
+           <span style="color: white;margin-right: 10px;">=>> </span>{{ i }}</p>
+        {% endfor %}
+        </div>
+    </div>
+    </div>
+{% endblock %}

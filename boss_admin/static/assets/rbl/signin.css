@@ -1,0 +1,66 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f5f5f5;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 550px;
+  padding: 15px;
+  margin: auto;
+background-color: #ffffff;
+-webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+-moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#box_ani{
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.box-anim1 {
+  animation: box-anim1 1.2s ease-out;
+  -moz-animation: box-anim1 1.2s ease-out;
+  -webkit-animation: box-anim1 1.2s ease-out;
+}
+
+@keyframes box-anim1 {
+  from { bottom: 2000px; opacity: 0; visibility: hidden;}
+  to {bottom: 10px; opacity: 1; visibility: visible;}
+}
+@-moz-keyframes box-anim1 {
+  from {bottom: 2000px; opacity: 0; visibility: hidden;}
+  to {bottom: 78px; opacity: 1; visibility: visible;}
+}
+@-webkit-keyframes box-anim1 {
+  from {bottom: 2000px; opacity: 0; visibility: hidden;}
+  to {bottom: 78px; opacity: 1; visibility: visible;}
+}

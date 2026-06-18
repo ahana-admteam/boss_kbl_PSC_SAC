@@ -1,0 +1,108 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+    <style>
+        .admin-link:link {
+            text-decoration: underline;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+        .col-sm-3{
+            padding: 25px;
+        }
+
+        .contianer{
+            padding-top: 100px;
+            display:flex;
+            flex-direction:row;
+            flex-wrap: wrap;
+        }
+    </style>
+
+        <div class="container-fluid" style="margin-top: 100px">
+            <div class="contianer">
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/branch_upload">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Branch Upload</div>
+                                <div class="card-body">
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/employee_upload">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Employee Upload</div>
+                                <div class="card-body">
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/role_2_assign">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Roles Upload</div>
+                                <div class="card-body">
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/escalation_upload">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Upload Escalation Emails</div>
+                                <div class="card-body">
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/assets_upload">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Assets Upload</div>
+                                <div class="card-body">
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/registers_log">
+                            <div class="card text-white bg-success bg-success2 mb-3">
+                                <div class="card-header">Application Logs</div>
+                                <div class="card-body">
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <a name="admin-link" href="/utility/escalation_log">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Cronjob Logs</div>
+                                <div class="card-body">
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+
+                </div>
+                </div>
+
+      
+   
+{% endblock content %}

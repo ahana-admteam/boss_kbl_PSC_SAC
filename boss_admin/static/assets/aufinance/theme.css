@@ -1,0 +1,223 @@
+/* #sidebar {
+  background:#003975;
+}
+
+#sidebar ul li a{
+  color: #fff;
+  border-bottom: 1px solid #003975;
+}
+#sidebar ul li a:hover span{
+  color: white;
+}
+#sidebar ul li a::after, a::before{
+  background: #003975;
+}
+#sidebar ul li.active a{
+  background: #003975;
+  color: white;
+}
+.admin-icon {
+  color: #004C8F;
+  background: #f9f9f9;
+}
+.table-dark tr th{
+background-color:#004C8F !important;
+}
+#sidebar ul ul a:hover span {
+color: white !important;
+}
+.card{
+background-color: #215388;
+}
+.card-title{
+background-color: #215388;
+border: #215388;
+color: white;
+}
+.admin-icon{
+border-radius: 5px;
+color: #fff;
+background-color:#215388;
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 150px;
+  height: 50px;
+  margin-left: -50px;
+}
+.ahana_img{
+  width: 50px;
+  height: 50px;
+  margin-left: 80px;
+}
+.mini_logo{
+  width: 40px;
+  height: 40px;
+}
+#sidebarCollapse{
+  background-color:#003975;
+}
+.sidebar_icon{
+  background-color: #003975;
+}
+.tile1{
+  background-color: #003975;
+}
+.tile1 .admin-icon{
+  background-color: #003975;
+}
+.tile1 .card-title{
+  background-color: #003975;
+}
+.tile2{
+  background-color: #9db9d6;
+}
+.tile2 .admin-icon{
+  background-color: #9db9d6;
+}
+.tile2 .card-title{
+  background-color: #9db9d6;
+}
+.navbar {
+  background-color:#ED1C24 !important;
+}
+.title{
+  color: #fff !important;
+}
+.profile_icon{
+  color: #fff;
+} */
+
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  /* background: #004C8F; */
+  background:#fff2f0!important;
+}
+
+#sidebar ul li a{
+  color: #6d3078;
+  border-bottom: 1px solid #fff2f0;
+}
+#sidebar ul li a:hover span{
+  color: #6d3078;
+}
+#sidebar ul li a::after, a::before{
+  background: #fff;
+}
+#sidebar ul li.active a{
+  background: #fff;
+  color: #6d3078;
+}
+.admin-icon {
+  color: #6d3078;
+  background: #707070;
+}
+.table-dark tr th{
+background-color:#6d3078 !important;
+}
+#sidebar ul ul a:hover span {
+color: black !important;
+}
+.card{
+background-color: #215388;
+}
+.card-title{
+background-color: #215388;
+border: #215388;
+color: black;
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 150px;
+  height: 65px;
+  margin-left: -50px;
+}
+.ahana_img{
+  width: 50px;
+  height: 60px;
+  margin-left: 80px;
+}
+.mini_logo{
+  width: 40px;
+  height: 40px;
+}
+#sidebarCollapse{
+  background-color:#f37435;
+  border-color: #f37435;
+}
+#sidebarCollapse:hover{
+  background-color:#f37435;
+  border-color: #f37435;
+}
+.sidebar_icon{
+  background-color: #f37435;
+}
+.tile1{
+  background-color: #fceeff;
+  /* -webkit-box-shadow:  2px 2px 2px 2px rgba(119, 125, 212, 0.932); */
+  -webkit-box-shadow:  5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+}
+.tile1 .admin-icon{
+  background-color: #fceeff;
+}
+.tile1 .card-title{
+  background-color: #fceeff;
+}
+.tile2{
+  background-color: #fceeff;
+  -webkit-box-shadow:  5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+
+}
+.tile2 .admin-icon{
+  background-color: #fceeff;
+}
+.tile2 .card-title{
+  background-color: #fceeff;
+}
+.navbar {
+  background-color:#fff2f0!important;
+}
+.title{
+  color: #000000 !important;
+}
+.profile_icon{
+  color: #f37435;
+}
+.left_icon{
+  color:#f37435 !important;
+
+}
+.sidebar-header{
+  background-color:#fff;
+}
+.backgroud-highligter{
+  background-color: #fff !important;
+  }
+
+/* .get-list{
+  background-color: #f37435;
+  border-color: #f37435;
+}
+
+.get-list:hover{
+  background-color: #f37435;
+  border-color: #f37435;
+}
+
+.btn-export{
+  background-color: #f37435;
+  border-color: #f37435;
+}
+
+.btn-export:hover{
+  background-color: #f37435;
+  border-color: #f37435;
+} */

@@ -1,0 +1,476 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+<style>
+    .fa-stack[data-count]:after {
+        font-size: 50%;
+        margin-top: -5px;
+        ;
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: transparent;
+        /* Set even row background color to transparent */
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: transparent;
+        /* Set odd row background color to transparent */
+    }
+
+
+    .fa-eye:before {
+        margin-right: 10px;
+    }
+
+    .fa-edit:before {
+        margin-left: 10px;
+    }
+
+    body {
+        font-size: .9rem;
+    }
+
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+    }
+
+    /* textarea.ta-n-control {
+        border: 1px solid black;
+    } */
+
+    .in-control {
+        border: none;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        /* Collapse borders so adjacent cells share borders */
+    }
+
+    table th,
+    table td {
+        border: 1px solid rgb(0, 0, 0);
+        /* Add borders to table cells */
+        /* padding: 8px; */
+        font-weight: bold;
+        /* Add padding to cells for better spacing */
+    }
+
+    #staffaccountability_table tr {
+        background-color: #ffffff;
+    }
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+
+
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+
+    /* .btn-primary{
+            font-size: 85%;
+        } */
+</style>
+<div class="row">
+    <div class="col-md-12 mt-3">
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="message alert alert-success alert-dismissible text-center" role="alert">
+            {{ message }}
+            <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+        </div>
+        {% elif message.tags == 'error' %}
+        <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+            {{ message }}
+            <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+        </div>
+        {% endif %}
+        {% endfor%}
+    </div>
+</div>
+{% if reports_type_data == 'A' %}
+<div class="container-fluid">
+
+    <!-- action button -->
+
+    <form method="post" class="form-inline">
+        {% csrf_token %}
+        <div class="row p-1 pt-2">
+            <div class="col-md-5">
+                <div class="row" style="margin-left: 1%;">
+
+                    <div class="col-md-10" id="sac_search">
+
+                        <div class="row">
+                            <div class="col-md-12" style="padding-right: 0px; padding-left: 0px;">
+                                <div class="input-group row">
+                                    <div class="col-md-5">
+                                        <input type="text" onfocus="(this.type='date')" placeholder="From Date"
+                                            class="form-control" id="from_date" value="" name="from_date">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" onfocus="(this.type='date')" placeholder="To Date"
+                                            class="form-control" id="to_date" name="to_date" value="">
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3" style="padding-left: 5%;">
+                <div class="row">
+                    <div class="btn-group col-sm-4" role="group" aria-label="Basic radio toggle button group">
+                        <input class="btn-check" type="radio" style="width:16px; height:16px; margin-top: 8px;"
+                            value="PSC" name="review_type" required id="psc_radio">
+                        <label class="btn btn-outline-primary" for="psc_radio"
+                            style="font-size: 15px; font-weight: bold;">PSC</label>
+
+
+                        <input class="btn-check" type="radio" style="width:16px; height:16px; margin-top: 8px;"
+                            value="SAC" name="review_type" required id="sac_radio">
+                        <label class="btn btn-outline-primary" for="sac_radio"
+                            style="font-size: 15px; font-weight: bold;">SAC</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2" style="padding-left: 25%;">
+                <div class="col-md-6">
+
+                    <div id="sac_export">
+                        <button class="btnGet btn btn-primary" id="submitExportA" disabled type="button"
+                            value="">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- PSC/SAC table -->
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-hover bg-white" id="tableExcelA">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="max-width: 2%;">Sl No.</th>
+                        <th>Branch Code</th>
+                        <th>Customer ID</th>
+                        <th>Borrower Name</th>
+                        <th>Facility Number</th>
+                        <th>Sanction Limit</th>
+                        <th>Region Name</th>
+                        <th>NPA Date</th>
+                        <th>NPA Tag</th>
+                        <th>Status</th>
+                        <th>Current Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+{% elif reports_type_data == 'C' %}
+<div class="container-fluid">
+    <input type="text" value="{{reports_type_data}}" name="" id="">
+</div>
+{% endif %}
+
+
+
+<!-- pagination -->
+{% comment %} 
+<div id="psc_pagination" style="display: none;">
+    <div>
+        <div class="row">
+            <div class="col-md-11">
+                {% if psc_data.has_other_pages %}
+                <ul class="pagination">
+                    {% if psc_data.has_previous %}
+                    <li><a href="?page={{ psc_data.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+
+                    {% for i in psc_data.paginator.page_range %}
+                    {% if psc_data.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% elif i > psc_data.number|add:'-5' and i < psc_data.number|add:'5' %} <li><a
+                            href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if psc_data.has_next %}
+                        <li><a href="?page={{ psc_data.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="col-md-1">
+                <span class="current" style="color: #8a2895">
+                    Page {{ psc_data.number }} of {{ psc_data.paginator.num_pages }}.
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="rows_count"></div>
+</div>
+<div id="sac_pagination">
+    <div>
+        <div class="row">
+            <div class="col-md-11">
+                {% if sac_data.has_other_pages %}
+                <ul class="pagination">
+                    {% if sac_data.has_previous %}
+                    <li><a href="?page={{ sac_data.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+
+                    {% for i in sac_data.paginator.page_range %}
+                    {% if sac_data.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% elif i > sac_data.number|add:'-5' and i < sac_data.number|add:'5' %} <li><a
+                            href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if sac_data.has_next %}
+                        <li><a href="?page={{ sac_data.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="col-md-1">
+                <span class="current" style="color: #8a2895">
+                    Page {{ sac_data.number }} of {{ sac_data.paginator.num_pages }}.
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="rows_count"></div>
+</div> 
+{% endcomment %}
+
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fromDate = document.getElementById('from_date');
+        const toDate = document.getElementById('to_date');
+        const pscRadio = document.getElementById('psc_radio');
+        const sacRadio = document.getElementById('sac_radio');
+        const submitButton = document.getElementById('submitExportA');
+
+        function validateForm() {
+            const isFromDateFilled = fromDate.value !== '';
+            const isToDateFilled = toDate.value !== '';
+            const isRadioChecked = pscRadio.checked || sacRadio.checked;
+
+            submitButton.disabled = !(isFromDateFilled && isToDateFilled && isRadioChecked);
+        }
+
+        fromDate.addEventListener('change', validateForm);
+        toDate.addEventListener('change', validateForm);
+        pscRadio.addEventListener('change', validateForm);
+        sacRadio.addEventListener('change', validateForm);
+
+        // Initial validation in case the form is pre-filled
+        validateForm();
+    });
+
+
+</script>
+
+
+<script>
+
+    $('#submitExportA').on('click', function (e) {
+        $('#submitExportA').attr('disabled', true);
+        let reports_type = 'A'
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        var from_date = document.getElementById('from_date').value;
+        var to_date = document.getElementById('to_date').value;
+        var review_type = document.querySelector('input[name="review_type"]:checked').value;
+        $.ajax({
+            type: 'POST',
+            url: '/kbl_report/A',
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                "from_date": from_date,
+                "to_date": to_date,
+                "review_type": review_type
+            },
+            success: function (resp) {
+                console.log('resp', resp);
+                var tbody = $('#tableExcelA tbody');
+                tbody.empty();
+                if (resp.psc_data) {
+                    if (resp.psc_data.length === 0) {
+                        var noDataHtml = '<tr><td colspan="11" style="text-align:center;">No data available</td></tr>';
+                        tbody.append(noDataHtml);
+                    } else {
+                        $.each(resp.psc_data, function (index, rowData) {
+                            var rowHtml = '<tr>';
+                            rowHtml += '<td>' + rowData.psc_rec_id + '</td>';
+                            rowHtml += '<td>' + rowData.branch_code + '</td>';
+                            rowHtml += '<td>' + rowData.cust_id + '</td>';
+                            rowHtml += '<td>' + rowData.borrower_name + '</td>';
+                            rowHtml += '<td>' + rowData.facility_num + '</td>';
+                            rowHtml += '<td>' + rowData.sanc_limit + '</td>';
+                            rowHtml += '<td>' + rowData.region_name + '</td>';
+                            rowHtml += '<td>' + formatDate(rowData.npa_date) + '</td>';
+                            rowHtml += '<td>' + rowData.nap_tag + '</td>';
+                            rowHtml += '<td>' + (rowData.status ? rowData.status : 'Yet to start') + '</td>'; // Handle null status
+                            rowHtml += '<td>' + (rowData.current_role ? rowData.current_role : '') + '</td>'; // Handle null current role
+                            rowHtml += '</tr>';
+                            tbody.append(rowHtml);
+                        });
+                        window.location.href = '/download_excel_A'
+                    }
+                } else if (resp.sac_data) {
+                    if (resp.sac_data.length === 0) {
+                        // If no data, display a single row with one cell spanning all columns
+                        var noDataHtml = '<tr><td colspan="11" style="text-align:center;">No data available</td></tr>';
+                        tbody.append(noDataHtml);
+                    } else {
+                        $.each(resp.sac_data, function (index, rowData) {
+                            var rowHtml = '<tr>';
+                            rowHtml += '<td>' + rowData.sac_rec_id + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__branch_code + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__cust_id + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__borrower_name + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__facility_num + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__sanc_limit + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__region_name + '</td>';
+                            rowHtml += '<td>' + formatDate(rowData.psc_rec_id__npa_date) + '</td>';
+                            rowHtml += '<td>' + rowData.psc_rec_id__nap_tag + '</td>';
+                            rowHtml += '<td>' + (rowData.status ? rowData.status : 'Yet to start') + '</td>';
+                            rowHtml += '<td>' + (rowData.current_role ? rowData.current_role : '') + '</td>';
+                            rowHtml += '</tr>';
+                            tbody.append(rowHtml);
+                        });
+                        window.location.href = '/download_excel_A'
+                    }
+                }
+
+                $('#submitExportA').attr('disabled', false);
+            },
+
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText, error, status);
+                $('#submitExportA').attr('disabled', false);
+                // alert('An error occurred: ' + xhr.responseText);
+            }
+        });
+    })
+
+
+    function formatDate(dateString) {
+        var date = new Date(dateString);
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        return (day < 10 ? '0' : '') + day + '-' + (month < 10 ? '0' : '') + month + '-' + year;
+    }
+
+</script>
+
+
+{% endblock %}

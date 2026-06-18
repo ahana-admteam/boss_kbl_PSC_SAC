@@ -1,0 +1,81 @@
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  /* background: #004C8F; */
+  background:#234168;
+}
+
+#sidebar ul li a{
+  color: #fff;
+  border-bottom: 1px solid #47748b;
+}
+#sidebar ul li a:hover span{
+  color: white;
+}
+#sidebar ul li a::after, a::before{
+  background: #7386D5;
+}
+#sidebar ul li.active a{
+  background: #7386D5;
+  color: white;
+}
+.admin-icon {
+  color: #004C8F;
+  background: #f9f9f9;
+}
+.table-dark tr th{
+background-color:#004C8F !important;
+}
+#sidebar ul ul a:hover span {
+color: white !important;
+}
+.card{
+background-color: #234168;
+}
+.card-title{
+background-color: #234168;
+border: #234168;
+color: white;
+}
+.admin-icon{
+border-radius: 5px;
+color: #fff;
+background-color:#234168;
+}
+.card{
+  background-color: #234168;
+}
+.card-title{
+  background-color: #234168;
+  border: #234168;
+  color: white;
+}
+.admin-icon{
+  border-radius: 5px;
+  color: #fff;
+  background-color:#234168;
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 50px;
+  height: 50px;
+  margin-left: 190px;
+  margin-top: -72px;
+}
+.ahana_img{
+  width: 50px;
+  height: 50px;
+  margin-left: 80px;
+}
+.mini_logo{
+  display: none;
+}
+#sidebarCollapse{
+  background-color: #234168;
+}
+thead, tbody, tfoot, tr, td, th {
+  border-color: white;
+  border-style: solid;
+  border-width: 0;
+}

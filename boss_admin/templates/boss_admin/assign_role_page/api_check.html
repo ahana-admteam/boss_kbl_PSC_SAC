@@ -1,0 +1,421 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+
+<style>
+    .fa-stack[data-count]:after {
+        font-size: 50%;
+        margin-top: -5px;
+        ;
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: transparent;
+        /* Set even row background color to transparent */
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: transparent;
+        /* Set odd row background color to transparent */
+    }
+
+
+    .fa-eye:before {
+        margin-right: 10px;
+    }
+
+    .fa-edit:before {
+        margin-left: 10px;
+    }
+
+    body {
+        font-size: .9rem;
+    }
+
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+
+
+    .in-control {
+        border: none;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        /* Collapse borders so adjacent cells share borders */
+    }
+
+    table th,
+    table td {
+        border: 1px solid rgb(0, 0, 0);
+        /* Add borders to table cells */
+        /* padding: 8px; */
+        font-weight: bold;
+        /* Add padding to cells for better spacing */
+    }
+
+    #staffaccountability_table tr {
+        background-color: #ffffff;
+    }
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+
+
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+
+    /* .btn-primary{
+            font-size: 85%;
+        } */
+</style>
+
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+
+    <div class="row pt-1">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-hover bg-white" id="api_check">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Sl. No.</th>
+                            <th>API Name</th>
+                            <th>API Response</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTable">
+                        <tr>
+                            <td>1.</td>
+                            <td>PSC Dashboard API</td>
+                            <td>
+                                <textarea id="DashboardResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
+                                    readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="DashboardSubmit" class="btn btn-primary"
+                                    onclick="openApiDataModal('Dashboard')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Branch API</td>
+                            <td>
+                                <textarea id="BranchResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="BranchSubmit" class="btn btn-primary"
+                                    onclick="fetchApiData('Branch')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td>NPA Status API</td>
+                            <td>
+                                <textarea id="PSCResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="PSCSubmit" class="btn btn-primary"
+                                    onclick="openApiDataModal('PSC')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4.</td>
+                            <td>Employee API</td>
+                            <td>
+                                <textarea id="HUPMINQResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
+                                    readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="HUPMINQSubmit" class="btn btn-primary"
+                                    onclick="openApiDataModal('HUPMINQ')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5.</td>
+                            <td>Customer Assets API</td>
+                            <td>
+                                <textarea id="CustomerAssetsResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
+                                    readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="CustomerAssetsSubmit" class="btn btn-primary"
+                                    onclick="openApiDataModal('CustomerAssets')">Test</button>
+                            </td>
+                        </tr>
+                        <!-- <tr style="background-color: #8a2895; text-align: center; color: #fff;">
+                            <td colspan="4">CRON STATUS</td>
+                        </tr>
+                        <tr>
+                            <td>1.</td>
+                            <td>PSC DASHBOARD CRON</td>
+                            <td>
+                                <textarea id="DashboardCRONResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
+                                    readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="DashboardCRONSubmit" class="btn btn-primary"
+                                    onclick="fetchApiData('DashboardCRON')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Branch CRON</td>
+                            <td>
+                                <textarea id="BranchCRONResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="BranchCRONSubmit" class="btn btn-primary"
+                                    onclick="fetchApiData('BranchCRON')">Test</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td>NPA Status CRON</td>
+                            <td>
+                                <textarea id="PSC_CRONResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                            </td>
+                            <td>
+                                <button id="PSC_CRONSubmit" class="btn btn-primary"
+                                    onclick="fetchApiData('PSC_CRON')">Test</button>
+                            </td>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ApiDataModal" role="dialog">
+    <div class="modal-dialog" style="max-width: 80%; max-height: 170%;">
+        <div class="modal-content">
+            <form action="" method="POST" id="apiRequest" class="form-inline">
+                {% csrf_token %}
+                <div class="modal-body mt-2">
+                    <div class="row">
+                        <h3 class="text-center text-dark col-12" id="dataLabel"> API Request Modal</h3>
+                        <div class="col-md-12">
+
+                            <input id="dataRequest" type="text" class="form-control" autocomplete="off">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="add_data" type="button" data-dismiss="modal" onclick="fetchApiData(clickedButtonId)"
+                        class="btn btn-primary">Submit</i>
+                    </button>
+                    <button type="button" id="cancelbutton12" class="btn btn-secondary"
+                        data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openApiDataModal(buttonId) {
+        document.getElementById('dataRequest').value =''
+        clickedButtonId = buttonId;
+        $('#ApiDataModal').modal('show');
+        if(buttonId == 'Dashboard'){
+            document.getElementById('dataLabel').textContent = `PSC Dashboard API Request Modal`
+            $('#dataRequest').attr('placeholder','Please enter the Branch Code')
+        }else if(buttonId == 'HUPMINQ'){
+            document.getElementById('dataLabel').textContent = `Employee Lookup API Request Modal`
+            $('#dataRequest').attr('placeholder','Please enter the Employee Id')
+        }
+        else if(buttonId == 'PSC'){
+            document.getElementById('dataLabel').textContent = `NPA Status Check API Request Modal`
+            $('#dataRequest').attr('placeholder','Please enter the PSC ID')
+        }
+        else if(buttonId == 'CustomerAssets'){
+            document.getElementById('dataLabel').textContent = `Customer Assets API Request Modal`
+            $('#dataRequest').attr('placeholder','Please enter the Customer ID')
+        }
+    }
+    function fetchApiData(api_type) {
+        requestData = document.getElementById('dataRequest').value;
+        console.log('requestData', requestData);
+        if (api_type == 'HUPMINQ' || api_type == 'Dashboard' || api_type == 'Branch' || api_type == 'PSC' || api_type == 'CustomerAssets' || api_type == 'DashboardCRON' || api_type == 'BranchCRON' || api_type == 'PSC_CRON') {
+            let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                type: 'POST',
+                url: '/api_check',
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                data: {
+                    'requestData': requestData,
+                    'apiType': api_type,
+                },
+                success: function (data) {
+                    $('#ApiDataModal').modal('hide');
+                    console.log('data',data);
+                    response = JSON.parse(JSON.stringify(data.responseData))
+                    console.log(typeof(response));
+                    $('#'+data.api+'Response').val(response)
+                }
+            });
+        } else {
+            console.log('none');
+        }
+    }
+
+    document.getElementById("cancelbutton12").addEventListener("click", function () {
+            $('#ApiDataModal').modal('hide');
+            // window.location.reload();
+        });
+
+    function editdatatobackend() {
+        var role_name = document.getElementById('role_name').value;
+        var role_type = document.getElementById('role_type').value;
+        var role_dept = document.getElementById('role_dept').value;
+        var des_id = document.getElementById('des_id').value;
+        var tbody = document.getElementById('designation_tbody');
+
+        // Initialize an array to store the data
+        var desigData = [];
+
+        // Loop through each row in the tbody
+        for (var i = 0; i < tbody.rows.length; i++) {
+            // Get the first cell of the row
+            var cell = tbody.rows[i].cells[0];
+
+            // Get the text content of the cell and add it to the array
+            desigData.push(cell.textContent.trim());
+        }
+        if (role_type == 'Head' && role_dept == '') {
+            role_dept.required = true;
+            alert('Please enter department.')
+            $('#editDesignationModal').modal('show');
+        }
+        else {
+            role_dept.required = false;
+
+            let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                type: 'POST',
+                url: '/edit_designationmatrix/' + des_id,
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                data: {
+                    'role_name': role_name,
+                    'role_type': role_type,
+                    'role_dept': role_dept,
+                    'desigData': JSON.stringify(desigData),
+                },
+                success: function (data) {
+
+                    $('#success').show();
+                    window.location.href = "/designation_matrix";
+                }
+            });
+        }
+
+    }
+
+
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,309 @@
+{% extends "boss_admin/base.html" %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+{% include "boss_admin/assign_role_page/left_nav_bar.html" %}
+
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+<script src="{% static '/js/js/table.js' %}"></script>
+<style>
+.div1 {
+width:100;
+height:50px;
+padding:8px;
+border:2px solid pink;
+margin-top:10px;
+margin-left:50px;
+margin-right:50px;
+}
+
+.alert11 {
+   width:100%;
+   line-height:10%;
+}
+th {
+    position: sticky;
+    top: 0;
+  }
+.right-main-container {
+    position: fixed;
+    top: 115px;
+    background-color: #fff;
+    left: 241px;
+    right: 10px;
+}
+</style>
+
+<div class="right-main-container" style="margin-top: -12px;">
+    <div class="row">
+    <div class="col-md-3 export mt-2">
+        <button style="font-size:15px;" onclick="exportTableToExcel('table-id1')" class="btn btn-primary" >Export</button>
+        <button type="button" data-toggle="modal" data-target="#myModal" id ="btnGet"  class="btn btn-primary" style="font-size: 15px;">Remove</button>
+    </div>
+    <div class="offset-6 col-md-3 tb_search mt-2" style="float:right;padding-right:70px;width:25%;">
+        <input  type="text" id="search_input_all" onkeyup="FilterkeyWord_all_table()" placeholder="Search.." class="form-control">
+    </div>
+    </div><br>
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+                <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                    {{ message }}
+                    <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                    {{ message }}
+                    <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+        {% endif %}
+    {% endfor%}
+   <!--<div style="text-align:center; margin-top:20px; margin-left:23px; margin-right:32px;">-->
+        <!--<div class="container" style="width:980px; height:400px; overflow:auto; position:fixed;">-->
+            <div class="row mt-2">
+                <div class="col-md-12">
+                <table height="350" class="table table-hover table-responsive table-striped" id="table-id" style="font-size: 14px; ">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left;width:12%">
+                            <input type="checkbox" id="selectAll" style="margin-right: 10px;" />Asset Name</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Quantity</th>
+                        <th style="padding-right: 40px;padding-left: 40px;">Tag Number</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Remarks</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Location Code</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Location Name</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Created By</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Creation Date</th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="myTable">
+                    {% for list in far_data %}
+                    <tr>
+                        <td hidden>{{list.id}}</td>
+                        <td style="text-align:left;width:12%"><input type="checkbox" id="{{ list.id }}" class="chkbx" />&nbsp;<span hidden>{{ list.id}}</span>{{ list.asset_name }}</td>
+                        <td>{{list.qty}}</td>
+                        <td>{{list.tag_no}}</td>
+                        <td>{{list.remarks}}</td>
+                        <td>{{list.branch_code__branch_code}}</td>
+                        <td>{{list.branch_code__branch_name}}</td>
+                        <td>{{list.emp_id__emp_name}}</td>
+                        <td>{{list.created_date_time|date:"d-m-Y"}}</td>
+
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <table id="table-id1" style="display: none">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left;width:12%">
+                            <input type="checkbox" id="selectAll" style="margin-right: 10px;" />Asset Name</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Quantity</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Tag Number</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Remarks</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Location Code</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Location Name</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Created By</th>
+                        <th style="padding-right: 35px;padding-left: 35px;">Creation Date</th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="myTable">
+                    {% for list in far_list %}
+                    <tr>
+                        <td>{{ list.asset_name }}</td>
+                        <td>{{list.qty}}</td>
+                        <td>{{list.tag_no}}</td>
+                        <td>{{list.remarks}}</td>
+                        <td>{{list.branch_code__branch_code}}</td>
+                        <td>{{list.branch_code__branch_name}}</td>
+                        <td>{{list.emp_id__emp_name}}</td>
+                        <td>{{list.created_date_time|date:"d-m-Y"}}</td>
+
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+   
+                <div class="row">
+                    <div class="col-md-10">
+                        {% if far_data.has_other_pages %}
+                         <ul class="pagination">
+                            {% if far_data.has_previous %}
+                              <li><a href="?page={{ far_data.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+        
+                            {% for i in far_data.paginator.page_range %}
+                        {% if far_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > far_data.number|add:'-5' and i < far_data.number|add:'5' %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+        
+                            {% if far_data.has_next %}
+                              <li><a href="?page={{ far_data.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                          </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        <span class="current" style="color: #95a4f2">
+                            Page {{ far_data.number }} of {{ far_data.paginator.num_pages }}.
+                        </span>
+                    </div>
+                </div>
+</div>
+                <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                            <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            </div>
+                            <div class="modal-body">
+                                <p>are you sure you want to remove..?</p>
+                                <input hidden name="checklist" type="text" id="chklist" />
+                                <div style="float:right">
+                                    <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                                            onclick="delete1()">yes
+                                    </button>
+                                    <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+<!-- message -->
+<script>
+   $('#success').hide()
+</script>
+
+<!-- javascript for popup -->
+<script type="text/javascript">
+// Popup window code
+function newPopup(url) {
+	popupWindow = window.open(
+		url,'popUpWindow','height=423,width=961,left=293,top=166,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+}
+
+
+</script>
+
+<script>
+    $('#selectAll').click(function (e) {
+            $(this).closest('table').find('.chkbx').prop('checked', this.checked);
+    
+            });
+    
+</script>
+<script type="text/javascript">
+    $(function () {
+        
+        $("#btnGet").click(function () {
+
+            var cars=[];
+            
+            $("#table-id > tbody > tr .chkbx:checked").each(function () {
+            var row = $(this).closest("tr")[0];
+            cars.push(row.cells[0].innerHTML);
+            
+            });
+
+        $("#chklist").val(cars);
+        
+            });
+        });
+</script>
+<script>
+    function delete1(e) {
+    var check_list=$('#chklist').val(); 
+    var delete_data = $("#deleteid").val();
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        
+            $.ajax({
+                    url: "/far_delete_add_asset/",
+                    headers: {
+                                    "X-CSRFToken": csrftoken
+                                },
+                    data: { "check_list": check_list ,
+                            },
+                    dataType:"html",
+                    type: "post",
+                    success: function(data){
+                        location.reload();
+                    }
+                });
+            }
+</script>
+<script>
+    function confirms(a) {
+                
+                $("#deleteid").attr('value',a);
+            }
+</script>
+<script>
+    function exportTableToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename?filename+'.xls':'Assets_data.xls';
+
+    // Create download link element
+    downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+        // Setting the file name
+        downloadLink.download = filename;
+
+        //triggering the function
+        downloadLink.click();
+    }
+}
+</script>
+<script>
+    $(document).ready(function() {       
+        setTimeout(function() {
+        $('.message').fadeOut('slow');
+        }, 5000); 
+        
+        $('.del-msg').live('click',function(){
+        $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+<!-- jQuery to reload windows -->
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+
+
+{%  endblock content %}

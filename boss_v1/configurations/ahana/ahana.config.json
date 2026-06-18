@@ -1,0 +1,1674 @@
+{
+    "version": "boss/v1",
+    "tenant": "karnataka",
+    "authorisation": {
+        "option1": "LDAP-Single-Signon/AD Authentication",
+        "option2": "BOSS-User-Management",
+        "option3": "HRMS-User-Management"
+    },
+    "logo_image": {
+        "image": "karnataka",
+        "image_path": "karnataka.png"
+    },
+    "main-app": "admin-panel",
+    "display-name": "User Management",
+    "description": "Role Based Access Management",
+    "roles": [
+        "App-Admin",
+        "Branch-Admin",
+        "Django-Admin",
+        "Finance-Admin",
+        "IT-Admin"
+    ],
+    "category": "admin",
+    "adminuserroles": [
+        {
+            "id": "ad001appadmin",
+            "name": "App-Admin"
+        },
+        {
+            "id": "ad001branchadmin",
+            "name": "Branch-Admin"
+        },
+        {
+            "id": "djangoadmin",
+            "name": "Django-Admin"
+        },
+        {
+            "id": "ad001financeadmin",
+            "name": "Finance-Admin"
+        }
+    ],
+    "notification_configurations": {
+        "required": "False"
+    },
+    "file_folder": {
+        "file_path": "boss_admin/static/karnataka/media"
+    },
+    "file_extension": {
+        "png": ".png",
+        "jpg": ".jpg",
+        "pdf": ".pdf",
+        "docx": "docx"
+    },
+    "reports_type": [
+        {
+            "option": "A",
+            "display_name": "Accounts qualified for review"
+        },
+        {
+            "option": "B",
+            "display_name": "Level and Status of Loans available"
+        },
+        {
+            "option": "C",
+            "display_name": "Traversing"
+        }
+    ],
+    "email_configurations": {
+        "validation_type": "string",
+        "required": "True",
+        "Smtp_Server": "smtp.office365.com",
+        "Smtp_Port": "587",
+        "Email_User": "CRM@ahana.co.in",
+        "Email_Password": "#Vd93csrocky",
+        "pattern": [
+            {
+                "option": "*@karnataka.com"
+            },
+            {
+                "option": "*@karnataka.co.in"
+            }
+        ]
+    },
+    "escalation_configuration": {
+        "verification_date": 5,
+        "new_asset_date": 8,
+        "escalation_levels": [
+            {
+                "first_escalation_level": "branch_manager",
+                "rule": "verification_date",
+                "id": "ad001branchadmin",
+                "description": "email trigger on the verification date",
+                "verify_assets_email_subject": "Please verify all assets in your branch",
+                "verify_assets_email_body": " Dear Sir/Madam,  \n \n > This is to inform you, to verify pending assets in your branch. \\n    > Kindly login to below URL and complete the FAR verification process. \n    > URL: https://digitalregister.karnataka.com/ \n \n",
+                "verify_assets_email_signature": " Thanks, \n Admin Department \n  karnataka Bank Ltd. "
+            },
+            {
+                "seocnd_escalation_level": "regional_office_lead",
+                "rule": "verification_date + 2 days",
+                "id": "ad001regionalauditor",
+                "description": "email trigger on the post delay of 2 days from verification date",
+                "rol_verify_assets_email_subject": "Asset verification pending in your branches",
+                "rol_verify_assets_email_body": " Dear Sir/Madam, \n \n    > Attached file contains list of branches having assets pending for verification. \n    > Kindly login to below URL and complete the FAR verification process. \n    > URL: https://digitalregister.karnataka.com/ \n \n",
+                "rol_verify_assets_email_signature": " Thanks, \n Admin Department \n  karnataka Bank Ltd. "
+            },
+            {
+                "third_escalation_level": "zonal_officer",
+                "rule": "verification_date + 4 days",
+                "id": "ad001zonalauditor",
+                "description": "email trigger on the  post delay of 4 days verification date",
+                "zo_verify_assets_email_subject": "Asset verification pending in your zone",
+                "zo_verify_assets_email_body": " Dear Sir/Madam, \n \n     > Attached file contains list of branches having assets pending for verification. \n    > Kindly login to below URL and complete the FAR verification process. \n    > URL: https://digitalregister.karnataka.com/ \n \n",
+                "zo_verify_assets_email_signature": " Thanks, \n Admin Department \n  karnataka Bank Ltd. "
+            },
+            {
+                "fourth_escalation_level": "head_office",
+                "rule": "verification_date + 6 days",
+                "id": "ad001opscontrolller",
+                "description": "email trigger on the  post delay of 6 days verification date",
+                "ho_verify_assets_email_subject": "Asset verification pending for the month",
+                "ho_verify_assets_email_body": " Dear Sir/Madam, \n \n     > Attached file contains list of branches having assets pending for verification. \n    > Kindly login to below URL and complete the FAR verification process. \n    > URL: https://digitalregister.karnataka.com/ \n \n",
+                "ho_verify_assets_email_signature": " Thanks, \n Admin Department \n  karnataka Bank Ltd. "
+            }
+        ]
+    },
+    "checklist_visit_buffer_days": 5,
+    "checklist_configuartions": [
+        {
+            "rol_zsdl": {
+                "description": "when checklist sent to from ROL to zsdl",
+                "rol_to_zsdl_subject": "ROL_VISIT",
+                "rol_to_zsdl_body": "Dear Sir/Madam, \n \n ROL visit checklist has been Submitted in Digital Registers. Please verify and provide your inputs/approve. \\n    Branch Code :{}  \n    Branch Name :{} \n    Visit Type: {} \n    Visit Date: {} \n    Visit Close Date: {} \n    Submitted by: {} \n \\nKindly login to Digital Registers and complete the Audit process. \n \nURL: https://digitalregister.karnataka.com/ ",
+                "rol_to_zsdl_signature": "\n\nThanks, \n karnataka Bank Ltd. \n{}  "
+            }
+        },
+        {
+            "zsdl_rol": {
+                "description": "when checklist sent back from zsdl to ROL",
+                "zsdl_to_rol_subject": "ROL_VISIT",
+                "zsdl_to_rol_body": "Dear Sir/Madam, \n \nChecklist sent-back in Digital Registers. Please verify all the checkpoint and resubmit. \\n    Branch Code :{}  \n    Branch Name :{} \n    Visit Type: {} \n    Visit date: {} \n    Visit Close Date: {} \n    Submitted by: {} \n    ZSDL Comments: {}",
+                "zsdl_to_rol_signature": "\n\nThanks, \n karnataka Bank Ltd. \n{} "
+            }
+        },
+        {
+            "zsdl_bom": {
+                "description": "when checklist approved from zsdl to BOM",
+                "zsdl_to_bom_subject": "ROL_VISIT",
+                "zsdl_to_bom_body": "Dear Team, \n \nThe ROL visit report is reviewed. Please login to digital register and work on actionable. Please ensure to close all findings immediately and submit your response. \\n    Branch Code :{}   \n    Branch Name :{} \n    Visit Type: {} \n    Visit Date: {} \n    Visit Close Date: {} \n    Submitted by: {} \n    ZSDL Comments: {}  \\n \nURL: https://digitalregister.karnataka.com/ ",
+                "zsdl_to_bom_signature": "\n\nThanks, \n karnataka Bank Ltd. \n{}  "
+            }
+        },
+        {
+            "bom_rol": {
+                "description": " when checklist approved from BOM to ROL",
+                "bom_to_rol_subject": "ROL_VISIT",
+                "bom_to_rol_body": "Dear Team, \n \nChecklist open items have been actioned upon. Please review and advise. \\n    Branch Code :{}   \n    Branch Name :{} \n    Visit Type: {} \n    Visit Date: {} \n    Visit Close Date: {} \n    Submitted by: {} \n  \\n \nURL: https://digitalregister.karnataka.com/ ",
+                "bom_to_rol_signature": "\n\nThanks, \n karnataka Bank Ltd. \n{} "
+            }
+        }
+    ],
+    "security_stock": {
+        "description": " requesting for security forms",
+        "security_stock_email_subject": "Requesting for security form",
+        "security_stock_email_body": " Dear Sir/Madam, \n \n     > The following branch {1} has low balance of stock type {0}, Please provide {3} amount of stock type {0}. \n    > Please verify and provide your inputs/approve. \n \n",
+        "security_stock_email_signature": "\n\nThanks, \n karnataka Bank Ltd. \n{}  "
+    },
+    "otp_configuration": {
+        "otp_service_provider": "fast2sms",
+        "otp_type": "counter_based_otp",
+        "otp_required": "True",
+        "url": "https://www.fast2sms.com/dev/bulkV2",
+        "headers": {
+            "authorization": "SzHDCgE0U4lnrPo8cNQmsbtWw2yMFa5dKpfie7vLx6jRIqAuh1BfejvXGZNm9nKJPALczYr81sCh75bt",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache"
+        }
+    },
+    "inwardoutwardsecurity": {
+        "flag": "true"
+    },
+    "api_integration": {
+        "type": "string",
+        "required": "True",
+        "value": [
+            {
+                "type": "Supply-Chain-Management/Delivery",
+                "api-token": "$d5pSA0kJ24USYWb19b3fyw==$+NuXNIEVIZInirQmD8HI9XinrqbPcmG0G6wgNY/8CH0=",
+                "method": "POST",
+                "api-url": "https://www.dhl.com/in-en/home.html?locale=true"
+            }
+        ]
+    },
+    "customer": [
+        {
+            "required": "True",
+            "regex": "^[0-9]{11,}$",
+            "message": "Account Number allows only numeric values with minimum 11 digits"
+        }
+    ],
+    "global_styles": "configurations/karnataka/karnataka.css",
+    "global_fonts": "<link href='https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap' rel='stylesheet'>",
+    "module": {
+        "IN001": {
+            "app_id": "IN001",
+            "app_name": "Inward Registers",
+            "display_name": "Inward",
+            "app_required": "False",
+            "additional_columns_required": "Yes",
+            "properties": {
+                "pod_confirmation": {
+                    "type": "boolean",
+                    "required": "True"
+                },
+                "particulars": [
+                    {
+                        "option": "Cheque",
+                        "display_name": "Cheques"
+                    },
+                    {
+                        "option": "DD",
+                        "display_name": "Demand Draft"
+                    },
+                    {
+                        "option": "Instakit",
+                        "display_name": "Instakit"
+                    },
+                    {
+                        "option": "others",
+                        "display_name": "Others"
+                    }
+                ],
+                "additional_columns": [
+                    {
+                        "option": "",
+                        "display_name": "Department",
+                        "id": "col1"
+                    },
+                    {
+                        "option": "",
+                        "display_name": "Location",
+                        "id": "col2"
+                    },
+                    {
+                        "option": "",
+                        "display_name": "Tracking Code",
+                        "id": "col3"
+                    }
+                ],
+                "security_stock_update": {
+                    "required": "yes"
+                }
+            }
+        },
+        "OUT001": {
+            "app_id": "OUT001",
+            "app_name": "Outward Registers",
+            "display_name": "Outward",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "particulars": [
+                    {
+                        "option": "Cheque",
+                        "display_name": "Cheques"
+                    },
+                    {
+                        "option": "DD",
+                        "display_name": "Demand Draft"
+                    },
+                    {
+                        "option": "Instakit",
+                        "display_name": "Instakit"
+                    },
+                    {
+                        "option": "others",
+                        "display_name": "others"
+                    },
+                    {
+                        "option": "Property Documents",
+                        "display_name": "Property Documents"
+                    }
+                ],
+                "prop_dropdown": [
+                    {
+                        "option": "CIS",
+                        "display_name": "CIS"
+                    },
+                    {
+                        "option": "Promoter KYC /Applicant KYC",
+                        "display_name": "Promoter KYC /Applicant KYC"
+                    },
+                    {
+                        "option": "FCU",
+                        "display_name": "FCU"
+                    },
+                    {
+                        "option": "Accepted sanction letter",
+                        "display_name": "Accepted sanction letter"
+                    },
+                    {
+                        "option": "Seller KYC letter",
+                        "display_name": "Seller KYC letter"
+                    },
+                    {
+                        "option": "DPN",
+                        "display_name": "DPN"
+                    },
+                    {
+                        "option": "Credit file",
+                        "display_name": "Credit file"
+                    },
+                    {
+                        "option": "Guarantor",
+                        "display_name": "Guarantor"
+                    },
+                    {
+                        "option": "NOI",
+                        "display_name": "NOI"
+                    },
+                    {
+                        "option": "Property Insurance",
+                        "display_name": "Property Insurance"
+                    },
+                    {
+                        "option": "Life Insurance",
+                        "display_name": "Life Insurance"
+                    },
+                    {
+                        "option": "MOE",
+                        "display_name": "MOE"
+                    },
+                    {
+                        "option": "Guarantee Agreement",
+                        "display_name": "Guarantee Agreement"
+                    },
+                    {
+                        "option": "Loan Agreement",
+                        "display_name": "Loan Agreement"
+                    }
+                ],
+                "additional_columns": [
+                    {
+                        "option": "",
+                        "display_name": "Department",
+                        "id": "col1"
+                    },
+                    {
+                        "option": "",
+                        "display_name": "Location",
+                        "id": "col2"
+                    }
+                ],
+                "security_stock_update": {
+                    "required": "yes"
+                },
+                "stock_dispatch": [
+                    {
+                        "option": "from_vault",
+                        "display_name": "Vault"
+                    },
+                    {
+                        "option": "from_cashier",
+                        "display_name": "Cashier"
+                    }
+                ]
+            },
+            "pod_confirmation": {
+                "type": "boolean",
+                "required": "True"
+            }
+        },
+        "KEY001": {
+            "app_id": "KEY001",
+            "app_name": "Key Movement Registers",
+            "display_name": "Key Movement",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "key_set": [
+                    {
+                        "option": "SET-1",
+                        "display_name": "SET-1"
+                    },
+                    {
+                        "option": "SET-2",
+                        "display_name": "SET-2"
+                    },
+                    {
+                        "option": "SET-3",
+                        "display_name": "SET-3"
+                    },
+                    {
+                        "option": "SET-4",
+                        "display_name": "SET-4"
+                    },
+                    {
+                        "option": "SET-5",
+                        "display_name": "SET-5"
+                    },
+                    {
+                        "option": "SET-6",
+                        "display_name": "SET-6"
+                    }
+                ],
+                "location": [
+                    {
+                        "option": "onsite",
+                        "display_name": "ONSITE"
+                    },
+                    {
+                        "option": "offsite",
+                        "display_name": "OFFSITE"
+                    }
+                ],
+                "custodian": [
+                    {
+                        "option": "BM",
+                        "display_name": "BM"
+                    },
+                    {
+                        "option": "BOM",
+                        "display_name": "BOM"
+                    },
+                    {
+                        "option": "TELLER",
+                        "display_name": "TELLER"
+                    }
+                ],
+                "key_set_type_master": [
+                    {
+                        "option": "vault_key",
+                        "display_name": [
+                            "Vault key",
+                            "Safe key"
+                        ]
+                    },
+                    {
+                        "option": "premises_key",
+                        "display_name": [
+                            "Premises key",
+                            "Store room key"
+                        ]
+                    },
+                    {
+                        "option": "others_key",
+                        "display_name": [
+                            "F19",
+                            "F23"
+                        ]
+                    }
+                ]
+            }
+        },
+        "DOC001": {
+            "app_id": "DOC001",
+            "app_name": "Branch Document Registers",
+            "display_name": "Branch Document",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "part_type": [
+                    {
+                        "option": "PART-1",
+                        "display_name": "PART-1"
+                    },
+                    {
+                        "option": "PART-2",
+                        "display_name": "PART-2"
+                    },
+                    {
+                        "option": "PART-3",
+                        "display_name": "PART-3"
+                    },
+                    {
+                        "option": "PART-4",
+                        "display_name": "PART-4"
+                    },
+                    {
+                        "option": "PART-5",
+                        "display_name": "PART-5"
+                    },
+                    {
+                        "option": "PART-6",
+                        "display_name": "PART-6"
+                    },
+                    {
+                        "option": "PART-7",
+                        "display_name": "PART-7"
+                    }
+                ]
+            }
+        },
+        "SS001": {
+            "app_id": "SS001",
+            "app_name": "Security Stock Register",
+            "display_name": "Security Stock",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "issue_destruct": [
+                    {
+                        "option": "Issue",
+                        "display_name": "Issue"
+                    },
+                    {
+                        "option": "Destruction",
+                        "display_name": "Destruction"
+                    }
+                ],
+                "transaction_type": [
+                    {
+                        "option": "Received",
+                        "display_name": "Received"
+                    },
+                    {
+                        "option": "Issued to Cashier",
+                        "display_name": "Issued to Cashier"
+                    },
+                    {
+                        "option": "Returned to Cashier",
+                        "display_name": "Returned to Cashier"
+                    },
+                    {
+                        "option": "Issued to Customer",
+                        "display_name": "Issued to Customer"
+                    },
+                    {
+                        "option": "Issued to Other Branch",
+                        "display_name": "Issued to Other Branch"
+                    },
+                    {
+                        "option": "Destruction",
+                        "display_name": "Destruction"
+                    }
+                ],
+                "type_of_security": [
+                    {
+                        "option": "Instakit",
+                        "display_name": "InstaKit"
+                    },
+                    {
+                        "option": "DD",
+                        "display_name": "DD"
+                    },
+                    {
+                        "option": "Cheque",
+                        "display_name": "Cheque"
+                    }
+                ]
+            }
+        },
+        "SC001": {
+            "app_id": "SC001",
+            "app_name": "Suspense Cash Register",
+            "display_name": "Suspense Cash",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "handover_to": [
+                    {
+                        "option": "JCH",
+                        "display_name": "JCH"
+                    },
+                    {
+                        "option": "JCIC",
+                        "display_name": "JCIC"
+                    }
+                ]
+            }
+        },
+        "IS001": {
+            "app_id": "IS001",
+            "app_name": "Issuance Register",
+            "display_name": "Security Issuance",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "issue_dropdown": [
+                    {
+                        "option": "Issue",
+                        "display_name": "Issue"
+                    },
+                    {
+                        "option": "Return",
+                        "display_name": "Return"
+                    }
+                ],
+                "account_type": [
+                    {
+                        "option": "Regular Savings",
+                        "display_name": "Regular Savings"
+                    },
+                    {
+                        "option": "Regular Current",
+                        "display_name": "Regular Current"
+                    },
+                    {
+                        "option": "Jana Salary",
+                        "display_name": "Jana Salary"
+                    },
+                    {
+                        "option": "Premium Salary",
+                        "display_name": "Premium Salary"
+                    },
+                    {
+                        "option": "Regular Salary",
+                        "display_name": "Regular Salary"
+                    },
+                    {
+                        "option": "Loans",
+                        "display_name": "Loans"
+                    }
+                ],
+                "type_of_security": [
+                    {
+                        "option": "Instakit",
+                        "display_name": "InstaKit"
+                    },
+                    {
+                        "option": "DD",
+                        "display_name": "DD"
+                    },
+                    {
+                        "option": "Loan CA kits",
+                        "display_name": "Loan CA kits"
+                    },
+                    {
+                        "option": "Loan Cheque Books",
+                        "display_name": "Loan Cheque Books"
+                    },
+                    {
+                        "option": "Cheque Books",
+                        "display_name": "Cheque Books"
+                    },
+                    {
+                        "option": "Others",
+                        "display_name": "Others"
+                    }
+                ]
+            }
+        },
+        "SEQ001": {
+            "app_id": "SEQ001",
+            "app_name": "Security Equipment Register",
+            "display_name": "Security Equipment",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "verified_session": [
+                    {
+                        "option": "Morning",
+                        "display_name": "Morning"
+                    },
+                    {
+                        "option": "Evening",
+                        "display_name": "Evening"
+                    }
+                ]
+            }
+        },
+        "PC001": {
+            "app_id": "PC001",
+            "app_name": "Petty Cash Register",
+            "display_name": "Petty Cash",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "transaction_type": [
+                    {
+                        "option": "Add Amount",
+                        "display_name": "Add Amount"
+                    },
+                    {
+                        "option": "Withdraw Amount",
+                        "display_name": "Withdraw Amount"
+                    }
+                ],
+                "particular_type": [
+                    {
+                        "option": "House keeping salary",
+                        "display_name": "House keeping salary"
+                    },
+                    {
+                        "option": "Tea/Coffee",
+                        "display_name": "Tea/Coffee"
+                    }
+                ]
+            }
+        },
+        "CR001": {
+            "app_id": "CR001",
+            "app_name": "Complaint Book Register",
+            "display_name": "Complaint Book",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                }
+            }
+        },
+        "GL001": {
+            "app_id": "GL001",
+            "app_name": "Gold Loan Register",
+            "display_name": "Gold Loan",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "transaction_type": [
+                    {
+                        "option": "In",
+                        "display_name": "In"
+                    },
+                    {
+                        "option": "Out",
+                        "display_name": "Out"
+                    }
+                ]
+            }
+        },
+        "FAR001": {
+            "app_id": "FAR001",
+            "app_name": "Fixed Asset Register",
+            "display_name": "Fixed Asset",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com",
+                    "new_assets_email_subject": "Please verify new assets in your branch",
+                    "new_assets_email_body": " Dear Sir/Madam, \n \n     > This is to inform you, below list of NEW assets has been added in your branch. \\n    > Kindly login to below URL and complete the FAR verification process. \n    > URL: https://digitalregister.fincare.com/ \n \n",
+                    "new_assets_email_signature": " Thanks, \n Admin Department \n Fincare Small Finance Bank Ltd. "
+                },
+                "physical_verification": [
+                    {
+                        "option": "Found",
+                        "display_name": "Found"
+                    },
+                    {
+                        "option": "Not Found",
+                        "display_name": "Not Found"
+                    },
+                    {
+                        "option": "Moved to Other Location",
+                        "display_name": "Moved to Other Location"
+                    }
+                ],
+                "tagging_status": [
+                    {
+                        "option": "Tagging Completed",
+                        "display_name": "Tagging Completed"
+                    },
+                    {
+                        "option": "Not Tagged",
+                        "display_name": "Tags Not Received"
+                    },
+                    {
+                        "option": "Not Tagged",
+                        "display_name": "Tags Damaged"
+                    }
+                ],
+                "asset_receive_status": [
+                    {
+                        "option": "Received",
+                        "display_name": "Received"
+                    },
+                    {
+                        "option": "Not Received",
+                        "display_name": "Not Received"
+                    },
+                    {
+                        "option": "Received with Damage",
+                        "display_name": "Received with Damage"
+                    }
+                ]
+            }
+        },
+        "ITR001": {
+            "app_id": "ITR001",
+            "app_name": "IT Asset Register",
+            "display_name": "Asset Management",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "physical_verification": [
+                    {
+                        "option": "verified",
+                        "display_name": "Verified"
+                    },
+                    {
+                        "option": "Moved to another employee",
+                        "display_name": "Move to another employee (same branch)"
+                    },
+                    {
+                        "option": "Moved to Other Location",
+                        "display_name": "Moved to Other Location"
+                    }
+                ],
+                "verified_status": [
+                    {
+                        "option": "In-Stock Working",
+                        "display_name": "New"
+                    },
+                    {
+                        "option": "In-Stock Not Working",
+                        "display_name": "Not Working"
+                    },
+                    {
+                        "option": "In Use",
+                        "display_name": "In Use"
+                    },
+                    {
+                        "option": "damaged",
+                        "display_name": "Damaged"
+                    },
+                    {
+                        "option": "lost",
+                        "display_name": "Lost"
+                    }
+                ],
+                "not_verified_status": [
+                    {
+                        "option": "not-found",
+                        "display_name": "Not-Found"
+                    },
+                    {
+                        "option": "not-traceable",
+                        "display_name": "Not-Traceable"
+                    },
+                    {
+                        "option": "lost",
+                        "display_name": "Lost/Theft/Snatch"
+                    }
+                ],
+                "asset_receive_status": [
+                    {
+                        "option": "Received",
+                        "display_name": "Received"
+                    },
+                    {
+                        "option": "Not Received",
+                        "display_name": "Not Received"
+                    },
+                    {
+                        "option": "Received with Damage",
+                        "display_name": "Received with Damage"
+                    }
+                ],
+                "asset_type": [
+                    {
+                        "option": "IT",
+                        "display_name": "IT"
+                    },
+                    {
+                        "option": "Non-IT",
+                        "display_name": "Non-IT"
+                    },
+                    {
+                        "option": "Furniture",
+                        "display_name": "Furniture"
+                    },
+                    {
+                        "option": "Building",
+                        "display_name": "Building"
+                    }
+                ]
+            }
+        },
+        "CD001": {
+            "app_id": "CD001",
+            "app_name": "Cheque Drop Box Register",
+            "display_name": "Cheque Drop Box",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "cheques_clearance_window": {
+                    "clearance_window": "1"
+                }
+            }
+        },
+        "CF001": {
+            "app_id": "CF001",
+            "app_name": "Counterfeit Notes Register",
+            "display_name": "Counterfeit Notes",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "transaction_type": [
+                    {
+                        "option": "10",
+                        "display_name": "Rs.10/-"
+                    },
+                    {
+                        "option": "20",
+                        "display_name": "Rs.20/-"
+                    },
+                    {
+                        "option": "50",
+                        "display_name": "Rs.50/-"
+                    },
+                    {
+                        "option": "100",
+                        "display_name": "Rs.100/-"
+                    },
+                    {
+                        "option": "200",
+                        "display_name": "Rs.200/-"
+                    },
+                    {
+                        "option": "500",
+                        "display_name": "Rs.500/-"
+                    },
+                    {
+                        "option": "2000",
+                        "display_name": "Rs.2000/-"
+                    }
+                ]
+            }
+        },
+        "CL001": {
+            "app_id": "CL001",
+            "app_name": "Cash Limit Register",
+            "display_name": "Cash Transgression",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "cash_limit": {
+                    "Amount": "10,00,000"
+                },
+                "trans_type": [
+                    {
+                        "option": "Deposit",
+                        "display_name": "Deposit"
+                    },
+                    {
+                        "option": "Withdraw",
+                        "display_name": "Withdraw"
+                    }
+                ]
+            }
+        },
+        "CNE001": {
+            "app_id": "CNE001",
+            "app_name": "Coins Fresh Notes Exchange Register",
+            "display_name": "Coins/Notes Exchange",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "notes_denomination": [
+                    {
+                        "option": "500",
+                        "display_name": "500"
+                    },
+                    {
+                        "option": "200",
+                        "display_name": "200"
+                    },
+                    {
+                        "option": "100",
+                        "display_name": "100"
+                    },
+                    {
+                        "option": "50",
+                        "display_name": "50"
+                    },
+                    {
+                        "option": "20",
+                        "display_name": "20"
+                    },
+                    {
+                        "option": "10",
+                        "display_name": "10"
+                    }
+                ],
+                "coins_denomination": [
+                    {
+                        "option": "20",
+                        "display_name": "20"
+                    },
+                    {
+                        "option": "10",
+                        "display_name": "10"
+                    },
+                    {
+                        "option": "5",
+                        "display_name": "5"
+                    },
+                    {
+                        "option": "2",
+                        "display_name": "2"
+                    },
+                    {
+                        "option": "1",
+                        "display_name": "1"
+                    }
+                ],
+                "customer_type": [
+                    {
+                        "option": "Account Holder",
+                        "display_name": "Account Holder"
+                    },
+                    {
+                        "option": "Walk-In Customer",
+                        "display_name": "Walk-In Customer"
+                    }
+                ],
+                "transaction_type": [
+                    {
+                        "option": "Exchange",
+                        "display_name": "Exchange"
+                    }
+                ],
+                "transaction_type_backup": [
+                    {
+                        "option": "Collection",
+                        "display_name": "Deposit"
+                    },
+                    {
+                        "option": "Payments",
+                        "display_name": "Withdraw"
+                    },
+                    {
+                        "option": "Exchange",
+                        "display_name": "Exchange"
+                    }
+                ],
+                "exchange_type": [
+                    {
+                        "option": "Mutilated",
+                        "display_name": "Mutilated"
+                    },
+                    {
+                        "option": "Counterfeit",
+                        "display_name": "Counterfeit"
+                    }
+                ],
+                "exchange_type_backup": [
+                    {
+                        "option": "Regular",
+                        "display_name": "Regular"
+                    },
+                    {
+                        "option": "Mutilated",
+                        "display_name": "Mutilated"
+                    },
+                    {
+                        "option": "Counterfeit",
+                        "display_name": "Counterfeit"
+                    }
+                ]
+            }
+        },
+        "AOF001": {
+            "app_id": "AOF001",
+            "app_name": "AOF Movement Register",
+            "display_name": "AOF Movement",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                }
+            }
+        },
+        "CM001": {
+            "app_id": "CM001",
+            "app_name": "Cash Management",
+            "display_name": "Cash Management",
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "tableConfig": {
+                    "notes_denomination": [
+                        {
+                            "option": "500",
+                            "display_name": "500"
+                        },
+                        {
+                            "option": "200",
+                            "display_name": "200"
+                        },
+                        {
+                            "option": "100",
+                            "display_name": "100"
+                        },
+                        {
+                            "option": "50",
+                            "display_name": "50"
+                        },
+                        {
+                            "option": "20",
+                            "display_name": "20"
+                        },
+                        {
+                            "option": "10",
+                            "display_name": "10"
+                        }
+                    ],
+                    "coins_denomination": [
+                        {
+                            "option": "20",
+                            "display_name": "20"
+                        },
+                        {
+                            "option": "10",
+                            "display_name": "10"
+                        },
+                        {
+                            "option": "5",
+                            "display_name": "5"
+                        },
+                        {
+                            "option": "2",
+                            "display_name": "2"
+                        },
+                        {
+                            "option": "1",
+                            "display_name": "1"
+                        }
+                    ],
+                    "grand_total": 0
+                },
+                "trans_type": [
+                    {
+                        "option": "Deposit",
+                        "display_name": "Deposit"
+                    },
+                    {
+                        "option": "Withdraw",
+                        "display_name": "Withdraw"
+                    }
+                ],
+                "max_deposit_withdraw": 1000000,
+                "vault_approvals": [
+                    {
+                        "option": "JC1",
+                        "display_name": "JC1",
+                        "role": "cm001checker1"
+                    },
+                    {
+                        "option": "JC2",
+                        "display_name": "JC2",
+                        "role": "cm001checker2"
+                    }
+                ],
+                "CR_approvals": [
+                    {
+                        "option": "JC1",
+                        "display_name": "JC1",
+                        "role": "cm001checker1",
+                        "approver_level": "First"
+                    },
+                    {
+                        "option": "JC2",
+                        "display_name": "JC2",
+                        "role": "cm001checker2",
+                        "approver_level": "Second"
+                    },
+                    {
+                        "option": "BOM",
+                        "display_name": "BOM",
+                        "role": "ad001branchadmin",
+                        "approver_level": "Final"
+                    }
+                ],
+                "mutilated_deposit_addition": "true",
+                "vault_name": [
+                    {
+                        "option": "Vault",
+                        "display_name": "Double Lock"
+                    },
+                    {
+                        "option": "Cashier",
+                        "display_name": "Single Lock"
+                    }
+                ],
+                "mutilated_counterfeit_approval": "False"
+            }
+        },
+        "PSC001": {
+            "app_id": "PSC001",
+            "app_name": "Online Submission of PSC and SAC",
+            "app_name2": "MOM Review",
+            "app_namepsc": "Online Submission of PSC",
+            "app_namesac": "Online Submission of PSC and SAC",
+            "psc_display_name": "Preliminary Screening Committee Review",
+            "sac_display_name": "Staff Accountability Committee Review",
+            "app_required": "True",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                }
+            },
+            "ynstatus": [
+                {
+                    "option": "YES",
+                    "display_name": "YES"
+                },
+                {
+                    "option": "NO",
+                    "display_name": "NO"
+                }
+            ],
+            "is_api_data": true,
+            "psc_mom_limit" : 10000000,
+            "mail_configuration" : {
+                "Smtp_Server": "smtp.office365.com",
+                "Smtp_Port": "587",
+                "Email_User": "CRM@ahana.co.in",
+                "Email_Password": "#Vd93csrocky",
+                "TO_MAIL": "p.srikanth@ahanait.com",
+                "MAIL_CC" : ["rushil.prasad@ahanait.com"],
+                "SUBJECT": "{type} account {id} rejected ",
+                "BODY_line1": "The {type} account {id} has been rejected by the {rejected_by} on {rejection_date}\n\n",
+                "BODY_line2": "Remarks for the rejection is [{reject_remarks}] and it has been rejected to {reject_level}\n\n"
+            }
+        },
+        "AD001": {
+            "app_id": "AD001",
+            "app_name": "Admin",
+            "display_name": {
+                "admin": "Roles Assignment",
+                "audit": "Audit and Compliance",
+                "asset_management": "Asset Management",
+                "document_movement": "Document Movement",
+                "reports": "Reporting"
+            },
+            "app_required": "False",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "pattern": "*@fincare.com"
+                },
+                "far_physical_verification": [
+                    {
+                        "option": "yes",
+                        "display_name": "Verified"
+                    },
+                    {
+                        "option": "no",
+                        "display_name": "Not Verified"
+                    }
+                ],
+                "tagging_required": [
+                    {
+                        "option": "yes",
+                        "display_name": "YES"
+                    },
+                    {
+                        "option": "no",
+                        "display_name": "NO"
+                    }
+                ],
+                "it_physical_verification": [
+                    {
+                        "option": "yes",
+                        "display_name": "Verified"
+                    },
+                    {
+                        "option": "no",
+                        "display_name": "Not Verified"
+                    }
+                ],
+                "it_escalation": [
+                    {
+                        "option": "ZO",
+                        "display_name": "ZO"
+                    },
+                    {
+                        "option": "ROL",
+                        "display_name": "ROL"
+                    },
+                    {
+                        "option": "HO",
+                        "display_name": "HO"
+                    },
+                    {
+                        "option": "mail_to_employee",
+                        "display_name": "Mail to Employee"
+                    }
+                ],
+                "it_audit": [
+                    {
+                        "option": "Approve",
+                        "display_name": "Approve"
+                    },
+                    {
+                        "option": "Reject",
+                        "display_name": "Reject"
+                    }
+                ],
+                "far_audit": [
+                    {
+                        "option": "Found",
+                        "display_name": "Found"
+                    },
+                    {
+                        "option": "Not Found",
+                        "display_name": "Not Found"
+                    }
+                ],
+                "escalation_level": [
+                    {
+                        "option": "ROL",
+                        "display_name": "ROL"
+                    },
+                    {
+                        "option": "ZO",
+                        "display_name": "ZO"
+                    },
+                    {
+                        "option": "HO",
+                        "display_name": "HO"
+                    }
+                ],
+                "register_role_master": [
+                    {
+                        "option": "in001receiver",
+                        "display_name": "Inward Receiver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "in001approver",
+                        "display_name": "Inward Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "out001sender",
+                        "display_name": "Outward Sender",
+                        "required": "True"
+                    },
+                    {
+                        "option": "out001approver",
+                        "display_name": "Outward Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "doc001custodian",
+                        "display_name": "Branch Custodian",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ss001maintainer",
+                        "display_name": "Stock Maintainer",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ss001verifier",
+                        "display_name": "Stock Verifier",
+                        "required": "True"
+                    },
+                    {
+                        "option": "sc001crec",
+                        "display_name": "CREC",
+                        "required": "True"
+                    },
+                    {
+                        "option": "sc001cashier",
+                        "display_name": "Cashier",
+                        "required": "True"
+                    },
+                    {
+                        "option": "sc001jch",
+                        "display_name": "JCH",
+                        "required": "True"
+                    },
+                    {
+                        "option": "sc001jcic",
+                        "display_name": "JCIC",
+                        "required": "True"
+                    },
+                    {
+                        "option": "sc001ah",
+                        "display_name": "AH",
+                        "required": "True"
+                    },
+                    {
+                        "option": "gl001maker",
+                        "display_name": "Gold Loan Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "gl001approver",
+                        "display_name": "Gold Loan Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "seq001maker",
+                        "display_name": "Security Equipment Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "seq001checker",
+                        "display_name": "Security Equipment Checker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "pc001maker",
+                        "display_name": "Petty Cash Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "pc001approver",
+                        "display_name": "Petty Cash Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cr001maker",
+                        "display_name": "Complaints Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cr001approver",
+                        "display_name": "Complaints Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ita001verifier",
+                        "display_name": "Asset Verifier",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cd001maker",
+                        "display_name": "Cheque Dropbox Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cf001maker",
+                        "display_name": "Counterfeit Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cf001approver",
+                        "display_name": "Counterfeit Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cl001maker",
+                        "display_name": "Cashlimit Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cl001checker",
+                        "display_name": "Cashlimit Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001internalauditor",
+                        "display_name": "Internal Auditor",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001branchadmin",
+                        "display_name": "Branch Admin",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001appadmin",
+                        "display_name": "App Admin",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001regionalauditor",
+                        "display_name": "Regional Auditor",
+                        "required": "False"
+                    },
+                    {
+                        "option": "ad001bomcheck",
+                        "display_name": "BM Check",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001finance",
+                        "display_name": "Finance Admin",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001zonalauditor",
+                        "display_name": "Zonal Head",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ad001operationshead",
+                        "display_name": "Operations Head",
+                        "required": "True"
+                    },
+                    {
+                        "option": "it001admin",
+                        "display_name": "Asset Manager",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cne001maker",
+                        "display_name": "Coins Notes Exchange Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cne001checker",
+                        "display_name": "Coins Notes Exchange Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "aof001maker",
+                        "display_name": "AOF Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "aof001checker",
+                        "display_name": "AOF Approver",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cm001maker",
+                        "display_name": "Cash Management Maker",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cm001checker1",
+                        "display_name": "Cash Management JC1",
+                        "required": "True"
+                    },
+                    {
+                        "option": "cm001checker2",
+                        "display_name": "Cash Management JC2",
+                        "required": "True"
+                    }
+                ],
+                "register_master": [
+                    {
+                        "option": "AD001",
+                        "display_name": "Admin",
+                        "required": "True"
+                    },
+                    {
+                        "option": "IN001",
+                        "display_name": "Inward Register",
+                        "required": "True"
+                    },
+                    {
+                        "option": "OUT001",
+                        "display_name": "Outward Register",
+                        "required": "True"
+                    },
+                    {
+                        "option": "DOC001",
+                        "display_name": "Branch Document",
+                        "required": "True"
+                    },
+                    {
+                        "option": "KEY001",
+                        "display_name": "Key Movement",
+                        "required": "True"
+                    },
+                    {
+                        "option": "SS001",
+                        "display_name": "Security Stock",
+                        "required": "True"
+                    },
+                    {
+                        "option": "SC001",
+                        "display_name": "Suspense Cash",
+                        "required": "True"
+                    },
+                    {
+                        "option": "SEQ001",
+                        "display_name": "Security Equipment",
+                        "required": "True"
+                    },
+                    {
+                        "option": "PC001",
+                        "display_name": "Petty Cash",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CR001",
+                        "display_name": "Complaint Book",
+                        "required": "True"
+                    },
+                    {
+                        "option": "GL001",
+                        "display_name": "Gold Loan",
+                        "required": "True"
+                    },
+                    {
+                        "option": "ITR001",
+                        "display_name": "Asset Management",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CD001",
+                        "display_name": "Cheque DropBox",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CF001",
+                        "display_name": "CounterFeit Notes",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CL001",
+                        "display_name": "Cash Limit",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CNE001",
+                        "display_name": "Coins Notes Exchange",
+                        "required": "True"
+                    },
+                    {
+                        "option": "AOF001",
+                        "display_name": "AOF Movement",
+                        "required": "True"
+                    },
+                    {
+                        "option": "CM001",
+                        "display_name": "Cash Management",
+                        "required": "True"
+                    },
+                    {
+                        "option": "PSC001",
+                        "display_name": "Preliminary Screening Committee",
+                        "required": "True"
+                    }
+                ]
+            }
+        }
+    }
+}

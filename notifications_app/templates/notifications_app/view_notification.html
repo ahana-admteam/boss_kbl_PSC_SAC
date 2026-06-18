@@ -1,0 +1,38 @@
+{% extends 'boss_admin/base.html' %}
+{% load filters %}
+{% load static %}
+
+{% block content %}
+  {% with request.session.new_roles|my_filter as roles %}
+    <div class="container" style="margin-top: 130px;">
+      <h1 class="title">Notifications</h1>
+      <!-- 
+
+       -->
+       <div class="notification_container">
+            {% for item in notification_data  %}
+                <strong>{{ item.register_type}}</strong>
+                from
+                <strong style="color:green">{{ item.created_by__emp_name }}</strong> was received <small>{{ item.created_at|timesince }} ago </small>
+            {% endfor %}
+
+            {% for data in model_data %}
+            
+              <table class="table  table-striped" style="width:400px" >
+                  {% for k, v in data.items %}
+                  <tr>
+                    
+                      <td><strong>{{ k }}</strong></td>
+                      <td>{{ v }}</td>
+                    
+                   </tr>
+                  {% endfor %}
+              </table>
+              
+            {% endfor %}
+            
+            
+        </div>
+    </div>
+  {% endwith %}
+{% endblock %}

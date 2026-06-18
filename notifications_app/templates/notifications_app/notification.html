@@ -1,0 +1,30 @@
+{% extends 'boss_admin/base.html' %}
+{% load filters %}
+{% load static %}
+
+{% block content %}
+  {% with request.session.new_roles|my_filter as roles %}
+    <div class="container">
+      <h1 class="title">Notifications</h1>
+      {% if not notifications %}
+        No notifications yet ! 
+      {% endif %}
+
+      {% for notification in notifications %}
+        <div class="notification">
+            {% if notification.notification_type == "message" %}
+            <a href="{% url 'notifications' %}?goto=view_application&notification={{ notification.id }}&extra_id={{ notification.extra_id }}" >
+                <strong>{{ notification.created_by.username }}</strong> sent you a message
+                <small>{{ notification.created_at|timesince }} ago</small>
+            </a>
+            {% elif notification.notification_type == "application"  %}
+            <a href="{% url 'notifications' %}?goto=view_application&notification={{ notification.id }}&extra_id={{ notification.extra_id }}" >
+                <strong>{{ notification.created_by.username }}</strong> applied
+                <small>{{ notification.created_at|timesince }} ago</small>
+            </a>
+            {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endwith %}
+{% endblock %}

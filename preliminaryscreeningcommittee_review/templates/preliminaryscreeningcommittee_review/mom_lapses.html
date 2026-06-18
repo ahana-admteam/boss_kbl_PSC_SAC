@@ -1,0 +1,752 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+{% with request.session.new_roles|my_filter as roles %}
+{% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker2' in roles or 'psc001checker2' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles or 'momconvener' in roles or 'sac001maker3' in roles or 'sac001checker3' in roles %}<!-- custom styling -->
+<style>
+
+    table tbody tr:nth-child(even) {
+        background-color: transparent;
+        /* Set even row background color to transparent */
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: transparent;
+        /* Set odd row background color to transparent */
+    }
+
+    .fa-stack[data-count]:after {
+        font-size: 50%;
+        margin-top: -5px;
+        ;
+    }
+
+    .fa-eye:before {
+        margin-right: 10px;
+    }
+
+    .fa-edit:before {
+        margin-left: 10px;
+    }
+
+    body {
+        font-size: .9rem;
+    }
+
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+    }
+
+    /* textarea.ta-n-control {
+        border: 1px solid black;
+    } */
+
+    .in-control {
+        border: none;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        /* Collapse borders so adjacent cells share borders */
+    }
+
+    table th,
+    table td {
+        border: 1px solid rgb(0, 0, 0);
+        /* Add borders to table cells */
+        padding: 8px;
+        font-weight: bold;
+        /* Add padding to cells for better spacing */
+    }
+
+    #staffaccountability_table tr {
+        background-color: #ffffff;
+    }
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+</style>
+
+<div class="container-fluid" style="padding: 0px 20px;" >
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-danger" data-dismiss="alert">&times;</button>
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <button id="closeButton" type="button" class="close btn-success" data-dismiss="alert">&times;</button>
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <!-- action buttons -->
+    {% for mom in mom_data %}
+    <input type="text" name="" hidden id="mom_pk_id" value="{{mom.id}}">
+    <div class="col-md-12 mt-3 mb-3" style="padding: 0px 20px; border: 2px solid black;">
+        <div class="row">
+            <div class="form-group col-sm-10" style="padding-top: 10px">
+                <label for="branch_name"><strong>Meeting No. :
+                        {{mom.meeting_id}}</strong></label>
+            </div>
+
+            <div class="form-group col-sm-2" style="padding-top: 10px">
+                <label for="mom_creation_date"><strong>Date : {{mom.mom_creation_date|date:'d-m-Y'}}</strong></label>
+            </div>
+            {% if mom.review_type == 'PSC1' or mom.review_type == 'PSC2'  %}
+            <div class="form-group col-sm-12 mt-3" style="padding-top: 10px">
+                <h5 class="text-center"><u><strong>Minutes of the meeting of the PRELIMINARY SCREENING COMMITTEE - I held on <span id="mom_datetime">{{mom.mom_date|date:'d-m-Y'}} at 11.00
+                                AM.</u></strong></span>
+                </h5>
+            </div>
+            {% elif mom.review_type == 'sac' %}
+            <div class="form-group col-sm-12 mt-3" style="padding-top: 10px">
+                <h5 class="text-center"><u><strong>Minutes of the meeting of the STAFF ACCOUNTABILITY
+                            COMMITTEE - I held on <span id="mom_datetime">{{mom.mom_date|date:'d-m-Y'}} at 11.00
+                                AM.</u></strong></span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+        <h6><strong>PRESENT:</strong></h6>
+        <div class="col-md-12">
+            <div class="row">
+                {% for aud_index in mom.audience %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                        </div><div class="row">
+                    {% endif %}
+                    <div class="col-md-4 mb-2">
+                        <div style="font-weight: bold;">{{ aud_index.slno }}){{ aud_index.staffName }}({{ aud_index.staffNo }})</div>
+                        <div>{{ aud_index.designation }}</div>
+                        <div>{{ aud_index.role }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if review_type == 'PSC1' %}
+    <div class="row p-1">
+        <div class="col-md-12">
+            
+            <table height="400" class="table table-responsive table-hover shadow-lg bg-white" id="PSC_MOM_Table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>PSC1 Srl No.</th>
+                        <th>Branch</th>
+                        <!-- <th>Region</th> -->
+                        <th>Customer ID</th>
+                        <th>Facility No.</th>
+                        <th>Borrower</th>
+                        <th>NPA Date</th>
+                        <th>NPA Tag</th>
+                        <th>PSC Status</th>
+                        <th>Current Role</th>
+                        <th>Lapse</th>
+                    </tr>
+                </thead>
+
+                <tbody id="myTable">
+                    
+                    {% for data in psc_data %}
+                    <tr>
+                        <td>{{data.psc_rec_id}}</td>
+                        <td>{{data.branch_code_id__branch_code}}</td>
+                        <!-- <td>{{data.region_name}}</td> -->
+                        <td>{{data.cust_id}}</td>
+                        <td>{{data.facility_num}}</td>
+                        <td>{{data.borrower_name}}</td>
+                        <td  style="white-space: nowrap;">{{data.npa_date|date:'d-m-Y'}}</td>
+                        <td>{{data.nap_tag}}</td>
+                        <td>{{data.status}}</td>
+                        <td>{{data.current_role}}</td>
+                        {% if data.mom_lapse %}
+                        {% if data.mom_lapse == 'yes' %}
+                        <td>{{data.mom_lapse}} 
+                            {% comment %}
+                            <a style="cursor: pointer; color: red;" href="{% url 'mom_review_export' data.id data.mom_id %}" id="pdf_export">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                            {% endcomment %}
+                        </td>
+                        {% else %}
+                        <td>{{data.mom_lapse}}</td>
+                        {% endif %}
+                        {% else %}
+                        <td width="5%">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    {% for mom in mom_data %}
+                                    <div style="display: flex; align-items: center;">
+                                        <select style="width: 150px;" onchange="toggleTextarea(this,'{{data.id}}','PSC1','{{mom.id}}')" type="text" required class="form-control" name="lapses_selection" id="lapses_selection">
+                                            <option value="" disabled selected hidden>Choose</option>
+                                            {% for status in ynstatus %}
+                                            <option value="{{ status.option }}">{{status.display_name}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    
+                    {% endfor %}
+                    
+                </tbody>
+
+                
+            </table>
+
+        </div>
+
+       
+    </div>
+    {% elif review_type == 'PSC2' %}
+    <div class="row p-1">
+        <div class="col-md-12">
+            
+            <table height="400" class="table table-responsive table-hover shadow-lg bg-white" id="PSC_MOM_Table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>PSC2 Srl No.</th>
+                        <th>Branch</th>
+                        <!-- <th>Region</th> -->
+                        <th>Customer ID</th>
+                        <th>Facility No.</th>
+                        <th>Borrower</th>
+                        <th>NPA Date</th>
+                        <th>NPA Tag</th>
+                        <th>PSC Status</th>
+                        <th>Current Role</th>
+                        <th>Lapse</th>
+                    </tr>
+                </thead>
+
+                <tbody id="myTable">
+                    
+                    {% for data in psc_data %}
+                    <tr>
+                        <td>{{data.psc_rec_id}}</td>
+                        <td>{{data.branch_code_id__branch_code}}</td>
+                        <!-- <td>{{data.region_name}}</td> -->
+                        <td>{{data.cust_id}}</td>
+                        <td>{{data.facility_num}}</td>
+                        <td>{{data.borrower_name}}</td>
+                        <td  style="white-space: nowrap;">{{data.npa_date|date:'d-m-Y'}}</td>
+                        <td>{{data.nap_tag}}</td>
+                        <td>{{data.status}}</td>
+                        <td>{{data.current_role}}</td>
+                        {% if data.mom_lapse %}
+                        {% if data.mom_lapse == 'yes' %}
+                        <td>{{data.mom_lapse}} 
+                            {% comment %}
+                            <a style="cursor: pointer; color: red;" href="{% url 'mom_review_export' data.id data.mom_id %}" id="pdf_export">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                            {% endcomment %}
+                        </td>
+                        {% else %}
+                        <td>{{data.mom_lapse}}</td>
+                        {% endif %}
+                        {% else %}
+                        <td width="5%">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    {% for mom in mom_data %}
+                                    <div style="display: flex; align-items: center;">
+                                        <select style="width: 150px;" onchange="toggleTextarea(this,'{{data.id}}','PSC2','{{mom.id}}')" type="text" required class="form-control" name="lapses_selection" id="lapses_selection">
+                                            <option value="" disabled selected hidden>Choose</option>
+                                            {% for status in ynstatus %}
+                                            <option value="{{ status.option }}">{{status.display_name}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    
+                    {% endfor %}
+                    
+                </tbody>
+
+                
+            </table>
+
+        </div>
+
+       
+    </div>
+
+    {% elif review_type == 'sac' %}
+    <div class="row p-1">
+        <div class="col-md-12">
+            <table height="400" class="table table-responsive table-hover shadow-lg bg-white" id="SAC_MOM_Table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>SAC Srl Num</th>
+                        <th>Branch</th>
+                        <!-- <th>Region</th> -->
+                        <th>Customer ID</th>
+                        <th>Account No.</th>
+                        <th>Borrower</th>
+                        <th>NPA Date</th>
+                        <th>NPA Tag</th>
+                        <th>SAC Status</th>
+                        <th>Current Role</th>
+                        <th>Lapse</th>
+                    </tr>
+                </thead>
+
+                <tbody id="myTable">
+                    {% for data in sac_data %}
+                    <tr>
+                        <td>{{data.sac_rec_id}}</td>
+                        <td>{{data.psc_rec_id__branch_code_id__branch_code}}</td>
+                        <!-- <td>{{data.psc_rec_id__region_name}}</td> -->
+                        <td>{{data.psc_rec_id__cust_id}}</td>
+                        <td>{{data.psc_rec_id__facility_num}}</td>
+                        <td>{{data.psc_rec_id__borrower_name}}</td>
+                        <td style="white-space: nowrap;">{{data.psc_rec_id__npa_date|date:'d-m-Y'}}</td>
+                        <td>{{data.psc_rec_id__nap_tag}}</td>
+                        <td>{{data.status}}</td>
+                        <td>{{data.current_role}}</td>
+                        {% if data.mom_lapse %}
+                        {% if data.mom_lapse == 'yes' %}
+                        <td width="5%">{{data.mom_lapse}} 
+                            {% comment %}
+                            <a style="cursor: pointer; color: red;" href="{% url 'mom_review_export' data.id data.mom_id %}" id="pdf_export">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                            {% endcomment %}
+                        </td>
+                        {% else %}
+                        <td width="5%">{{data.mom_lapse}}</td>
+                        {% endif %}
+                        {% else %}
+                        <td width="5%">
+                            {% for mom in mom_data %}
+                            <div style="padding-right: 30px; display: flex; align-items: center;">
+                                <select style="width: 100px;" onchange="toggleTextarea(this,'{{data.id}}','sac','{{mom.id}}')" type="text" required class="form-control" name="lapses_selection" id="lapses_selection">
+                                    <option value="" disabled selected hidden>Choose</option>
+                                    {% for status in ynstatus %}
+                                    <option value="{{ status.option }}">{{status.display_name}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+
+            </table>
+
+        </div>
+    </div>
+    {% endif %}
+    <a class="btn btn-primary" href="{% url 'mom_dashboard' %}" style="margin-left: 60%;">Go Back</a>
+                            
+    <button class="btn btn-primary mt-2 mb-2" id="mom_close_confirm" style="margin-left: 20%;" type="submit">Close MOM</button>
+</div>
+
+<input hidden type="text" name="db_rec_id" id="db_rec_id">
+<input hidden type="text" name="db_review_type" id="db_review_type">
+<input hidden type="text" name="db_mom_id" id="db_mom_id">
+
+<div class="modal fade" id="dd_yes_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel">MOM Lapse</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    <h5>Are you sure to proceed?</h5>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="lapses_yes_submit_button" type="submit" value="rejected"
+                        class="btn btn-primary  ml-2">YES</button>
+
+                    <button type="button" class="btn btn-outline-secondary ml-2" id="cancelbutton1"
+                        data-dismiss="modal">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Add event listener for modal close
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalElement = document.getElementById('dd_yes_modal');
+
+        // Reload the page when the modal is completely hidden
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            location.reload();
+        });
+    });
+</script>
+
+<div class="modal fade" id="dd_no_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectremarksLabel">MOM Lapse</h5>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="row modal_data">
+                    <div class="form-group col-sm-12" id="remarks">
+                        <label for="lapses_no_remarks">Lapses Not Found Remarks<span style="color: red">*</span></label>
+                        <textarea name="lapses_no_remarks" class="form-control" id="lapses_no_remarks"></textarea>
+                    </div>
+                                
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="mt-2" style="float:right">
+                    <button id="lapses_no_submit_button" type="submit" value="rejected" class="btn btn-primary  ml-2" disabled>Submit</button>
+            
+                    <button type="button" class="btn btn-outline-secondary ml-2" id="cancelbutton2" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var lapsesNoRemarksTextarea = document.getElementById('lapses_no_remarks');
+                    var lapsesNoSubmitButton = document.getElementById('lapses_no_submit_button');
+            
+                    lapsesNoRemarksTextarea.addEventListener('input', function () {
+                        if (lapsesNoRemarksTextarea.value.trim() !== '') {
+                            lapsesNoSubmitButton.removeAttribute('disabled');
+                        } else {
+                            lapsesNoSubmitButton.setAttribute('disabled', 'disabled');
+                        }
+                    });
+                });
+            </script>
+            
+        </div>
+    </div>
+</div>
+<script>
+    // Add event listener for modal close
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalElement = document.getElementById('dd_no_modal');
+
+        // Reload the page when the modal is completely hidden
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            location.reload();
+        });
+    });
+</script>
+
+
+<div class="modal fade" id="momModalclose" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Close MOM</h4>
+            </div>
+            <div class="modal-body mt-2">
+                <div class="row">
+                    {% for mom in mom_data %}
+                    {% for count in mom.loan_count %}
+                    <div class="col-md-4"><p>Out of <span id="total_mom_count"  style="font-weight: bold;">{{count.total_count}}</span> borrower(s)</p></div>
+                    <div class="col-md-4"><p><span  style="font-weight: bold;" id="mom_yes_complete_count">{{count.yes_count}}</span> borrower(s) have marked lapse</p></div>
+                    <div class="col-md-4"><p><span  style="font-weight: bold;" id="mom_no_complete_count">{{count.no_count}}</span> borrower(s) have not been found lapse.</p></div>
+
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer" >
+                <span style="margin-right: 130px; font-weight: bold;">Are you sure to Close the MOM?</span>
+                <button id="mom_close_button" type="submit" value=""
+                    class="btn btn-success left ml-2">YES</button>
+                <button type="button" class="btn btn-danger ml-2" id="cancelbutton3" data-dismiss="modal">NO</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     function toggleTextarea(select,id,type,mom_id) {
+        var dropdownId = select.id;   
+        $('#db_rec_id').val(id)
+        $('#db_review_type').val(type)
+        $('#db_mom_id').val(mom_id)  
+        if (select.value === 'YES') {
+            $('#dd_yes_modal').modal('show');
+            // window.location.href = '/screeningcommittee/mom_review/'+mom_id+'/'+type+'/'+id;
+        } else {
+            $('#dd_no_modal').modal('show');
+            // alert('Lapses not found')
+        }
+    }
+</script>
+
+<!-- show hide filters of psc & sac -->
+<script>
+    if (window.history.replaceState) {
+  window.history.replaceState(null, null, window.location.href);
+}
+</script>
+
+<script>
+  document.getElementById("cancelbutton1").addEventListener("click", function () {
+        $('#dd_yes_modal').modal('hide');
+        window.location.reload();
+    });
+  document.getElementById("cancelbutton2").addEventListener("click", function () {
+        $('#dd_no_modal').modal('hide');
+        window.location.reload();
+    });
+  document.getElementById("cancelbutton3").addEventListener("click", function () {
+        $('#momModalclose').modal('hide');
+        window.location.reload();
+    });
+</script>
+
+<script>
+        let id = $('#db_rec_id').val()
+        let type = $('#db_review_type').val()
+        let mom_id = $('#db_mom_id').val()
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+    $('#lapses_yes_submit_button').on('click', function (e) {
+        $('#lapses_yes_submit_button').attr('disabled', true);
+        let id = $('#db_rec_id').val()
+        let type = $('#db_review_type').val()
+        let mom_id = $('#db_mom_id').val()
+        // console.log(id,type,mom_id);
+        // preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_review/'+mom_id+'/'+type+'/'+id,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'id' : id,
+                'type' : type,
+                'mom_id' : mom_id,
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = '/screeningcommittee/mom_review/'+mom_id+'/'+type+'/'+id;
+
+            }
+        });
+    })
+
+    $('#lapses_no_submit_button').on('click', function (e) {
+        let lapses_no_remarks = $('#lapses_no_remarks').val();
+        $('#lapses_no_submit_button').attr('disabled', true);
+        let id = $('#db_rec_id').val()
+        let type = $('#db_review_type').val()
+        let mom_id = $('#db_mom_id').val()
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_review/'+mom_id+'/'+type+'/'+id,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'dd_select': 'no',
+                'json_lapses_heads': JSON.stringify(''),
+                'json_present_head': JSON.stringify(''),
+                'pk' : id,
+                'review_type' : type,
+                'mom_id' : mom_id,
+                'lapses_no_remarks': lapses_no_remarks
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_lapses/"+type+"/"+mom_id;
+
+            }
+        });
+    })
+</script>
+
+<script>
+    $('#mom_close_confirm').on('click', function (e) {
+        e.preventDefault()
+        $('#momModalclose').modal('show')
+    })
+
+    $('#mom_close_button').on('click', function (e) {
+        $('#mom_close_button').attr('disabled', true);
+        let status = e.target.value
+        let pk = $('#mom_pk_id').val()
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            type: 'POST',
+            url: '/screeningcommittee/mom_close/',
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'pk': pk,
+                'loan_count':'loan_count',
+                'status': ''
+            },
+            success: function (data) {
+
+                $('#success').show();
+                window.location.href = "/screeningcommittee/mom_dashboard";
+
+            }
+        });
+
+    })        
+    document.getElementById("cancelbutton2").addEventListener("click", function () {
+    $('#momModalclose').modal('hide');
+    });
+</script>
+
+<script>
+    function preventInitialSpaceOrSpecialChars(inputElement) {
+            // Define the regex pattern for space or special characters at the beginning
+            const invalidPattern = /^[\s\W_]/;
+
+            // Add event listener for input event
+            inputElement.addEventListener('input', function() {
+                // Check if the input value matches the invalid pattern
+                if (invalidPattern.test(inputElement.value)) {
+                    // Remove the invalid characters
+                    inputElement.value = inputElement.value.replace(invalidPattern, '');
+                }
+            });
+        }
+
+    // Function to apply the validation to all inputs of specific types
+    function applyValidation() {
+        // Select all input elements of type text, email, and password
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
+
+        // Apply the validation function to each input element
+        inputs.forEach(input => preventInitialSpaceOrSpecialChars(input));
+    }
+
+    // Call the applyValidation function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', applyValidation);
+</script>
+<!-- msg fadeOut -->
+<script>
+    var roles = "{{ roles }}";
+    
+$(document).ready(function () {
+    // setTimeout(function () {
+    //     $('.message').fadeOut('slow');
+    // }, 3000);
+    $('.del-msg').on('click', function () {
+        $('.del-msg').parent().attr('style', 'display:none;');
+    })
+});
+
+</script>
+{% endif %}
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "boss_admin/base.html" %}
+{% load  static %}
+{% load filters %}
+
+{% block content %}
+
+<html>
+    <style>
+
+        .center{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color:white;
+        }
+        .card-body, .card{
+            background-color:lightgray
+        }
+        
+        .mainbox{
+            padding:10px;
+            height:300px;
+            width:400px;
+        }
+        .err {
+            color: #ffffff;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10rem;
+            position:absolute;
+            left: 12%;
+            top: 40%;
+        }
+
+        .err1 {
+            color: #ffffff;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10rem;
+            position:absolute;
+            left: 35%;
+            top: 40%;
+        }
+
+        .far {
+        position: absolute;
+        font-size: 8.5rem;
+        left: 42%;
+        top: 40%;
+        color: #ffffff;
+        }
+
+        .err2 {
+            color: #ffffff;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 10rem;
+            position:absolute;
+            left: 58%;
+            top: 40%;
+        }
+
+        .msg {
+            text-align: center;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 1.6rem;
+            position:absolute;
+            left: 16%;
+            top: 45%;
+            width: 75%;
+        }
+
+       
+
+        .btn-outline-primary{
+            width: min-content;
+            height: min-content;
+            margin-left: 85%;
+            background-color: lightgray;
+        }
+
+    </style>
+    <body>
+        {% block mand_fields %} {% endblock %}
+        {% block sidenavicon %} {% endblock %}
+        {% block mand_fields2 %} {% endblock %}
+        
+        <div class="container mt-2">
+            <h5 style="background-color: #ffffff; margin-top: 2%; margin-left: 31%;">Error Details :</h5>
+            <div class="row justify-content-center">
+              <div class="col-6 center">
+               <div class="card" style="margin:10px">
+                <div class="card-body">
+                <div class="mainbox">
+                <div class="err">4</div>
+                <div class="err1">0</div>
+                <div class="err2">4</div>
+                {{error}}
+                </div>
+               </div> 
+               {% comment %}<a class="btn btn-outline-primary" href="/screeningcommittee/dashboard" >BACK</a>{% endcomment %}      
+              </div>
+            </div>
+          </div>
+    </body>
+</html>
+
+{% endblock %}

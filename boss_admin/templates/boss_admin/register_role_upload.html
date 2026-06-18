@@ -1,0 +1,61 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+           
+    </div>
+    {% if messages %}
+    <div class="row pt-4">
+            <div class="offset-4 col-md-4">
+                  {% for message in messages %}
+                       {% if message.tags == 'success' %}
+                            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                                {{ message }}
+                                <!--<a href="#" class="del-msg"></a>-->
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                            {% elif message.tags == 'error' %}
+                            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                                {{ message }}
+                                <!--<a href="#" class="del-msg"></a>-->
+                                <button id = "closeButton" type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                       {% endif %}
+                   {% endfor%}
+            </div>
+    </div>
+    {% endif %}
+    <div class="row pt-5">
+        <div class="offset-4 col-md-4 shadow p-5" style="margin-top: 70px;">
+        <center>
+            <h2>Upload Role Here</h2><hr><br><br>
+ <form id="submit_form" method="POST" action="{% url 'employee_role_2' %}" enctype ="multipart/form-data">
+       {% csrf_token %}
+       <input type = "file" name= "myfile"><br>
+       <button type="submit" class="btn btn-success">Upload</button>
+ </form>
+        </center>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+        $('#closeButton').on('click', function (e) {
+            $('#previewBox').remove();
+        });
+    });
+</script>
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+<script src="{% static '/js/js/popper.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap-datepicker.min.js' %}"></script>
+
+<script src="{% static '/js/additional-methods.js' %}"></script>
+<script src="{% static '/js/jquery.validate.js' %}"></script>
+<script src="{% static '/js/forge.min.js' %}"></script>
+<script src="{% static '/js/js_rsa.js' %}"></script>
+</body>
+</html>
+{% endblock %}

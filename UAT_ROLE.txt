@@ -1,0 +1,27 @@
+PSC HO Checker	psc001checker3	
+["Br.Manager (Scale II)", "Officer", "Sr.Manager", "Manager", "Asst.Gen.Manager"]
+-----------------------------------------------------------------------------------------------------
+SAC HO Checker	sac001checker3	
+["Officer", "Sr.Manager"]
+-----------------------------------------------------------------------------------------------------
+BO Maker	psc001maker1	
+["Customer Service Associate", "Customer Service Associate(Trainee)", "Clerk", "Typist Cum Clerk"]
+-----------------------------------------------------------------------------------------------------
+RO Maker	psc001maker2	
+["Customer Service Associate", "Customer Service Associate(Trainee)", "Clerk", "Typist Cum Clerk"]
+-----------------------------------------------------------------------------------------------------
+SAC HO Maker	sac001maker3	
+["Clerk"]
+-----------------------------------------------------------------------------------------------------
+PSC HO Maker	psc001maker3	
+["Customer Service Associate", "Customer Service Associate(Trainee)", "Clerk", "Typist Cum Clerk"]
+-----------------------------------------------------------------------------------------------------
+Convener	momconvener	
+["Dy.Gen.Manager", "Chief Manager"]
+-----------------------------------------------------------------------------------------------------
+BO Checker	psc001checker1	
+["Br.Manager (Scale II)", "Officer", "Sr.Manager", "Manager", "Asst.Gen.Manager", "Br.Manager (Scale I)"]
+-----------------------------------------------------------------------------------------------------
+RO Checker	psc001checker2	
+["Br.Manager (Scale II)", "Officer", "Sr.Manager", "Manager", "Asst.Gen.Manager", "Asst.Gen.Manager (RH)"]
+-----------------------------------------------------------------------------------------------------

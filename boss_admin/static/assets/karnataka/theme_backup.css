@@ -1,0 +1,75 @@
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  /* background: #004C8F; */
+  background:#853A93;
+}
+
+#sidebar ul li a{
+  color: #fff;
+  border-bottom: 1px solid #47748b;
+}
+#sidebar ul li a:hover span{
+  color: white;
+}
+#sidebar ul li a::after, a::before{
+  background: #f8ab1b;
+}
+#sidebar ul li.active a{
+  background: #f8ab1b;
+  color: white;
+}
+.admin-icon {
+  color: #004C8F;
+  background: #f9f9f9;
+}
+.table-dark tr th{
+background-color:#853A93 !important;
+}
+#sidebar ul ul a:hover span {
+color: white !important;
+}
+.card{
+/* background-color: #853A93; */
+background: linear-gradient(-70deg, #853A93 30%, rgba(0, 0, 0, 0) 30%);
+}
+.card-title{
+/*background-color: #853A93; */
+/* filter:purple(50%);*/
+border: #853A93;
+color: black;
+margin-top: 70px;
+/* background: linear-gradient(-70deg, #853A93 30%, rgba(0, 0, 0, 0) 30%); */
+}
+.admin-icon{
+border-radius: 5px;
+color: #fff;
+background-color:#853A93;
+margin-top: 0px;
+margin-right: 100px;
+width: 20%;
+}
+#img_title{
+margin-top: 10px;
+}
+
+.container{
+  width: 100%;
+}
+
+.tenant_img{
+  width: 150px;
+  height: 50px;
+  margin-left: 190px;
+}
+.ahana_img{
+  width: 50px;
+  height: 50px;
+  margin-left: 80px;
+}
+.mini_logo{
+  width: 40px;
+  height: 40px;
+}
+#sidebarCollapse{
+  background-color: #853A93;
+}

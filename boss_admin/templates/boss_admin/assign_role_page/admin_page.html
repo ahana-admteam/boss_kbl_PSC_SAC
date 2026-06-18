@@ -1,0 +1,56 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+{% with request.session.new_roles|my_filter as roles %}   
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+  });
+</script>
+  <div class="container mt-4">
+    {% if 'psc001checker3' in roles or 'sac001checker3' in roles %}
+    <div class="row mb-3" style="margin-top:75px;">
+        <div class="col-sm-3 tile">
+          <a href="{% url 'designation_matrix' %}">
+          <div class="card text-center tile1">
+            <div class="card-body">
+              <i class="fa fa-user admin-icon fa-2x mb-2" aria-hidden="true"></i>
+              <h5 class="card-title">Designation Matrix</h5>
+              <!-- <a href="/suspensecash/all" class="btn btn-primary">Suspense Cash</a> -->
+            </div>
+          </div>
+          </a>
+        </div>
+        
+        <div class="col-sm-3 tile">
+          <a href="{% url 'kbl_reports' %}">
+          <div class="card text-center tile1">
+            <div class="card-body">
+              <i class="fa fa-user admin-icon fa-2x mb-2" aria-hidden="true"></i>
+              <h5 class="card-title">Reports</h5>
+              <!-- <a href="/suspensecash/all" class="btn btn-primary">Suspense Cash</a> -->
+            </div>
+          </div>
+          </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="row mb-3" style="margin-top:75px;">
+        <div class="col-sm-3 tile">
+          <a href="{% url 'kbl_reports' %}">
+          <div class="card text-center tile1">
+            <div class="card-body">
+              <i class="fa fa-user admin-icon fa-2x mb-2" aria-hidden="true"></i>
+              <h5 class="card-title">Reports</h5>
+              <!-- <a href="/suspensecash/all" class="btn btn-primary">Suspense Cash</a> -->
+            </div>
+          </div>
+          </a>
+        </div>
+    </div>
+    {% endif %}
+  </div>
+{% endwith %}
+{% endblock content %}
+

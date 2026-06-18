@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static '/assets/images/karnataka/karnataka_small.png' %}" type="image/x-icon" />
+    <link href="{% static '/assets/bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static '/assets/bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet">
+    <script src="{% static '/assets/static_files/js/jquery.min.js' %}"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="{% static '/assets/'%}{{tenant}}/home.css" rel="stylesheet">
+    <link href="{% static '/assets/'%}/datatable.css" rel="stylesheet">
+    <link href="{% static '/assets/'%}{{tenant}}/theme.css" rel="stylesheet">
+    <link href="{% static '/assets/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static '/css/flatpickr.min.css' %}">
+    <title>{{tenant}}</title>
+
+</head>
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>
+
+<style>
+  .btn-outline-primary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+  #navbar {
+    transition: 0.4s;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+  }
+
+  .imp{
+    color: red;
+    font-weight: bold;
+  }
+
+  .fa-stack[data-count]:after {
+    position: absolute;
+    right: 0%;
+    top: 0%;
+    content: attr(data-count);
+    font-size: 50%;
+    padding: .6em;
+    margin-top: -10px;
+    border-radius: 900px;
+    line-height: .75em;
+    color: white;
+    background: rgba(255, 0, 0, .85);
+    text-align: center;
+    min-width: 2em;
+    font-weight: bold;
+  }
+  .btn-primary {
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+
+        /* Override primary background color */
+        .bg-primary {
+            background-color: #8a2895;
+        }
+
+        /* Override primary text color */
+        .text-primary {
+            color: #8a2895;
+        }
+
+        /* Optionally, you can also override other related classes */
+        .btn-outline-primary {
+            color: #8a2895;
+            border-color: #8a2895;
+        }
+
+        .btn-primary:hover, .btn-outline-primary:hover {
+            background-color: darkpurple;
+            border-color: darkpurple;
+        }
+        .btn-check:checked + .btn-outline-primary, .btn-check:active + .btn-outline-primary, .btn-outline-primary:active, .btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show {
+            color: #fff;
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+        .btn-outline-primary:hover , .btn-primary:hover{
+            color: #fff;
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+        .btn-outline-primary:focus, .btn-primary:focus {
+            color: #fff;
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+        .nav-link {
+            color: #8a2895;
+        }
+        .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+        
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+        .pagination>li>a, .pagination>li>span {
+          color: #8a2895;
+            border-color: #8a2895;
+        }
+        .btn-primary:disabled, .btn-primary.disabled {
+          color: #fff;
+          background-color: #8a2895;
+          border-color: #8a2895;
+        }
+        .btn-info {
+            color: #000;
+            background-color: #8a2895;
+            border-color: #8a2895;
+        }
+
+        .flatpickr-calendar {
+            background: #fdfdfd;
+            border: 1px solid #8a2895;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        
+  /* Smaller day cells */
+  .flatpickr-day {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    padding: 0;
+    font-size: 10px;
+  }
+</style>
+
+<body>
+    <div class="wrapper">
+      {% block mand_fields %}
+      <nav id="sidebar" >
+          <div class="sidebar-header">
+              <div class="d-flex flex-wrap justify-content-center">
+                  <img class="mb-4 small mini_logo" src="{% static '/assets/images/karnataka/karnataka_small.png' %}" alt="">
+                  <img class="mb-4 large tenant_img" src="{% static '/assets/images/' %}{{tenant}}/{{tenant_image}}" alt="">
+
+              </div>
+          </div>
+          <ul class="list-unstyled components pt-3">
+              <li>
+                <a href="{% url 'home_page' %}" {% if request.path == '/home' %}
+                class="backgroud-highligter" {% endif %}><span>Home <i class="fa fa-home left_icon" data-toggle="tooltip" title="Home" aria-hidden="true"></i>
+                      </span></a>
+              </li>
+              <li>
+                <a href="{% url 'admin_func' %}" {% if request.path == '/admin_func' %}
+                class="backgroud-highligter" {% endif %}><span>Admin <i class="fa fa-file-text-o left_icon" data-toggle="tooltip" title="Admin" aria-hidden="true"></i>
+                </span></a>
+            </li>
+          </ul>
+          
+      </nav>
+      {% endblock %}
+      <div id="content" style="padding: 0px;">
+          <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height: 68px;">
+              <div class="container-fluid" style="background-color: #8a2895;" >
+                {% block sidenavicon %}
+                  <button type="button" id="sidebarCollapse" class="btn btn-info">
+                      <i style="color: white;" class="fa fa-align-left admin-icon sidebar_icon"></i>
+                      
+                      <!-- <span>Toggle Sidebar</span> -->
+                  </button>
+                {% endblock %}
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                      <div class="container">
+                          <div class="col-sm-12">
+                              {% if title %}
+                                <h2 class="title pt-4" style="text-align:center;"> {{ title }} </h2>
+                              {% else %}
+                                <h2 class="title pt-4" style="text-align:center; color: white;">Online Submission of PSC & SAC</h2>
+                              {% endif %}
+                                {% block mand_fields2 %}
+                              <div class="menu_class">
+                                <div class="row">
+                                <div class="col-sm-12">
+                                <ul class="nav navbar-nav ml-auto">
+                                  <li class="nav-item" >
+                                    <a class="nav-link no-loader" data-toggle="tooltip" title="View Profile" id="show-hidden-menu"><i class="fa fa-user-o   profile_icon" aria-hidden="true"></i></a>
+                                    <div class="hidden-menu" style="display: none;margin-left:-160px;">
+                                      <div class="row">
+                                      <h6 style="width: 120px;">{{request.session.emp_name}}-{{request.session.emp_id}}</h6>
+                                      <h6>{{request.session.branch_name}}-{{request.session.branch_code}}</h6> 
+                                      <h6>{{request.session.designation}}</h6> <br>
+                                    </div>
+                                      <a class="nav-link position-icon" style="margin-left: 40px; color: black; font-family: sans-serif" href="{% url 'log_out' %}"><h6><i class="fa fa-sign-out " aria-hidden="true">Logout</i></h6></a>
+                                    </div>
+                                   
+                                  </li>
+                                  <!-- <li class="nav-item">
+                                    <a class="nav-link" id="show-hidden-branch-name"><i class="fa fa-random profile_icon" aria-hidden="true"></i>
+                                    </a>
+                                    <div class="hidden-menu-branch" style="display: none;margin-left:-100px;">
+                                      <h6 class="mb-3">Branch</h6>
+                                    </div>
+                                  </li> -->
+                                  <li class="nav-item">
+                                    {% if notifications and notification_feature == "True" %}
+                                    {% if not notifications %}
+                                    <i class="icon fa fa-bell profile_icon" aria-hidden="true"></i>
+                                    <a class="nav-link" id="show-hidden-notification"><i class="fa fa-bell-o" aria-hidden="true"></i>
+                                    </a>
+                                    {% else %}
+                                    <span class="fa-stack fa-1x" data-count="{{ notifications.count }}">
+                                      <a class="nav-link" id="show-hidden-notification"><i class="fa fa-bell-o" aria-hidden="true"></i>
+                                      </a>
+                                    </span>
+                                    
+                                    {% endif %}
+                                    
+                                    
+                                    <div class="hidden-menu-notification"  style="display: none;margin-left: -100px; ">
+              
+                                      {% if not notifications %}
+                                      No notifications yet !
+                                      {% endif %}
+              
+                                      
+                                      <div class="notification" style="height:200px; overflow-y:scroll">
+                                        {% for notification in notifications %}
+                                        {% if notification.notification_type == "Sent" %}
+                                        <a href='{{ notification.hyper_link }}'>
+                                          <strong>{{ notification.created_by.username }}</strong> sent {{ notification.register_type}}
+                                          <small>{{ notification.created_at|timesince }} ago</small>
+                                        </a>
+                                        {% elif notification.notification_type == "Received" %}
+                                        <a href='{{ notification.hyper_link }}'>
+                                          <strong>{{ notification.created_by.username }}</strong> received 
+                                          {{ notification.register_type }}
+                                          <small>{{ notification.created_at|timesince }} ago</small>
+                                        </a>
+                                        {% elif notification.notification_type == "Approved" %}
+                                        <a
+                                          href="{% url 'notifications' %}?goto=view_notification&notification={{ notification.id }}&extra_id={{ notification.extra_id }}">
+                                          <strong>{{ notification.created_by.username }}</strong> approved 
+                                          {{ notification.register_type }}
+                                          <small>{{ notification.created_at|timesince }} ago</small>
+                                        </a>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                      </div>
+                                      <button type="submit" onclick="clear_all_notification()"
+                                        class="btn btn-secondary float-right">clear all</button>
+              
+                                    </div>
+                                    {% endif %}
+                                  </li>
+                                  <!-- <li class="nav-item">
+                                    </a>
+                                  </li> -->
+                                </ul>
+                              </div>
+                              </div>
+                              </div>
+                              {% endblock %}
+                              <div class="row" style="height: 20px;">
+                                <div class="col-sm-12">
+                                  {% if request.session.cr_date %}
+                                  {% if request.path == '/cash_register/cash_register_home/' or request.path == '/cash_register/cash_register_cashier/' or request.path == '/cash_register/cash_register_vault/' or request.path == '/cash_register/vault_form/?action=Deposit' or request.path == '/cash_register/vault_form/' or request.path|slice:34 == '/cash_register/open_cash_register/' %}
+                                  <p class="pull-right" style="color: #fff;">Cash Register-{{request.session.cr_date}}
+                                  </p>
+                                 
+                                  {% endif %}
+                                  {% endif %}
+                                </div>
+                              </div>                     
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </nav>
+          <div style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(4px); z-index: 9999; text-align: center; font-size: 24px; padding-top: 20%;" id="loader">
+            <h1><strong>Loading, please wait.... </strong></h1>
+          </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                document.querySelectorAll('a').forEach(function(links){
+                    links.addEventListener('click', function(e){
+                        if(links.classList.contains('no-loader')){
+                            var loader = document.getElementById('loader');
+                            if (loader) loader.style.display = 'none';
+                            return;  
+                        }
+                        var loader = document.getElementById('loader');
+                        if (loader) loader.style.display = 'block'
+                    });
+                });
+            });
+        </script>
+        
+          <script>
+            window.addEventListener('load', function(){
+              const loader = document.getElementById('loader');
+              if(loader) loader.style.display = 'none'
+            })
+          </script>
+          <script>
+            document.addEventListener('DOMContentLoaded', function(){
+              const loadee = document.getElementById('loader')
+              const links = document.querySelectorAll('a[href^="/screeningcommittee/"]');
+              //console.log("links", links);
+              links.forEach(link => {
+                document.querySelectorAll('a:not(.no-loader)').forEach(link => {
+                  link.addEventListener('click', function(){
+                  loader.style.display = 'block'
+
+                });
+                
+                });
+              
+              });
+              window.addEventListener('beforeunload', function(){
+                loader.style.display = 'block';
+              });
+            });
+          </script>
+
+          {%  block content %}
+          {%  endblock content %}
+      </div>
+  </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+        var loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none'
+
+    });
+</script>
+
+<!-- file upload modeal 2 -->
+<div class="modal fade" id="fileUploadModal1" tabindex="-1" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fileUploadModalLabel">File Upload</h5>
+        <button type="button" id="closeBtn" class="close" data-dismiss="modal" aria-label="Close" style="background: none; border: none;"><i class="fa fa-close"></i>
+      </button>
+      
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <!-- document table -->
+          <div class="docTableContainer col-md-12" style="padding: 2% 0%; padding-top: 0%; ">
+            <div class="docTableContent" style="border: 1px solid rgb(201, 201, 201); border-radius: 5px;">
+
+              <div style="padding-left: 20px; padding-top: 20px; ">
+                <label id="file_for"></label>
+              </div>
+
+              <div class="uploadContainer p-3">
+                <!-- <input type="text" hidden name="file_values" id="file_values" /> -->
+
+                <div id="uploadfileContainer" class="selectTypeContainer p-1 mb-3"
+                  style="border: 1px solid rgb(201, 201, 201); border-radius: 5px;">
+                  <div class="selectTypeContent">
+
+                    <div class="col-md-12">
+                      <div class="row d-flex justify-content-around">
+                        <div class="col-md-3">
+
+                          <div class="type">
+                            <div class="form-group fileType" id="fileType">
+                              <label class="m-0 p-0" for="fileType">Section<span style="color: red">*</span></label>
+                              <input type="text" disabled name="section_name" class="form-control" value=""
+                                id="sectionNameInput">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="selectFile">
+                            <div class="form-group file">
+                              <label class="m-0 p-0" for="selectFile">Select File<span id="selectFile"
+                                  style="color: red">*</span></label>
+                              <input type="file" id="my_file" name="my_file" class="form-control"
+                                onchange='handleAddBTN()'>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="addButton">
+                            <div class="form-group addButton">
+                              <label class="m-0 p-0" for="addButton">Action<span id="addButton"
+                                  style="color: red">*</span></label>
+                              <input id="addFileBtn" class="form-control " name="addButton"
+                                onclick="previewFile(document.getElementById('sectionNameInput').value);" type="button"
+                                value="Add" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+                <span style="padding-left: 40%;">Supported file types:<span class="imp">.pdf, .png, .jpg</span> and File size should be max of <span class="imp">5mb</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- delete file modal -->
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body mt-2">
+        <span>Are you sure?</span>
+        <div style="float:right">
+          <input hidden type="number" step="0.01" id="rowcnt" />
+          <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+            onclick="deleteRow(this.id)">Yes
+          </button>
+          <button type="button" class="btn btn-success ml-2" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'assets/jquery-3.6.0.js' %}"></script>
+<script src="{% static 'assets/bootstrap/dist/js/bootstrap.js' %}"></script>
+<script src="{% static 'assets/custom_ui.js' %}"></script>
+<script src="{% static '/js/js/table.js' %}"></script>
+<script src="{% static '/js/js/popper.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap.min.js' %}"></script>
+<script src="{% static '/js/js/lib/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static '/js/js/selectize.min.js' %}"></script>
+<script>
+  
+  function clear_all_notification() {
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+    $.ajax({
+      url: "/notifications/clear_notification/",
+      headers: {
+        "X-CSRFToken": csrftoken
+      },
+      type: "POST",
+      success: function (data) {
+        window.location.reload();
+      }
+    });
+  }
+
+
+  </script>
+  <script type="text/javascript" src="{% static '/js/js/validations.js' %}"></script>
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            preventExponentialInputForNumberInputs();
+        });
+</script>
+
+<!-- file upload start -->
+<script>
+  let buttonid_modal = ''
+  $('#closeBtn').on('click', function () {
+    $('#fileUploadModal1').modal('hide')
+  })
+  function openFileUploadModal(filefor,appName, sectionName, btnid) {
+    let filesInput = document.getElementById('my_file')
+    let fileAddBTN = document.getElementById('addFileBtn')
+    fileAddBTN.disabled = true
+    fileAddBTN.className = 'form-control'
+    filesInput.value = ""
+    $('#appNameInput').val(appName);
+    $('#sectionNameInput').val(sectionName);
+    $('#file_for').text(filefor)
+    buttonid = btnid;
+    document.getElementById('my_file').value = '';    
+   console.log(document.getElementById(btnid).innerHTML);
+    if (document.getElementById(btnid).innerHTML == 'Uploaded') {
+    console.log('fa-link');
+      $('#fileUploadModal1').modal('hide');
+    //   $('html, body').animate({
+    //     scrollTop: $("#myTable").offset().top
+    // }, 500);
+    } else {
+      console.log('fa-upload');
+      $('#fileUploadModal1').modal('show');
+    $('#uploadfileContainer').show();
+    document.getElementById('my_file').value = '';    }
+    
+    buttonid_modal = btnid;
+  }
+
+  
+</script>
+
+<script type="text/javascript" src="{% static '/js/js/fileupload.js' %}">
+  checkUser()
+  console.log('checkUser()',checkUser());
+</script>
+
+<script type="text/javascript" src="{% static '/js/js/flatpickr.min.js' %}"></script>
+<script>
+    flatpickr(".flpck_dab", {
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d-m-Y",
+      maxDate: "today",
+      clickOpens: false
+  });
+
+  flatpickr(".flpck", {
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d-m-Y",
+      maxDate: "today",
+  });
+
+  flatpickr(".flp", {
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d-m-Y",
+      minDate: "today",
+      maxDate: new Date(new Date().setDate(new Date().getDate() + 30))
+  });
+
+
+
+
+</script>
+<script>
+  // console.log(request.session);
+  
+
+  {% load filters %}
+
+{% with request.session.new_roles|my_filter as roles %}
+        {% if 'momconvener' in roles %}
+            const loggedUserRole = "momconvener";
+        {% elif 'psc001maker1' in roles %}
+            const loggedUserRole = "psc001maker1";
+        {% else %}
+            const loggedUserRole = "Other User";
+        {% endif %}
+    {% endwith %}
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+  {% if file_data %}
+    var data10 = JSON.parse(JSON.stringify({{ file_data|safe }}));
+  {% else %}
+      var data10 = 'null';
+  {% endif %}
+  if(data10 != 'null'){ 
+  
+   fileData(data10)
+   data10.forEach(function (element, index) {
+    // console.log('element',element);
+       var table = document.getElementById("myTable");
+       var rowCount = table.rows.length;
+      //  console.log(rowCount);
+       var row = table.insertRow(rowCount);
+     row.insertCell(0).innerHTML =
+           `
+               <td style="word-wrap: break-word;">
+                   <span>
+                       `+ element.file_name + `
+                   </span>
+               </td>
+           `
+     row.insertCell(1).innerHTML =
+           `
+               <td>
+                   <span>
+                       `+ element.section + `
+                   </span>
+               </td>
+           `
+       '<td><input type="button" class=" col-md-6 td_input form-control" value="delete" onclick="deleteRow(' + rowCount + ',' + element.section + ')" /></td>';
+       if (loggedUserRole === "momconvener") {
+
+       row.insertCell(2).innerHTML =
+           `
+             <td>
+                   <div class = 'col-md-8'>
+                       <div class = 'row d-flex justify-content-center'>
+                           <div style="max-width: 40%;" >
+                               <button class="form-control btn-outline-primary"   onclick="openimg(\'` + element.file + `\',\'` + element.file_name + `\',\'` + element.document_id + `\')">Preview</button>
+                           </div>
+                           <div style="max-width: 40%;" >
+                               <button class="form-control btn-outline-primary deletefile" data-toggle="modal" data-target="#myModal" onclick="getrowcnt(\'` + rowCount + `\')">Delete</button>
+                         </div>
+                       </div>
+                   </div>
+               </td>
+           `}
+       else if (loggedUserRole === "psc001maker1") {
+
+       row.insertCell(2).innerHTML =
+           `
+             <td>
+                   <div class = 'col-md-8'>
+                       <div class = 'row d-flex justify-content-center'>
+                           <div style="max-width: 25%;" >
+                               <button class="form-control btn-outline-primary"   onclick="openimg(\'` + element.file + `\',\'` + element.file_name + `\',\'` + element.document_id + `\')">Preview</button>
+                           </div>
+                           <div style="max-width: 25%;" >
+                               <button class="form-control btn-outline-primary deletefile" data-toggle="modal" data-target="#myModal" onclick="getrowcnt(\'` + rowCount + `\')">Delete</button>
+                         </div>
+                       </div>
+                   </div>
+               </td>
+           `
+              }else{
+                row.insertCell(2).innerHTML =
+                `
+             <td>
+                   <div class = 'col-md-8'>
+                       <div class = 'row d-flex justify-content-center'>
+                           <div style="max-width: 34%;" >
+                               <button class="form-control btn-outline-primary"   onclick="openimg(\'` + element.file + `\',\'` + element.file_name + `\',\'` + element.document_id + `\')">Preview</button>
+                           </div>
+                           <div style="max-width: 34%;" >
+                               <button class="form-control btn-outline-primary deletefile" data-toggle="modal" data-target="#myModal" onclick="getrowcnt(\'` + rowCount + `\')">Delete</button>
+                         </div>
+                       </div>
+                   </div>
+               </td>
+           `
+              }
+   })
+  }
+
+
+
+</script>
+<script>
+  file_types =
+    [
+      "image/jpeg",
+      "image/png",
+      "application/pdf"
+    ]
+  let file_type = Object.values(file_types)
+  // document.getElementById('add_image').onclick = function (ev) {
+
+</script>
+<script type="text/javascript">
+
+  file_size_limit = JSON.parse(JSON.stringify({{ 5242880 | safe }})) 
+  // console.log('file_size_limit....', file_size_limit)
+
+  let filesInput = document.getElementById('my_file')
+  let fileAddBTN = document.getElementById('addFileBtn')
+
+  function handleAddBTN(e) {
+    var fileeee = document.querySelector("input[type=file]").files[0];
+    if (fileeee) {
+      var flag = 0
+            for (let i = 0; i < file_type.length; i++) {
+                if (file_type[i] == fileeee.type) {
+                    console.log("good to go")
+                    flag = 1
+                    break
+                }
+            }
+            if (flag == 0) {
+                fileAddBTN.disabled = true
+                fileAddBTN.className = 'form-control'
+                let text = file_type.join(", ")
+                filesInput.value = ""
+                alert("Please select the supported file types (" + text + ")")
+            } else if (flag == 1) {
+
+      console.log("limit", file_size_limit, 'file size', fileeee.size)
+
+      if (fileeee.size <= file_size_limit) {
+        fileAddBTN.disabled = false
+        fileAddBTN.className = 'form-control btn btn-primary'
+      } 
+      else {
+        fileAddBTN.disabled = true
+        fileAddBTN.className = 'form-control'
+        filesInput.value = ""
+        alert('File Size is too Large. The maximum file size allowed is ' + file_size_limit / 1048576 + ' MB and your file size is ' + (fileeee.size / 1048576).toFixed(1) + ' MB.')
+      }
+    } else {
+      console.log("files is not selected")
+    }
+  } else {
+            console.log("files is not selected")
+        }
+  }
+  
+
+</script>
+<!-- endof fileupload -->
+</body>
+
+</html>

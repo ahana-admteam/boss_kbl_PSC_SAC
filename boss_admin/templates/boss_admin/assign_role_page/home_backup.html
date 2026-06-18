@@ -1,0 +1,606 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+
+    <style>
+        .admin-link:link {
+            text-decoration: underline;
+        }
+
+        .tiles_container{
+            display:flex;
+            flex-direction: row;
+            justify-content:center;
+            flex-wrap: wrap;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .tile{
+            width:30%;
+            padding:16px;
+            padding-bottom: 5px;
+            height: 120px;
+        }
+        .card-header{
+            text-align: center;
+        }
+        .card-body{
+            text-align: center;
+            font-size: 17px;
+            height: 30px;
+        
+        }
+        .block{
+            display: flex;
+            width:65%;
+            margin-top: 108px;
+            margin-left:20px;
+            background-color: rgb(245, 244, 244);
+            color: #fff;
+            height: 540px;
+          
+        }
+        .block1{
+            width:30%;
+            margin-top: 108px;
+            margin-left:1000px;
+            position:fixed;
+        }
+        /*.block2{
+            margin-top: 0px;
+            width:71%;
+            margin-left:20px;
+        }*/
+        .grid{
+            width:70%;
+            padding:0px;
+            padding-bottom: 109px;
+            height: 100px;
+        }
+
+        
+        
+    </style>
+    
+
+        <div class="row" style="width: 100%; height:100%">                            
+            <div class="block">
+                
+                <div class="tiles_container">
+                    <!-- <h2 style="text-align: center; width:100%; color: #d9117c; font-weight:bold">Digital Registers</h2> -->
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'in001receiver' in roles %}
+                        <a name="admin-link" href="/inward/new_inward">
+                            <div class="card bg-success bg-success1 mb-3" >
+                                <div class="card-header">Inward</div>
+                                <div class="card-body">
+                                     (2)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'in001approver' in roles %}
+                        <a name="admin-link" href="/inward/acknowledge">
+                            <div class="card bg-success bg-success1 mb-3" >
+                                <div class="card-header">Inward</div>
+                                <div class="card-body">
+                                     (2)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/inward/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Inward</div>
+                                <div class="card-body">
+                                     (2)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="tile">
+                        {% with request.session.roles|my_filter as roles %}
+                        {% if '3' in roles %}
+                        <a name="admin-link" href="/outward/makernew">
+                            <div class="card bg-success bg-success2 mb-3" >
+                                <div class="card-header">Outward</div>
+                                <div class="card-body">
+                                     (3)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% elif '4' in roles %}
+                        <a name="admin-link" href="/outward/outcheck">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Outward</div>
+                                <div class="card-body">
+                                     (3)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/outward/">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Outward</div>
+                                <div class="card-body">
+                                     (3)                                  
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="tile">
+                        <a name="admin-link" href="/keys/keyhandover">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Key Movement</div>
+                                <div class="card-body">
+                                     (1)                                   
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="tile">
+                        {% with request.session.roles|my_filter as roles %}
+                        {% if '5' in roles %}
+                        <a name="admin-link" href="/branchdocuments/maintainance">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Branch Document</div>
+                                <div class="card-body">
+                                    (3)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/branchdocuments/">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Branch Document</div>
+                                <div class="card-body">
+                                    (3)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+
+                    </div>
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'ss001maintainer' in roles %}
+                        <a name="admin-link" href="/securityStockRegister/addStock/addStock">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Security Form</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'ss001verifier' in roles %}
+                        <a name="admin-link" href="/securityStockRegister/verifyStock/verifyStock">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Security Form</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+            
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/securityStockRegister/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Security Form</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="tile">
+                        {% with request.session.roles|my_filter as roles %}
+                        {% if '13' in roles %}
+                        <a name="admin-link" href="/issuanceregister/issuance">
+                        <div class="card bg-success bg-success2 mb-3">
+                            <div class="card-header"> Security Issuance</div>
+                            <div class="card-body">
+                                (5)
+                            </div>
+                        </div>
+                        </a>
+                        {% elif '14' in roles %}
+                        <a name="admin-link" href="/issuanceregister/verify_issuance">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header"> Security Issuance</div>
+                                <div class="card-body">
+                                    (5)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/issuanceregister/">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header"> Security Issuance</div>
+                                <div class="card-body">
+                                    (5)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'sc001crec' in roles  %}
+                        <a name="admin-link" href="/suspensecash/newentry">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Suspense Cash</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'sc001cashier' in roles %}
+                        <a name="admin-link" href="/suspensecash/cashieracknowledge">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Suspense Cash</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/suspensecash/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Suspense Cash</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="tile">
+                        {% with request.session.roles|my_filter as roles %}
+                        {% if '17' in roles %}
+                        <a name="admin-link" href="/securityequipments/new">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Security Equipment</div>
+                                <div class="card-body">
+                                    (1)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif '18' in roles %}
+                        <a name="admin-link" href="/securityequipments/verify">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Security Equipment</div>
+                                <div class="card-body">
+                                    (1)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/securityequipments/">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Security Equipment</div>
+                                <div class="card-body">
+                                    (1)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}    
+                    </div>
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'pc001maker' in roles %}
+                        <a name="admin-link" href="{% url 'add_or_withdraw' %}">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Teller Cash</div>
+                                <div class="card-body">
+                                    (7)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'pc001approver' in roles %}
+                        <a name="admin-link" href="{% url 'verify_cash' %}">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Teller Cash</div>
+                                <div class="card-body">
+                                    (7)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/petty_home/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Teller Cash</div>
+                                <div class="card-body">
+                                    (7)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %} 
+                    </div>
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'cr001maker' in roles %}
+                        <a name="admin-link" href="/complaints/newcomplaint">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Complaint Book</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'cr001approver' in roles %}
+                        <a name="admin-link" href="/complaints/acknowledge">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Complaint Book</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/complaints/">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Complaint Book</div>
+                                <div class="card-body">
+                                    (6)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %} 
+                    </div>
+
+                    <div class="tile">
+                        {% with request.session.new_roles|my_filter as roles %}
+	                    {% if 'gl001maker' in roles %}
+                        <a name="admin-link" href="/goldloan/new">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Gold Loan</div>
+                                <div class="card-body">
+                                    (4)
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'gl001approver' in roles %}
+                        <a name="admin-link" href="/goldloan/verify">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Gold Loan</div>
+                                <div class="card-body">
+                                    (4)
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/goldloan/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Gold Loan</div>
+                                <div class="card-body">
+                                    (4)
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <!-- {% with request.session.new_roles|my_filter as roles %}
+                    {% if 'lar001jc' in roles or 'lar001oic' in roles or 'ad001branchadmin' in roles %}
+                    <div class="tile">
+                        <a name="admin-link" href="{% url 'locker_home'%}">
+                            <div class="card text-white bg-success bg-success3 mb-3">
+                                <div class="card-header">Locker Access</div>
+                                <div class="card-body">
+                                    (2)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endwith %}-->
+                </div>
+            </div>
+            <div class="block1"> 
+                <div class="grid-container">
+                    <div class="grid">
+                        {% with request.session.new_roles|my_filter as roles %}
+                        {% if 'ad001appadmin' in roles %}
+                        <a name="admin-link" href="{% url 'app_admin' %}">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Admin Panel</div>
+                                <div class="card-body">
+                                    
+                                </div>
+                            </div>
+                        </a>
+                         {% elif 'ad001branchadmin' in roles  %}
+                        <a name="admin-link" href="{% url 'role_assign_page' %}">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Admin Panel</div>
+                                <div class="card-body">
+                                                                      
+                                </div>
+                            </div>
+                        </a>                  
+                        {% elif 'ad001finance' in roles %}
+                        <a name="admin-link" href="{% url 'asset_dataloader' %}">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Admin Panel</div>
+                                <div class="card-body">
+                                               
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="{% url 'app_admin' %}">
+                            <div class="card bg-success bg-success2 mb-3">
+                                <div class="card-header">Admin Panel</div>
+                                <div class="card-body">
+                                               
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}    
+                        {% endwith %}
+                    </div>    
+                    <div  class="grid">
+                        <a name="admin-link" href="/documents_manage/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Document Management</div>
+                                <div class="card-body">                
+                                </div>
+                            </div>
+                        </a>
+                    </div>                    
+                    
+                    <div class="grid">
+                        <!-- <a name="admin-link"  id="add" onclick="addasset()" href=""> -->
+                        <!-- <a name="admin-link" onclick="window.open('https://app.powerbi.com/groups/me/reports/25355eb3-9e32-44fe-a683-81208f6ecd53/ReportSection2d375cec11a8cf544a79?ctid=4d5cda78-277a-44f9-8ee0-c658fff21f68',
+                        'newwindow',
+                        'width=1000,height=1000');return false;"
+                         target="_blank" rel="noopener noreferrer"> -->
+                        <!-- <a name="admin-link" onclick="window.open('https://app.powerbi.com/links/6Nu6QdamdX?ctid=4d5cda78-277a-44f9-8ee0-c658fff21f68&pbi_source=linkShare',
+                        'newwindow',
+                        'width=1000,height=1000');return false;"
+                         target="_blank" rel="noopener noreferrer"> -->
+                            <div class="card bg-success bg-success2 mb-3">
+                                <a href="{% url 'select_auditor'%}" class="dropdown-toggle " id="navbarDropdown" role="button" style="text-align: center;
+                                padding-top: 20px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% if request.path == '/select_auditor' or request.path == '/app_admin'%}
+                                    style="background: #fdb913;" {% endif %}>Reporting</a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown"  >                              
+                                    <a href="/it_recon_assets" class="btn-text button-custom button-custom-hover" {% if request.path == '/app_admin' %}
+                                      style="background: #fdb913;" {% endif %}>IT Assets Reports</a>    
+                                    <a href="/audit/visit_snapshot" class="btn-text button-custom button-custom-hover" {% if request.path == '/select_auditor' %}
+                                      style="background: #fdb913;" {% endif %}>ROL Reports
+                                    </a>  
+                                  </div> 
+                                <div class="card-body">
+                                    
+                                   
+                                </div>
+                            </div>
+                        </a>
+                    </div>                       
+                    <div class="grid">
+                        {% with request.session.audit_roles|my_filter as roles %}
+                        {% if 'ad001internalauditor' in roles or 'ad001regionalauditor' in roles or 'ad001zonalauditor' in roles or 'ad001operationshead' in roles %}
+                        <a name="admin-link" href="{% url 'inward_audit' %}">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Audit and Compliance</div>
+                                <div class="card-body">       
+                                </div>
+                            </div>
+                        </a>
+                        {% elif 'ad001branchadmin' in request.session.new_roles  %}
+                        <a name="admin-link" href="{% url 'bom_view_all' %}">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Audit and Compliance</div>
+                                <div class="card-body">       
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a name="admin-link" href="/audit_home/">
+                            <div class="card bg-success bg-success1 mb-3">
+                                <div class="card-header">Audit and Compliance</div>
+                                <div class="card-body">       
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                        
+                    </div>
+                       
+                    <div class="grid"  id="but">
+                        <div class="card bg-success bg-success2 mb-3">
+                            <button class="card-header card1" style="border-top-right-radius:inherit;border-top-left-radius:inherit; border:none;" onclick="myfunction()" >Asset Management</button>
+                            <div class="card-body" >
+                                <div class="row">
+                                    <div style="width: 160px; font-size:18px;">                                   
+                                        <a class="card1" name="admin-link" href="/fixedasset/new/">Non-IT</a>                                                                             
+                                    </div>
+                                    <div style="font-size:18px;">
+                                        {% with request.session.new_roles|my_filter as roles %}
+                                        {% if 'ita001verifier' in roles %}
+                                        <a class="card1" name="admin-link"  href="{% url 'itassetstab' %}">IT</a>
+                                        {% else %}
+                                        <a class="card1" name="admin-link" href="/viewall_it_asset/">IT</a>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="block2">
+                <div class="tiles_container">
+                    <div class="tile">
+                        <a name="admin-link" id="asset_manage"  style="display:none" href="/fixedasset/new/">
+                            <div class="card text-white bg-success bg-success1 mb-3">
+                                <div class="card-header">Non-IT Asset</div>
+                                <div class="card-body">
+                                    (15)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% with request.session.new_roles|my_filter as roles %}
+                    {%  if 'ita001verifier' in roles %}
+                    <div class="tile">
+                        <a name="admin-link" id="asset_manage1" style="display:none" href="{% url 'itassetstab' %}">
+                                    <div class="card text-white bg-success bg-success4 mb-3">
+                                        <div class="card-header">IT Assets </div>
+                                        <div class="card-body">
+                                            (20)
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                    {% else %}
+                    <div class="tile">
+                        <a name="admin-link" id="asset_manage1" style="display:none" href="/viewall_it_asset/">
+                            <div class="card text-white bg-success bg-success4 mb-3">
+                                <div class="card-header">IT Assets </div>
+                                <div class="card-body">
+                                    (5)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    
+                    
+                </div>
+            </div>                  -->
+    </div>
+    <script>
+
+        function myfunction() {
+           $('#asset_manage').show();
+           $('#asset_manage1').show();
+           //$('#but').hide();
+        }
+    </script>
+    <!-- <script>
+        function addasset(){
+            //window.open("https://www.dhl.com/us-en/home/book-online.html")
+            window.open("https://app.powerbi.com/groups/me/reports/25355eb3-9e32-44fe-a683-81208f6ecd53/ReportSection2d375cec11a8cf544a79?ctid=4d5cda78-277a-44f9-8ee0-c658fff21f68")        }
+    </script> -->
+   
+{% endblock content %}

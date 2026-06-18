@@ -1,0 +1,307 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{%  block content %}
+
+{% include "boss_admin/assign_role_page/left_nav_bar.html" %}
+
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+<script src="{% static '/js/js/table.js' %}"></script>
+<style>
+.alert11 {
+   width:40%;
+   line-height:20%;
+}
+.col-md-3{
+padding:10px;
+}
+</style>
+<div class="container-fluid right-main-container" style="margin-top:20px;width: 80%;">
+<form id="submit_form" method="POST" action="{% url 'asset_export' %}">
+    {% csrf_token %}
+    <div class="row" >
+    <div class="col-md-3">
+         <select class="form-control dropdowns" name="branch_dropdown" required="required">
+                        <option value="">Select Branch</option>
+                        <option value="all">All</option>
+<!--                        <option id="branch_id" name="xyz" value="all">-->
+<!--                            All-->
+<!--                        </option>-->
+                        {% for branch in branch_list %}
+                        <option id="branch_id" name="xyz" value="{{branch.branch_code}}">
+                            {{branch.branch_name}}-{{branch.branch_code}}
+                        </option>
+                        {% endfor %}
+         </select>
+    </div>
+
+    <div class="col-md-3">
+         <select class="form-control dropdowns" name="verified">
+                        <option value="">Select</option>
+                        <option id="branch_id" name="yes" value="yes">Verified</option>
+                        <option id="branch_id" name="no" value="no">Not Verified</option>
+                        </option>
+         </select>
+    </div>
+
+
+<!--    <div class="col-md-3">-->
+<!--         <input name = "fromdate" placeholder="From Date" class="textbox-n form-control date_validity" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" />-->
+<!--    </div>-->
+
+<!--    <div class="col-md-3">-->
+<!--        <input name = "todate" placeholder="To Date" class= "textbox-n form-control date_validity" type="text" onfocus="(this.type='date')" onblur="(this.type='text')"/>-->
+<!--    </div>-->
+<div class="col-md-3">
+                            <div class="form-group">
+{#                                <select class="form-control" style="width:90%" name="state" id="maxRows">#}
+{#                                    <option value="10">10</option>#}
+{#                                    <option value="15">15</option>#}
+{#                                    <option value="20">20</option>#}
+{#                                    <option value="50">50</option>#}
+{#                                    <option value="70">70</option>#}
+{#                                    <option value="100">100</option>#}
+{#                                    <option value="5000">show all</option>#}
+{#                                </select>#}
+                            </div>
+                    </div>
+    <div class="col-md-3">
+        <button class="btn btn-primary mr-4" type="submit">Get Transactions</button>
+    </div>
+    <div class="col-md-3">
+       <div class="export">
+            <button style="font-size:15px" onclick="exportTableToExcel('table-id')" class="btn btn-primary" >Export</button>
+        </div>
+     </div>
+    <!--<div class="col-md-3">-->
+        <!--<div class="">-->
+            <!--<input  type="text" id="search_input_all" onkeyup="FilterkeyWord_all_table()"-->
+                   <!--placeholder="Search" class="form-control ">-->
+        <!--</div>-->
+    <!--</div>-->
+</form>
+</div>
+
+
+
+
+                   <div class="row p-2" style="margin-top: -10px">
+            <table height="350"  class="table table-responsive table-striped shadow-lg bg-white" id="">
+                <thead>
+                                        <tr>
+                      <th scope="col">Asset Number</th>
+
+                      <th scope="col">Location</th>
+                        <th scope="col">Location Name</th>
+                                            <th scope="col">Description</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Physical Verification</th>
+                      <th>Tag Number</th>
+                                            <th>Tagging Required</th>
+                      <th>Serial Number</th>
+                                            <th>Date Placed In Service</th>
+                      <th>Auditor status</th>
+                      <th>Auditor remarks</th>
+                      <th>Verified date</th>
+
+
+
+
+                    </tr>
+
+                                    </thead>
+                                    <tbody  id="myTable">
+                                     {% for mail in far_data %}
+                                        <tr>
+
+                    <td>{{mail.asset_number}}</td>
+
+                      <td>{{mail.location_code}}</td>
+                      <td>{{mail.location_name}}</td>
+                                            <td>{{mail.asset_description}}</td>
+                      <td>{{mail.asset_category}}</td>
+                      <!--<td>{{mail.it_or_nonit}}</td>-->
+                      <td>{{mail.physical_verification}}</td>
+                      <td>{{mail.tag_number}}</td>
+                                            <td >{{mail.tagged_yes_no}}</td>
+                      <td>{{mail.serial_number}}</td>
+                                            <td>{{mail.date_placed_in_service | date:"d-m-Y"}}</td>
+
+                    <td>{{mail.assetregistertransaction__auditor_status}}</td>
+
+                      <td>{{mail.assetregistertransaction__auditor_remarks}}</td>
+                      <td>{{mail.assetregistertransaction__verified_datetime | date:"d-m-Y"}}</td>
+
+
+                                        </tr>
+                                      {% endfor %}
+
+
+                                    </tbody>
+                                    </table>
+                                </div>
+        <!-- 2nd row end -->
+        <div class="row">
+            <div class="col-md-10">
+                {% if far_data.has_other_pages %}
+                 <ul class="pagination">
+                    {% if far_data.has_previous %}
+                      <li><a href="?page={{ far_data.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+
+                    {% for i in far_data.paginator.page_range %}
+    			{% if far_data.number == i %}
+        		<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+    			{% elif i > far_data.number|add:'-5' and i < far_data.number|add:'5' %}
+        		<li><a href="?page={{ i }}">{{ i }}</a></li>
+    			{% endif %}
+		    {% endfor %}
+
+                    {% if far_data.has_next %}
+                      <li><a href="?page={{ far_data.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                  </ul>
+                {% endif %}
+            </div>
+            <div class="col-md-2">
+                <span class="current" style="color: #95a4f2">
+                    Page {{ far_data.number }} of {{ far_data.paginator.num_pages }}.
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+    <table style="display: none;" id="table-id">
+                <thead>
+                    <tr>
+                      <th>Asset Number</th>
+
+                      <th>Location</th>
+                      <th>Location Name</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Physical Verification</th>
+                      <th>Tag Number</th>
+                      <th>Tagging Required</th>
+                      <th>Serial Number</th>
+                      <th>Date Placed In Service</th>
+                      <th>Auditor status</th>
+                      <th>Auditor remarks</th>
+                      <th>Verified date</th>
+
+                    </tr>
+
+                                    </thead>
+                                    <tbody>
+                                     {% for mail in far_list %}
+                                        <tr>
+
+                    <td>{{mail.asset_number}}</td>
+
+                      <td>{{mail.location_code}}</td>
+                      <td>{{mail.location_name}}</td>
+                                            <td>{{mail.asset_description}}</td>
+                      <td>{{mail.asset_category}}</td>
+                      <!--<td>{{mail.it_or_nonit}}</td>-->
+                      <td>{{mail.physical_verification}}</td>
+                      <td>{{mail.tag_number}}</td>
+                                            <td >{{mail.tagged_yes_no}}</td>
+                      <td>{{mail.serial_number}}</td>
+                                            <td>{{mail.date_placed_in_service|date:"d-m-Y"}}</td>
+
+                    <td>{{mail.assetregistertransaction__auditor_status}}</td>
+
+                      <td>{{mail.assetregistertransaction__auditor_remarks}}</td>
+                      <td>{{mail.assetregistertransaction__verified_datetime | date:"d-m-Y"}}</td>
+
+
+                                        </tr>
+                                      {% endfor %}
+
+
+                                    </tbody>
+                                    </table>
+
+    <!-- Full Container end -->
+
+
+    <script type="text/javascript">
+    $(function () {
+        //Assign Click event to Button.
+        $("#btnGet").click(function () {
+
+             var cars=[];
+            //Loop through all checked CheckBoxes in GridView.
+            $("#table-id > tbody > tr .chkbx:checked").each(function () {
+            var row = $(this).closest("tr")[0];
+            cars.push(row.cells[0].innerHTML);
+            console.log(cars)
+           });
+
+ $("#chklist").val(cars);
+console.log(cars)
+        });
+    });
+
+
+</script>
+<script>
+   $('#success').hide()
+</script>
+<script>
+    $(function(){
+    var dtToday = new Date();
+
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+
+    var maxDate = year + '-' + month + '-' + day;
+    $('.date_validity').attr('max', maxDate);
+});
+</script>
+
+ <script>
+function exportTableToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename?filename+'.xls':'Assets_data.xls';
+
+    // Create download link element
+    downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+        // Setting the file name
+        downloadLink.download = filename;
+
+        //triggering the function
+        downloadLink.click();
+    }
+}
+</script>
+
+
+{%  endblock content %}

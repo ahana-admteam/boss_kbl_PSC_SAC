@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.84.0">
+    <title>Bank Project</title>
+    <link rel="canonical" href="{% static 'https://getbootstrap.com/docs/5.0/examples/sign-in/' %}">
+    <link href="{% static '/assets/bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet">
+    <title>{{tenant}}</title>
+
+    
+    <style>
+           .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    <link href="{% static '/assets/' %}{{tenant}}/signin.css" rel="stylesheet">
+</head>
+<body class="text-center">
+    <div id="box_ani" class="container_ani form-signin rounded-3">
+        {% for message in messages %}
+        <div class="message alert alert-danger alert-dismissible">
+            {{ message }}
+            <a href="#" class="del-msg"></a>
+        </div>
+        {% endfor %}
+        <div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <img class="mb-4 image1" src="{% static '/assets/images/'  %}{{tenant}}/{{tenant_image}}" alt="">
+            <img class="mb-4 image2" src="{% static '/assets/images/ahana.jpg' %}" alt="">
+            <h2>{{title}}</h2>
+        </div>
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <form id="me" method="post">
+            <div class="form-floating">
+                <input type="text" name="domain_name" autocomplete="off" autofocus id="userId" class="form-control" placeholder="domain_id" required="required">
+                <label for="userId">Username</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" name="pwd" class="form-control" placeholder="password" autocomplete="off" autofocus id="pwd">
+                <label for="pwd">Password</label>
+            </div>
+
+            <div class="checkbox mb-3">
+                <label>
+                    <!-- <input type="checkbox" value="remember-me"> Remember me -->
+                </label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary twoToneButton" >Sign in</button>
+            <!-- <p class="mt-5 mb-3 text-muted">&copy; 2022</p> -->
+        </form>
+    </div>
+
+
+    <script src="{% static '/assets/jquery-3.6.0.js' %}"></script>
+    <script src="{% static '/assets/bootstrap/dist/js/bootstrap.js' %}"></script>
+    <script src="{% static '/assets/custom_ui.js' %}"></script>
+    </body>
+    <script src="{% static '/js/js/jquery.min.js' %}"></script>
+    <script src="{% static '/js/js/popper.min.js' %}"></script>
+    <script src="{% static '/js/js/lib/bootstrap.min.js' %}"></script>
+    <script src="{% static '/js/js/lib/bootstrap-datepicker.min.js' %}"></script>
+
+    <script src="{% static '/js/additional-methods.js' %}"></script>
+    <script src="{% static '/js/jquery.validate.js' %}"></script>
+    <script src="{% static '/js/forge.min.js' %}"></script>
+    <script src="{% static '/js/js_rsa.js' %}"></script>
+<script>
+    $('#success').hide()
+    $('#pass').hide();
+     $('#usrid').hide();
+
+</script>
+<script language="Javascript">
+    function capLock(e){
+     kc = e.keyCode?e.keyCode:e.which;
+     sk = e.shiftKey?e.shiftKey:((kc == 16)?true:false);
+     if(((kc >= 65 && kc <= 90) && !sk)||((kc >= 97 && kc <= 122) && sk))
+      document.getElementById('divMayus').style.visibility = 'visible';
+     else
+      document.getElementById('divMayus').style.visibility = 'hidden';
+    }
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $('#closeButton').on('click', function (e) {
+            $('#previewBox').remove();
+        });
+    });
+   $( "#btns" ).click(function(e) {
+ $('#pass').hide();
+     $('#usrid').hide();
+   var a= $('#pwd').val();
+   var b= $('#userId').val().toLowerCase();
+   if(a.length<=0)
+   {
+   $('#pass').show();
+e.preventDefault();
+}
+if(b.length<=0)
+   {
+   $('#usrid').show();
+e.preventDefault();
+}
+});
+</script>
+
+<script>
+    function file_encrypt(dtstmp, myid){
+            $.post('file_encrypt', {dtstmp:dtstmp, myid:myid}, function(data, status){
+                var publicKey = forge.pki.publicKeyFromPem(data);
+                $("#public_key").val(data);
+                var secretMessage = $("#pwd").val();
+                // cipher text with rsa public key
+                var encrypted = publicKey.encrypt(secretMessage, "RSA-OAEP", {
+                    md: forge.md.sha256.create(),
+                    mgf1: forge.mgf1.create()
+                });
+                var base64 = forge.util.encode64(encrypted);
+                var a = $("#pwd").val(base64);
+            });
+        }
+
+        $(document).ready(function () {
+           
+            $("#me").validate(
+                {
+                
+                rules: {
+                    userId:{
+                        required: true,
+                    },
+                    pwd:{
+                        required: true,
+                    },
+                },
+                messages: {
+
+                },
+                submitHandler: function(form,e) {
+                    console.log('login here')
+                    var dtstmp = Date.now();
+                    var myid = $("#userId").val().toLowerCase();
+                    var myresp = file_encrypt(dtstmp, myid);
+                    $('input[type=submit]').attr("disabled", "disabled");
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    var delayInMilliseconds = 8000; //1 second
+                    setTimeout(function() {
+                      //your code to be executed after 1 second
+                       $.ajax({
+                        url: "",
+                        type: "post",
+                        cache: false,
+                        contentType: 'application/x-www-form-urlencoded',
+                        data:  {
+                            userId: $("#userId").val().toLowerCase(),
+                            pwd: $("#pwd").val(),
+                            dtstmp: dtstmp,
+                        },
+                        beforeSend: function() {
+
+                        },
+
+                        success: function (data, status) {
+                        if(data['msg'] == 'success'){
+                            console.log(data['msg'])
+                            window.location.href='home';
+                        }else{
+                            console.log("eroor ...!") 
+                            window.location.href='';
+                           };
+                        },
+                        });
+                    }, delayInMilliseconds);
+                    return false;
+                },
+
+                 highlight: function(element) {
+                    $(element).css('border-color', '#800000');
+                    $(element).css('background-color', ' #FFE4C4');
+                },
+
+                errorPlacement: function(error, element) {
+                        error.appendTo(element.parents('.mygroup'));
+                },
+
+            });
+        });
+
+</script>
+<script>
+    $(function(){
+    
+    var twoToneButton = document.querySelector('.twoToneButton');
+    
+    twoToneButton.addEventListener("click", function() {
+        
+        twoToneButton.innerHTML = "Signing In";
+        twoToneButton.classList.add('spinning');
+        
+      setTimeout( 
+            function  (){  
+                twoToneButton.classList.remove('spinning');
+                twoToneButton.innerHTML = "Sign In";
+                
+            }, 6000);
+    }, false);
+    
+});
+
+    $(document).ready(function() {
+        // messages timeout for 10 sec
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 10000); // <-- time in milliseconds, 1000 =  1 sec
+
+        // delete message
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+
+    window.onload = () => {
+    const myInput = document.getElementById('pwd');
+    myInput.onpaste = e => e.preventDefault();
+    }
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

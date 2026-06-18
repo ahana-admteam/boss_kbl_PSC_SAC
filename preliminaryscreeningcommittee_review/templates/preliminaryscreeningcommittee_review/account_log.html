@@ -1,0 +1,340 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+<style>
+    input[type="date"] {
+        font-size: 100%;
+    }
+
+    textarea.ta-control {
+        border: none;
+        resize: none;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+    }
+
+    .in-control {
+        border: none;
+        width: 5%;
+    }
+
+    .collapsible {
+        color: black;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        text-align: left;
+        height: 40px;
+        background-color: rgb(235, 235, 235);
+        padding: 10px;
+    }
+
+    .active,
+    .collapsible:hover {
+        background-color: rgb(235, 235, 235);
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .custom-margin {
+        margin-right: 30px;
+        padding-right: 30px;
+
+    }
+
+    label {
+        padding-bottom: 0px;
+    }
+
+
+
+    .arrow {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 4px;
+    }
+
+    .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+    }
+
+    .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+
+
+
+    .custom-dropdown {
+        border: none;
+        /* Optionally, you can remove other border properties as well */
+        border-width: 0;
+        border-color: transparent;
+        border-radius: 0;
+        /* Additional styles to make the dropdown look consistent */
+        padding: 7px;
+        font-size: 16px;
+
+        background-color: #fff;
+        /* Set background color to match background */
+    }
+</style>
+
+<div class="right-main-container" style="padding: 0px 20px;">
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="message alert alert-success alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="message alert alert-danger alert-dismissible text-center" role="alert">
+                {{ message }}
+                <!-- <button id="closeButton" type="button" class="close" data-dismiss="alert">&times;</button> -->
+            </div>
+            {% endif %}
+            {% endfor%}
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if review_type == 'PSC' %}
+        <div class="row" style="padding-top: 25px">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="staff_no">PSC Review Id<span style="color: red">*</span></label>
+                    <input readonly type="text" class="form-control" value="{{acc_data.psc_rec_id}}" id="staff_no" name="staff_no">
+                </div>
+                <div class="container-fluid mt-2">
+                    <!-- BO Maker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">BO Maker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.bo_maker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- BO Checker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">BO Checker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.bo_checker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- RO Maker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">RO Maker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.ro_maker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- RO Checker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">RO Checker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.ro_checker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- HO Maker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">HO Maker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.ho_maker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- HO Checker Table -->
+                    <div class="table-responsive">
+                        <label class="btn btn-primary">HO Checker</label>
+                        <table class="table table-hover bg-white mt-2">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status(s)</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in acc_data.psc_users_log.ho_checker %}
+                                    <tr>
+                                        <td>{{ entry.user }}</td>
+                                        <td>{{ entry.status }}</td>
+                                        <td>{{ entry.ses_key }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="3">No data available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <a href="{% url 'account_dashboard' %}" class="btn btn-outline-primary">Back</a>
+            </div>
+        </div>
+        {% elif review_type == 'SAC' %}
+        <div class="row" style="padding-top: 25px">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="staff_no">SAC Review Id<span style="color: red">*</span></label>
+                    <input readonly type="text" class="form-control" value="{{acc_data.sac_rec_id}}" id="staff_no" name="staff_no">
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover bg-white"  id="psc_table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Role</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                    <th>Session Key</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTable">
+                                {% for list in acc_data.sac_users_log %}
+                                    <tr>
+                                        <td>{{list.role_type}}</td>
+                                        <td>{{list.role_name}}</td>
+                                        
+                                        <td>{{list.role_dept|default:''}}</td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <a href="{% url 'account_dashboard' %}" class="btn btn-outline-primary">Back</a>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

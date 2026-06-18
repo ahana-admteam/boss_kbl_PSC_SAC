@@ -1,0 +1,218 @@
+/* #sidebar {
+  background:#003975;
+}
+
+#sidebar ul li a{
+  color: #fff;
+  border-bottom: 1px solid #003975;
+}
+#sidebar ul li a:hover span{
+  color: white;
+}
+#sidebar ul li a::after, a::before{
+  background: #003975;
+}
+#sidebar ul li.active a{
+  background: #003975;
+  color: white;
+}
+.admin-icon {
+  color: #004C8F;
+  background: #f9f9f9;
+}
+.table-dark tr th{
+background-color:#004C8F !important;
+}
+#sidebar ul ul a:hover span {
+color: white !important;
+}
+.card{
+background-color: #215388;
+}
+.card-title{
+background-color: #215388;
+border: #215388;
+color: white;
+}
+.admin-icon{
+border-radius: 5px;
+color: #fff;
+background-color:#215388;
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 150px;
+  height: 50px;
+  margin-left: -50px;
+}
+.ahana_img{
+  width: 50px;
+  height: 50px;
+  margin-left: 80px;
+}
+.mini_logo{
+  width: 40px;
+  height: 40px;
+}
+#sidebarCollapse{
+  background-color:#003975;
+}
+.sidebar_icon{
+  background-color: #003975;
+}
+.tile1{
+  background-color: #003975;
+}
+.tile1 .admin-icon{
+  background-color: #003975;
+}
+.tile1 .card-title{
+  background-color: #003975;
+}
+.tile2{
+  background-color: #9db9d6;
+}
+.tile2 .admin-icon{
+  background-color: #9db9d6;
+}
+.tile2 .card-title{
+  background-color: #9db9d6;
+}
+.navbar {
+  background-color:#ED1C24 !important;
+}
+.title{
+  color: #fff !important;
+}
+.profile_icon{
+  color: #fff;
+} */
+
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  /* background: #004C8F; */
+  background:#fff;
+}
+
+#sidebar ul li a{
+  color: black;
+  border-bottom: 1px solid #707070;
+}
+#sidebar ul li a:hover span{
+  color: black;
+}
+#sidebar ul li a::after, a::before{
+  background: #DEE1E6;
+}
+#sidebar ul li.active a{
+  background: #DEE1E6;
+  color: black;
+}
+.admin-icon {
+  color: #00854A;
+  background: #707070;
+}
+.table-dark tr th{
+background-color:#00854A !important;
+}
+#sidebar ul ul a:hover span {
+color: black !important;
+}
+.card{
+background-color: rgba(180, 228, 15, 0.95);
+}
+.card-title{
+background-color: rgba(180, 228, 15, 0.95);
+border: rgba(180, 228, 15, 0.95);
+color: black;
+}
+.admin-icon{
+border-radius: 5px;
+color: #00854A;
+background-color:rgba(180, 228, 15, 0.95);
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 150px;
+  height: 65px;
+  margin-left: -50px;
+}
+.ahana_img{
+  width: 50px;
+  height: 60px;
+  margin-left: 80px;
+}
+.mini_logo{
+  width: 40px;
+  height: 40px;
+}
+#sidebarCollapse{
+  background-color:rgba(180, 228, 15, 0.95);
+}
+.sidebar_icon{
+  background-color: rgba(180, 228, 15, 0.95);
+}
+.tile1{
+  background-color: #f1f1f1;
+  /* -webkit-box-shadow:  2px 2px 2px 2px rgba(119, 125, 212, 0.932); */
+  -webkit-box-shadow:  5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+}
+.tile1 .admin-icon{
+  background-color: #f1f1f1;
+}
+.tile1 .card-title{
+  background-color: #f1f1f1;
+}
+.tile2{
+  background-color: #f1f1f1;
+  -webkit-box-shadow:  5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+  box-shadow: 5px 0px 5px 0px rgba(0, 0, 0, 0.35);
+
+}
+.tile2 .admin-icon{
+  background-color: #f1f1f1;
+}
+.tile2 .card-title{
+  background-color: #f1f1f1;
+}
+.navbar {
+  background-color:#00854A !important;
+}
+.title{
+  color: #fff !important;
+}
+.profile_icon{
+  color: #fff;
+}
+.left_icon{
+  color:#00854A !important;
+}
+.btn-primary{
+  border: rgba(180, 228, 15, 0.95);
+  background-color:rgba(180, 228, 15, 0.95) !important;
+}
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+  z-index: 3;
+  color: #fff;
+  cursor: default;
+  background-color: rgba(180, 228, 15, 0.95) !important;
+  border-color: rgba(180, 228, 15, 0.95) !important;
+}
+.pagination>li>a, .pagination>li>span {
+  position: relative;
+  float: left;
+  padding: 6px 12px;
+  margin-left: -1px;
+  line-height: 1.42857143;
+  color: black;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}

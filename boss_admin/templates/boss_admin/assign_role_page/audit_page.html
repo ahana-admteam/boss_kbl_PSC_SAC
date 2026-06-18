@@ -1,0 +1,314 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+  });
+</script>
+
+    <div class="container mt-3">
+        <div class="row mb-3" style="margin-top:75px;">
+          {% with request.session.audit_roles|my_filter as roles %}
+           {% if 'ad001internalauditor' in roles or 'ad001regionalauditor' in roles %}
+              {% if display_name.IN001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <a href="{% url 'inward_audit' %}">
+                  <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-arrow-circle-o-down admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.IN001.display_name}}</h5>
+                    <!-- <a href="/inward/branch_view/" class="btn btn-primary">Inward</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+              {% endif %}
+              {% if display_name.OUT001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <a href="{% url 'outward_audit' %}">
+                  <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-arrow-circle-o-up admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.OUT001.display_name}}</h5>
+                    <!-- <a href="/outward/checkerlistall/" class="btn btn-primary">Outward</a> -->
+                  </div>
+                  </div>
+                  </a>
+              </div>
+              {% endif %}
+              {% if display_name.KEY001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <a href="{% url 'key_audit' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <i class="fa fa-key admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.KEY001.display_name}}</h5>
+                    <!-- <a href="/keys/history/" class="btn btn-primary">Key Movement</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+              {% endif %}
+              {% if display_name.DOC001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <a href="{% url 'branch_doc_audit' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <i class="fa fa-code-fork admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.DOC001.display_name}}</h5>
+                    <!-- <a href="/branchdocuments/maintainancelist" class="btn btn-primary">Branch Document</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+              {% endif %}
+              {% if display_name.SS001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <a href="{% url 'security_stock_audit' %}">
+                  <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-file-code-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.SS001.display_name}}</h5>
+                  </div>
+                  </div>
+                  </a>
+              </div>
+              {% endif %}
+              <!-- <div class="col-sm-3 tile">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-lock admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">Security Issuance</h5>
+                    <a href="#" class="btn btn-primary">Click for more</a>
+                  </div>
+                </div>
+              </div> -->
+              {% if display_name.GL001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <a href= "{% url 'gold_loan_audit' %}">
+                  <div class="card text-center tile1">
+                  <div class="card-body">
+                    <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/gold.png"></img>
+                    <h5 class="card-title">{{display_name.GL001.display_name}}</h5>
+                    <!-- <a href= "/goldloan/viewall/" class="btn btn-primary">Gold Loan</a> -->
+                  </div>
+                  </div>
+                  </a>
+              </div>
+              {% endif %}
+              {% if display_name.SEQ001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <a href="{% url 'security_equipment' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <i class="fa fa-cog admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.SEQ001.display_name}}</h5>
+                    <!-- <a href="/securityequipments/listall" class="btn btn-primary">Security Equipment</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+              {% endif %}
+              {% if display_name.CR001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <a href="{% url 'complaint_audit' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                      <i class="fa fa-book admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.CR001.display_name}}</h5>
+                    <!-- <a href="/complaints/viewall" class="btn btn-primary">Complaint Book</a> -->
+                  </div>
+                </div>
+                </a>
+              </div>
+              {% endif %}
+              {% if display_name.PC001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <a href="{% url 'petty_cash' %}">
+                  <div class="card text-center tile1">
+                    <div class="card-body">
+                      <i class="fa fa-money admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.PC001.display_name}}</h5>
+                      <!-- <a href="/pettycash/view_all" class="btn btn-primary">Petty Cash</a> -->
+                    </div>
+                  </div>
+                  </a>
+              </div>
+              {% endif %}
+            {% else %}
+              {% if display_name.IN001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                <div class="card-body">
+                    <i class="fa fa-arrow-circle-o-down admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.IN001.display_name}}</h5>
+                </div>
+                </div>
+              </div>
+              {% endif %}
+              {% if display_name.OUT001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                      <i class="fa fa-arrow-circle-o-up admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.OUT001.display_name}}</h5>
+                  </div>
+                  </div>
+              </div>
+              {% endif %}
+              {% if display_name.KEY001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                    <div class="card-body">
+                    <i class="fa fa-key admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.KEY001.display_name}}</h5>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% if display_name.DOC001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <i class="fa fa-code-fork admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                    <h5 class="card-title">{{display_name.DOC001.display_name}}</h5>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% if display_name.SS001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                      <i class="fa fa-file-code-o admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.SS001.display_name}}</h5>
+                  </div>
+                  </div>
+              </div>
+              {% endif %}
+              <!-- <div class="col-sm-3 tile">
+                <div class="card text-center">
+                  <div class="card-body">
+                      <i class="fa fa-lock admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">Security Issuance</h5>
+                    <a href="#" class="btn btn-primary">Click for more</a>
+                  </div>
+                </div>
+              </div> -->
+              {% if display_name.GL001.app_required == 'True' %}
+              <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                  <div class="card-body">
+                    <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/gold.png"></img>
+                    <h5 class="card-title">{{display_name.GL001.display_name}}</h5>
+                  </div>
+                  </div>
+              </div>
+              {% endif %}
+              {% if display_name.SEQ001.app_required == 'True' %}
+                <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                    <div class="card-body">
+                      <i class="fa fa-cog admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                      <h5 class="card-title">{{display_name.SEQ001.display_name}}</h5>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                {% if display_name.CR001.app_required == 'True' %}
+                <div class="col-sm-3 tile">
+                  <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                    <div class="card-body">
+                        <i class="fa fa-book admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                        <h5 class="card-title">{{display_name.CR001.display_name}}</h5>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                {% if display_name.PC001.app_required == 'True' %}
+                <div class="col-sm-3 tile">
+                    <div class="card text-center tile1" data-toggle="tooltip" title="don't have access">
+                      <div class="card-body">
+                        <i class="fa fa-money admin-icon fa-2x mb-2" aria-hidden="true"></i>
+                        <h5 class="card-title">{{display_name.PC001.display_name}}</h5>
+                      </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+            {% endwith %}
+            {% with request.session.audit_roles|my_filter as roles %}
+            {% for val in display_name.AD001.properties.register_role_master %}
+            {% if 'ad001regionalauditor' in roles and val.required == 'True' and val.option == 'ad001regionalauditor' %}
+            <div class="col-sm-3 tile">
+                <a href="{% url 'view_checklist' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/rol.png"></img>
+                    <h5 class="card-title">{{val.display_name}}</h5>
+                    <!-- <a href="/pettycash/view_all" class="btn btn-primary">Petty Cash</a> -->
+                  </div>
+                </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+            {% with request.session.audit_roles|my_filter as roles %}
+            {% for val in display_name.AD001.properties.register_role_master %}
+            {% if 'ad001zonalauditor' in roles and val.required == 'True' and val.option == 'ad001zonalauditor' %}
+            <div class="col-sm-3 tile">
+                <a href= "{% url 'view_checklist' %}">
+                <div class="card text-center tile1">
+                <div class="card-body">
+                  <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/zonal.png"></img>
+                  <h5 class="card-title">{{val.display_name}}</h5>
+                  <!-- <a href= "/goldloan/viewall/" class="btn btn-primary">Gold Loan</a> -->
+                </div>
+                </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+            {% with request.session.new_roles|my_filter as roles %}
+            {% for val in display_name.AD001.properties.register_role_master %}
+            {% if 'ad001branchadmin' in roles and val.required == 'True' and val.option == 'ad001branchadmin' %}
+            <div class="col-sm-3 tile">
+                <a href="{% url 'bom_view_all' %}">
+                <div class="card text-center tile1">
+                  <div class="card-body">
+                    <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/bom.png"></img>
+                    <h5 class="card-title">{{val.display_name}}</h5>
+                    <!-- <a href="/pettycash/view_all" class="btn btn-primary">Petty Cash</a> -->
+                  </div>
+                </div>
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+            {% with request.session.audit_roles|my_filter as roles %}
+            {% for val in display_name.AD001.properties.register_role_master %}
+            {% if 'ad001operationshead' in roles and val.required == 'True' and val.option == 'ad001operationshead' %}
+            <div class="col-sm-3 tile">
+                  <a href="{% url 'view_checklist' %}">
+                  <div class="card text-center tile1">
+                    <div class="card-body">
+                      <img style="width: 60px; margin-left: 90px;" class="admin-icon mb-1" src="{% static '/assets/images/'%}{{tenant}}/icons/bom.png"></img>
+                      <h5 class="card-title">{{val.display_name}}</h5>
+                    </div>
+                  </div>
+                  </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+          </div>
+    </div>
+    
+   
+{% endblock content %}
+

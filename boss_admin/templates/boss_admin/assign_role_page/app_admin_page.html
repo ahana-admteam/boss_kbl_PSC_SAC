@@ -1,0 +1,413 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{%  block content %}
+{% with request.session.new_roles|my_filter as roles %}
+    {% if 'ad001branchadmin' in roles or 'ad001appadmin' in roles %}
+
+
+<script src="{% static '/js/js/jquery.min.js' %}"></script>
+
+<!-- <style>
+.div1 {
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    height:50px;
+    padding:4px;
+    border:1px solid white;
+    margin-top:5px;
+}
+.inner_cont{
+    width:100%;
+    display:flex
+}
+.form-control{
+    width:320px;
+    padding:2px;
+    margin:0px 5px;
+}
+.tb_search{
+    float:right;
+    padding-right:50px;
+    width:25%;
+    margin:0px 56px;
+}
+
+.alert {
+   width:95%;
+   line-height:10%;
+   margin: 10px;
+   padding: 10px 10px 10px 10px;
+}
+</style> -->
+<div class="container mt-3">
+    <div class="row mb-3">
+        <div class="col-sm-11">
+            <form id="submit_form" action="add_branch_admin" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="form-group col-sm-3">
+                        <select name="registers_role_dropdown" class="form-control dropdowns responsive"
+                                required="required">
+                            <option value="">Roles</option>
+                            {% for role in registers_role_list %}
+                            {% for key in admin_roles %}
+                            {% if key.option in role.role_desc and key.required == 'True'%}
+                            <option name="registers_role_id" value="{{role.role_id}}">{{key.display_name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <select required="required" id="branch_id" name="branch_dropdown" class="form-control dropdowns responsive">
+                            <option value="">Branch</option>
+                            {% for branch in branch_list %}
+                            <option id="branch_id__" name="xyz" value="{{branch.branch_code}}">
+                                {{branch.branch_code}} - {{branch.branch_name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                <!-- <div class="sub_cont">
+                    <select name="employee_dropdown" class="form-control dropdowns responsive" id="employee_id"
+                            style="background-color: #fdb913; color:white;font-size: 14px;" required="required">
+                        <option value="">Employees</option>
+                        {% for employee in employee_list %}
+                        <option name="employee_emp_id" value="{{employee.emp_id}}"
+                                data-val="{{employee.branch_code}}">
+                            {{employee.emp_name}}-({{employee.emp_id}})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div> -->
+                    <div class="form-group col-sm-3">
+                        <select name="employee_dropdown_new" disabled class="form-control dropdowns responsive" id="employee_id" value="{{employee_id}}">
+                        <option value="">Employees</option>
+                        {% for employee in employee_list %}
+                        <option name="employee_emp_id" id="employee_id" value="{{employee.emp_id}}"
+                                data-val="{{employee.branch_code}}">
+                            {{employee.emp_name}}-({{employee.emp_id}}-{{employee.branch_code}})
+                        </option>
+                        {% endfor %}
+                        </select>
+                        
+                        <select name="employee_dropdown" style="display: none;" class="form-control dropdowns responsive" id="employee_id_id" value="{{employee_id}}">
+                            <option value="">Employees</option>
+                            {% for employee in employee_list %}
+                            <option name="employee_emp_id" id="employee_id" value="{{employee.emp_id}}"
+                                    data-val="{{employee.branch_code}}">
+                                {{employee.emp_name}}-({{employee.emp_id}}-{{employee.branch_code}})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <div class="sub_cont__">
+                            <button class="btn btn-primary pull-right" type="submit" name="button">Add
+                            </button>
+                        </div>
+                    </div>
+                    <select name="register_dropdown" class="form-control dropdowns responsive"
+                            style="color:white;font-size: 0px; visibility:hidden; height:0px;width:0px;" required="required">
+                        <option value="">Registers</option>
+                        {% for register in registers_list %}
+                        <option name="register_id" value="{{register.registers_code}}" selected="selected">{{register.registers_type}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-1">
+            <div class="search" >
+                <button data-toggle="modal" data-target="#newModal" class="btn btn-outline-primary"
+                            ><i class="fa fa-search" data-toggle="tooltip" title="search"
+                            style="font-size:16px;"></i>
+                        </button>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <div class="tb_search">
+                <input  type="text" id="search_input_all" onkeyup="FilterkeyWord_all_table()"
+                        placeholder="Search.." class="form-control pull-right">
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="message alert alert-success alert-dismissible alert" role="alert">
+                        <p style="text-align:center;">{{ message }}</p>
+                    </div>
+                    {% elif message.tags == 'error' %}
+                    <div class="message alert alert-danger alert-dismissible alert" role="alert">
+                        <p style="text-align:center;">{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor%}
+        {% endif %}
+        <table class="table table-striped table-hover" id="table-id">
+            <thead class="table-dark">
+                <tr>
+                    <th>Role Name</th>
+                    <th>Branch Name</th>
+                    <th>Employee Name</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in emp_reg_role_list %}
+                <tr>
+                    {% for key in admin_roles %}
+                        {% if key.option == list.role_id__role_desc and key.required == 'True'%}
+                    <td>{{key.display_name}}</td>
+                    <td>{{list.branch_code__branch_name}}</td>
+                    <td>{{list.emp_id__emp_name}}</td>
+                    <td>
+                        <button data-toggle="modal" data-target="#myModal" class="btn btn-danger"
+                                onclick="confirms({{list.emp_reg_role_id}})"><i class="fa fa-trash" data-toggle="tooltip" title="Delete"
+                                                                                style="font-size:18px;"> </i>
+                        </button>
+                    </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                {% for mail in emp_reg_role_list4 %}
+                <tr>
+                    {% for key in admin_roles %}
+                        {% if key.option == mail.role_id__role_desc and key.required == 'True'%}
+                    <td>{{key.display_name}}</td>
+                    <td>{{mail.branch_code__branch_name}}</td>
+                    <td>{{mail.emp_id__emp_name}}</td>
+                    <td>
+                        <button data-toggle="modal" data-target="#myModal" class="btn btn-danger"
+                                onclick="confirms_audit({{mail.emp_reg_role_id}})"><i class="fa fa-trash" data-toggle="tooltip" title="Delete"
+                                                                                style="font-size:18px;"> </i>
+                        </button>
+                    </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                <p>are you sure you want to delete..?</p>
+                <div style="float:right">
+                    <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                            onclick="delete1()">yes
+                    </button>
+                    <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteaudit"
+                            onclick="auditor_delete()">yes
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="modal fade" id="newModal" role="dialog">
+        <form id="submit" method="POST">
+            {% csrf_token %}
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Search</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                        
+                            <div class="form-group col-sm-6">
+                                <select required="required" id="branch_id_new" name="branch_dropdown" class="form-control dropdowns responsive">
+                                    <option value="">Branch</option>
+                                    {% for branch in branch_list %}
+                                    <option id="branch_id__" name="xyz" value="{{branch.branch_code}}">
+                                        {{branch.branch_code}} - {{branch.branch_name}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <select name="employee_dropdown" class="form-control dropdowns responsive" id="employee_id_new"
+                                        required="required">
+                                    <option value="">Employees</option>
+                                    {% for employee in employee_list %}
+                                    <option name="employee_emp_id" value="{{employee.emp_id}}"
+                                            data-val="{{employee.branch_code}}">
+                                        {{employee.emp_name}}-({{employee.emp_id}}-{{employee.branch_code}})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <div class="col-sm-12" style="margin-left: 300px;">
+                            <div class="form-group">
+                                <button type="button" id="close_id" class="btn btn-danger button-custom-hover pull-right"
+                                        data-dismiss="modal">Close
+                                </button>
+                                <!-- <button type="submit" id="submit" class="btn btn-primary button-custom-hover">Submit
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div> 
+</div>
+
+<!-- message -->
+<script>
+   $('#success').hide()
+   $(document).ready(function() {
+   $('#close_id').click(function(e){
+       var emp=$('#employee_id_new').val();
+       console.log(emp)
+       $('#employee_id').val(emp)
+       $('#employee_id_id').val(emp)
+    console.log($('#employee_id').val())
+    e.preventDefault();
+   });
+});
+</script>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+
+<!-- javascript for popup -->
+<script type="text/javascript">
+// Popup window code
+function newPopup(url) {
+	popupWindow = window.open(
+		url,'popUpWindow','height=423,width=961,left=293,top=166,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+}
+
+
+</script>
+
+<!-- value to button deleteid-->
+<script>
+function confirms(a) {
+    $("#deleteaudit").hide()
+    $("#deleteid").attr('value',a);
+       }
+
+function confirms_audit(a){
+    $("#deleteaudit").attr('value',a);
+    $('#deleteid').hide()
+
+}
+</script>
+<script>
+// get first dropdown and bind change event handler
+      $(document).ready(function() {
+        // get first dropdown and bind change event handler
+        $('#branch_id_new').change(function(){
+            if ($(this).data('options') === undefined){
+                $(this).data('options', $('#employee_id_new option').clone());
+            }
+            var id = $(this).val();
+            var options = $(this).data('options').filter('[data-val="' + id + '"],[data-val=""]');
+            //$('#employee_id').html(options);
+            if(options.length===0){
+                console.log(options.length)
+                $('#employee_id_new').html('<option value=1>No employee exists</option>');
+            
+            }
+            else {
+
+                $('#employee_id_new').html(options);
+            }
+        });
+      });
+</script>
+<!-- to DELETE THE BASED ON DELETEID -->
+<script>
+function delete1() {
+var delete_data = $("#deleteid").val();
+        $.ajax({
+                url: "delete",
+                data: { "value": delete_data },
+                dataType:"html",
+                type: "post",
+                success: function(data){
+                   location.reload();
+                }
+            });
+        }
+
+function auditor_delete(){
+    var delete_data = $("#deleteaudit").val();
+
+    $.ajax({
+        url: "auditor_delete",
+        data: { "value": delete_data },
+        dataType:"html",
+        type: "post",
+        success: function(data){
+        location.reload();
+        }
+});
+}
+</script>
+
+<script>
+$('#reg_id').change(function() {
+
+  // get optios of second dropdown and cache it
+  var $options = $('#role_id')
+
+
+    // update the dropdown value if necessary
+    .val('')
+    // get options
+    .find('option')
+    // show all of the initially
+    .show();
+  // check current value is not 0
+  if (this.value != '0')
+    $options
+    // filter out options which is not corresponds to the first option
+    .not('[data-val="' + this.value + '"],[data-val=""]')
+    // hide them
+    .hide();
+})
+
+$(document).ready(function() {
+        // messages timeout for 10 sec
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 5000); // <-- time in milliseconds, 1000 =  1 sec
+
+        // delete message
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+
+{% else %}
+{% include 'boss_admin/donthave_access.html' %}
+        {% endif %}
+    {% endwith %}
+{%  endblock content %}

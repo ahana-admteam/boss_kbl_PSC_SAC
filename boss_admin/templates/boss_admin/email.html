@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if messages %}
+  {% for message in messages %}
+<div class="alert alert-{{ message.tags }}" role="alert">
+    <p {% if message.tags %} class = ""{% endif %}>{{ message }}</p>
+</div>
+{% endfor%}
+{% endif %}
+ <form id="submit_form" method="POST">
+       {% csrf_token %}
+     <button type="submit" id="btns" onclick="myfun()" class="btn btn-md btn-success" style="margin-left:50px;">send email</button>
+ </form>
+</body>
+</html>

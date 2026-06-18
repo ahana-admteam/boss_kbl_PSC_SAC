@@ -1,0 +1,79 @@
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  /* background: #004C8F; */
+  background:#f1f1f1;
+}
+
+#sidebar ul li a{
+  color: black;
+  border-bottom: 1px solid #f1f1f1;
+}
+#sidebar ul li a:hover span{
+  color: #fff;
+}
+#sidebar ul li a::after, a::before{
+  background: #37a588;
+}
+#sidebar ul li.active a{
+  background: #37a588;
+  color: white;
+}
+.admin-icon {
+  color: #37a588;
+  background: #f9f9f9;
+}
+.table-dark tr th{
+background-color:#37a588 !important;
+}
+#sidebar ul ul a:hover span {
+color: white !important;
+}
+.card{
+background-color: #37a588;
+}
+.card-title{
+background-color: #37a588;
+border: #37a588;
+color: white;
+}
+.admin-icon{
+border-radius: 5px;
+color: #fff;
+background-color:#37a588;
+}
+.container{
+  width: 100%;
+}
+.tenant_img{
+  width: 100px;
+  height: 100px;
+  margin-left: 190px;
+  margin-top: -95px;
+}
+.ahana_img{
+  width: 70px;
+  height: 70px;
+  margin-left: 80px;
+}
+.mini_logo{
+  display: none;
+}
+#sidebarCollapse{
+  background-color: #fff;
+}
+.left_icon{
+  color:black !important;
+
+}
+#sidebar ul li a:hover .left_icon{
+  color:#fff !important;
+
+}
+.btn-primary{
+  background-color: #37a588;
+  border-color: #37a588;
+}
+.btn-primary:hover{
+  background-color: #37a588;
+  border-color: #37a588;
+}

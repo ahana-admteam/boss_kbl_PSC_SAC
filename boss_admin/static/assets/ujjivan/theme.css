@@ -1,0 +1,23 @@
+#sidebar {
+    /* don't forget to add all the previously mentioned styles here too */
+    background: #004C8F;
+}
+
+#sidebar ul li a{
+    color: #fff;
+    border-bottom: 1px solid #47748b;
+}
+#sidebar ul li a:hover span{
+    color: white;
+  }
+  #sidebar ul li a::after, a::before{
+    background: #7386D5;
+  }
+  #sidebar ul li.active a{
+    background: #7386D5;
+    color: white;
+  }
+  .admin-icon {
+    color: #004C8F;
+    background: #f9f9f9;
+}

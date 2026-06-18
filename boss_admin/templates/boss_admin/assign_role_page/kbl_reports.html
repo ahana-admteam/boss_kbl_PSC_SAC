@@ -1,0 +1,227 @@
+{% extends "boss_admin/base.html" %}
+{% load filters %}
+{% load static %}
+{% block content %}
+<style>
+    th,
+    td {
+        font-size: 85%;
+        /* font-weight: bold; */
+    }
+</style>
+<div class="container">
+
+    <div id="ddForExport" class="form-group col-md-6 mt-5"
+        style="margin-left: 25%; padding: 15px; border-radius: 15px; border: 1px solid black;">
+        <div class="form-group row">
+            <form method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="psc_form_date" class="col-form-label">
+                            <strong>Select Report Type :</strong></label>
+                    </div>
+                    <div class="col-sm-6 mt-2">
+                        <select class="custom-dropdown" type="text" required class="form-control" name="reports_type"
+                            id="reports_type">
+                            <option value="" selected hidden>Choose</option>
+                            {% for status in reports_type %}
+                            <option value="{{ status.option }}">{{ status.display_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-3" style="margin-left: 40%;">
+                    <button id="reportsTypeSelection" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div style="display: none;" id="bExcel" class="container-fluid mt-3">
+
+        <div class="table-responsive">
+            <table class="table table-hover bg-white" id="tableExcelB_psc">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="max-width: 2%;"></th>
+                        <th id="psc_BO_Maker">BO Maker</th>
+                        <th id="psc_BO_Checker">BO Checker</th>
+                        <th id="psc_RO_Maker">RO Maker</th>
+                        <th id="psc_RO_Checker">RO Checker</th>
+                        <th id="psc_HO_Maker">HO Maker</th>
+                        <th id="psc_HO_Checker">HO Checker</th>
+                        <th id="psc_HO_Convener">HO Convener</th>
+                    </tr>
+                </thead>
+                <tbody id="psc_tbody">
+                </tbody>
+            </table>
+
+            <table class="table table-hover bg-white" id="tableExcelB_sac">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="max-width: 2%;"></th>
+                        <th id="sac_RO_Maker">RO Maker</th>
+                        <th id="sac_RO_Checker">RO Checker</th>
+                        <th id="sac_HO_Maker">HO Maker</th>
+                        <th id="sac_HO_Checker">HO Checker</th>
+                        <th id="sac_HO_Convener">HO Convener</th>
+                    </tr>
+                </thead>
+                <tbody id="sac_tbody">
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+<script>
+    $('#reportsTypeSelection').on('click', function (e) {
+        $('#reportsTypeSelection').attr('disabled', true);
+        let reports_type = $('#reports_type').val()
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/kbl_report/' + reports_type,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            data: {
+                'reports_type': reports_type,
+            },
+
+
+            //         success: function (res) {
+            //     if (reports_type == 'B') {
+            //         console.log('res', res);
+            //         document.getElementById('ddForExport').style.display = 'none';
+            //         document.getElementById('bExcel').style.display = 'block';
+
+            //         // Clear existing table rows
+            //         $('#tableExcelB_psc tbody').empty();
+            //         $('#tableExcelB_sac tbody').empty();
+
+            //         // Populate PSC table
+            //         const pscData = res.psc_data;
+            //         let pscRows = '';
+            //         const pscKeys = ['BOM', 'BOC', 'ROM', 'ROC', 'HOM', 'HOC', 'CON'];
+            //         for (let i = 0; i < Math.max(...pscKeys.map(key => pscData[key].length)); i++) {
+            //             pscRows += `<tr>
+            //                 <td>${i + 1}</td>
+            //                 <td>${pscData.BOM[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.BOC[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.ROM[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.ROC[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.HOM[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.HOC[i]?.psc_rec_id || ''}</td>
+            //                 <td>${pscData.CON[i]?.psc_rec_id || ''}</td>
+            //             </tr>`;
+            //         }
+            //         $('#tableExcelB_psc tbody').append(pscRows);
+
+            //         // Populate SAC table
+            //         const sacData = res.sac_data;
+            //         let sacRows = '';
+            //         const sacKeys = ['ROM', 'ROC', 'HOM', 'HOC', 'CON'];
+            //         for (let i = 0; i < Math.max(...sacKeys.map(key => sacData[key].length)); i++) {
+            //             sacRows += `<tr>
+            //                 <td>${i + 1}</td>
+            //                 <td>${sacData.ROM[i]?.sac_rec_id || ''}</td>
+            //                 <td>${sacData.ROC[i]?.sac_rec_id || ''}</td>
+            //                 <td>${sacData.HOM[i]?.sac_rec_id || ''}</td>
+            //                 <td>${sacData.HOC[i]?.sac_rec_id || ''}</td>
+            //                 <td>${sacData.CON[i]?.sac_rec_id || ''}</td>
+            //             </tr>`;
+            //         }
+            //         $('#tableExcelB_sac tbody').append(sacRows);
+            //     }
+            // }
+
+            success: function (res) {
+                if (reports_type == 'B') {
+                    console.log('res', res);
+                    document.getElementById('ddForExport').style.display = 'none';
+                    document.getElementById('bExcel').style.display = 'block';
+
+                    // Clear existing rows
+                    document.querySelector('#tableExcelB_psc tbody').innerHTML = '';
+                    document.querySelector('#tableExcelB_sac tbody').innerHTML = '';
+
+                    // Add PSC Data
+                    const pscData = res.psc_data;
+                    const pscKeys = ['BOM', 'BOC', 'ROM', 'ROC', 'HOM', 'HOC', 'CON'];
+                    const pscTableBody = document.querySelector('#tableExcelB_psc tbody');
+
+                    // Add the counts row
+                    let pscCountsRow = '<tr><td>Total</td>';
+                    pscKeys.forEach(key => {
+                        pscCountsRow += `<td>${pscData[key].length}</td>`;
+                    });
+                    pscCountsRow += '</tr>';
+                    pscTableBody.insertAdjacentHTML('beforeend', pscCountsRow);
+
+                    // Add the data rows
+                    let pscRowNumber = 1;
+                    const maxPscLength = Math.max(...pscKeys.map(key => pscData[key].length));
+                    for (let i = 0; i < maxPscLength; i++) {
+                        let row = `<tr><td></td>`;
+                        pscKeys.forEach(key => {
+                            row += `<td>${pscData[key][i] ? pscData[key][i].psc_rec_id : ''}</td>`;
+                        });
+                        row += '</tr>';
+                        pscTableBody.insertAdjacentHTML('beforeend', row);
+                        pscRowNumber++;
+                    }
+
+                    // Add SAC Data
+                    const sacData = res.sac_data;
+                    const sacKeys = ['ROM', 'ROC', 'HOM', 'HOC', 'CON'];
+                    const sacTableBody = document.querySelector('#tableExcelB_sac tbody');
+
+                    // Add the counts row
+                    let sacCountsRow = '<tr><td>Total</td>';
+                    sacKeys.forEach(key => {
+                        sacCountsRow += `<td>${sacData[key].length}</td>`;
+                    });
+                    sacCountsRow += '</tr>';
+                    sacTableBody.insertAdjacentHTML('beforeend', sacCountsRow);
+
+                    // Add the data rows
+                    let sacRowNumber = 1;
+                    const maxSacLength = Math.max(...sacKeys.map(key => sacData[key].length));
+                    for (let i = 0; i < maxSacLength; i++) {
+                        let row = `<tr><td></td>`;
+                        sacKeys.forEach(key => {
+                            row += `<td>${sacData[key][i] ? sacData[key][i].sac_rec_id : ''}</td>`;
+                        });
+                        row += '</tr>';
+                        sacTableBody.insertAdjacentHTML('beforeend', row);
+                        sacRowNumber++;
+                    }
+                    window.location.href = '/download_excel_B'
+                }
+                else {
+                    $('#success').show();
+                    window.location.href = '/kbl_report/' + reports_type;
+                }
+            }
+
+
+        });
+
+    })
+
+
+</script>
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+{% endblock %}

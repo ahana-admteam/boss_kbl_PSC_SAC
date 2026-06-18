@@ -1,0 +1,709 @@
+{% extends 'boss_admin/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+<!-- <style>
+.alert11 {
+   width:100%;
+   line-height:10%;
+}
+th {
+    position: sticky;
+    top: 0;
+    text-align: center;        
+}
+.pagination-container {
+    width: 70%;
+    float: left;
+    position: absolute;
+    bottom: 5px;
+    margin-left: 1px;
+}
+ .pag{
+    margin-top: -35px;
+}
+
+</style> -->
+
+<div class="container mt-3">
+    <div class="row mb-3">
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="form-group col-sm-1">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="add" onclick="addasset()" onblur="resetPopup();">Add</button>
+                </div>
+                <div class="form-group col-sm-3">
+                    <button id="bulk" action="" class="btn btn-primary" onclick="bulkasset()">Upload</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-4">
+            <div class="export">
+                <button class="btn btn-primary btn-export pull-right" data-toggle="modal" data-target="#newModal_export">
+                    <i class="fa fa-download" data-toggle="tooltip" title="Export"></i>
+                </button>  
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-left:365px;">
+        <div id="message_success" style="margin-top:-38px; display:none; text-align:center; height:38px; padding-top:5px;" class="alert-danger alert-dismissible col-7 mx-1" role="alert">
+            <span id="response_id" value={{data}}></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <form action="{% url 'branch_data_search' %}" method="post" class="form-inline">
+                <div class="row pull-right">
+                    <div class="col-md-10" id="search_all">
+                        {% csrf_token %}
+                            <input type="text" name="search" placeholder="Search" class="form-control" autocomplete="off">
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <button style="float: right; width: 40px;" class="form-control btn-outline-primary" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+        <div class=" message alert alert-success alert-dismissible alert11" role="alert">
+            <p style="text-align:center">{{ message }}</p>
+        </div>
+        {% elif message.tags == 'error' %}
+        <div class="col-md-12">
+            <div class="message alert alert-danger alert-dismissible alert11" role="alert">
+                    <p id="id1" style="text-align:center;">{{ message }}
+                    <a href="{% url 'upload_err_logs_export' %}" style="margin-left: 250px" class="btn btn-primary">
+                    <i class="fa fa-download"></i>
+                    Upload Logs</a>
+                </p>
+
+            </div>
+        </div>
+        {% endif %}
+        {% endfor%}
+        {% endif %}
+        <!-- {% if msg %}
+        <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible alert11" role="alert">
+                    <p id="id1" style="text-align:center;margin-top:10px;">{{ msg }}
+                    <a href="{% url 'upload_err_logs_export' %}" style="margin-left: 250px" class="btn btn-primary">
+                    <i class="fa fa-download"></i>
+                    Upload Logs</a></p>
+
+                <button id = "closeButton" type="button" style="margin-top: 20px" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        </div>
+        {% endif %} -->
+
+        <table class="table table-striped mytable" id="table-id">
+            <thead class="table-dark">
+                <tr>
+                
+                    <th>Branch Name</th>
+                    <th>Branch Code</th>
+                    <th>Zone</th>
+                    <!-- <th>City</th>
+                    <th>Address</th>
+                    <th>Pincode</th>
+                    <th>Building</th>
+                    <th>Floor</th>
+                    <th>Room</th>
+                    <th>Created By</th>
+                    <th>Created Date</th> -->
+                    <th colspan="2">Action</th>
+                </tr>
+            </thead>
+                {% if data1 %}
+            <tbody>
+                    {% for list in data1 %}
+                        {% if list.active == False %}
+                        <tr  style="color: lightsalmon;">
+                        {% else %}
+                        <tr>
+                        {% endif %}
+                        <td hidden>{{list.sl_no}}</td>
+                        <td>{{list.branch_name}}</td>
+                        <td>{{list.branch_code}}</td>
+                        <td>{{list.zone}}</td> 
+                        <!-- <td>{{list.locationmaster__city}}</td>     
+                        <td>{{list.locationmaster__address}}</td>
+                        <td>{{list.locationmaster__pin_code}}</td>
+                        <td>{{list.locationmaster__building}}</td>                     
+                        <td>{{list.locationmaster__floor}}</td>
+                        <td>{{list.locationmaster__room}}</td>
+                        <td>{{list.created_by}}</td>
+                        <td>{{list.created_date|date:"d-m-Y"}}</td> -->
+                        {% if list.active == False %}
+                        <td colspan="2">
+                            <button data-toggle="modal" data-target="" class="btn btn-primary" 
+                            onclick="myFunction('{{ list.sl_no }}','{{ list.locationmaster__id }}', '{{ list.branch_name }}','{{ list.branch_code }}',
+                                                    '{{ list.zone }}','{{ list.locationmaster__address }}','{{ list.locationmaster__city }}','{{ list.locationmaster__pin_code }}','{{ list.locationmaster__building }}','{{ list.locationmaster__floor }}','{{ list.locationmaster__room }}', 'Edit')"><i class="fa fa-edit"
+                                                                        style="font-size:18px;color: lightsalmon;" data-toggle="tooltip" title="Edit"> </i></button>
+                            <button id="deleteBtn-{{list.sl_no}}" data-toggle="modal" data-target="" class="btn btn-danger"
+                                onclick="confirms('{{list.sl_no}}')"><i class="fa fa-trash"
+                                                                            style="font-size:18px; color: lightsalmon;" data-toggle="tooltip" title="Delete"> </i>
+                            </button>
+                        </td>
+                        {% else %}
+                        <td colspan="2">
+                            <button data-toggle="modal" data-target="#exampleModal" class="btn btn-primary" 
+                            onclick="myFunction('{{ list.sl_no }}','{{ list.locationmaster__id }}', '{{ list.branch_name }}','{{ list.branch_code }}',
+                                                    '{{ list.zone }}','{{ list.locationmaster__address }}','{{ list.locationmaster__city }}','{{ list.locationmaster__pin_code }}','{{ list.locationmaster__building }}','{{ list.locationmaster__floor }}','{{ list.locationmaster__room }}', 'Edit')"><i class="fa fa-edit"
+                                                                        style="font-size:18px;"  data-toggle="tooltip" title="Edit"> </i></button>
+                            <button id="deleteBtn-{{list.sl_no}}" data-toggle="modal" data-target="#myModal" class="btn btn-danger"
+                                onclick="confirms('{{list.sl_no}}')"><i class="fa fa-trash" data-toggle="tooltip" title="Delete"
+                                                                            style="font-size:18px;" > </i>
+                            </button>
+                        </td>
+                        {% endif %}
+
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        <td>No Records</td>
+                        
+                    </tr>
+                    {% endif %}
+                </tbody>
+        </table>
+    </div>
+
+    <div class='pagination-container'>
+        <div class="row mytable">
+            <div class="col-md-10">
+                    {% if data1.has_other_pages %}
+                    <ul class="pagination">
+                        {% if data1.has_previous %}
+                        <li><a href="?page={{ data1.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+
+                        {% for i in data1.paginator.page_range %}
+                    {% if data1.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% elif i > data1.number|add:'-5' and i < data1.number|add:'5' %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                        {% if data1.has_next %}
+                        <li><a href="?page={{ data1.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+            </div>
+            <div class="col-md-3 pag" style="margin-left: 840px;">
+                    <span class="current" style="color: #95a4f2">
+                        Page {{ data1.number }} of {{ data1.paginator.num_pages }}.
+                    </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row1" style="display:none;">
+        <div class="row pt-5">
+            <div class="offset-4 col-md-4 shadow p-5">
+                <center>
+                <h2>Branch Upload</h2><hr><br><br>
+            <form id="submit_form" method="POST" action="{% url 'branch_upload_new' %}" enctype ="multipart/form-data">
+            {% csrf_token %}
+                <input type = "file" name= "myfile"><br>
+                    <button type="submit" class="btn btn-success">Upload</button>
+            </form>
+                </center>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="edit_modal">
+            {% csrf_token %}
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Branch</h5>
+                        
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                    <input type="text" hidden id="req_id">
+                                    <input type="text" hidden id="loc_id">
+                                    <div class="form-group col-sm-6">
+                                        <label for="branch_name">Branch Name<span style="color:red">*</span></label>
+                                        <input required type="text"  class="form-control" autocomplete="off" required name="branch_name" id="branch_name"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="branch_code">Branch Code<span style="color:red">*</span></label>
+                                        <input required type="text"  class="form-control" autocomplete="off" required name="branch_code" id="branch_code"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="zone">Zone<span style="color:red">*</span></label>
+                                        <input required type="text"  class="form-control" autocomplete="off" required name="zone" id="zone"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="address">Address</label>
+                                        <input type="text"  class="form-control" autocomplete="off" name="address" id="address"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="city">City</label>
+                                        <input type="text"  class="form-control" autocomplete="off"  name="city" id="city"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="pincode">Pincode</label>
+                                        <input type="text"  class="form-control" autocomplete="off"  name="pincode" id="pincode"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="building">Building</label>
+                                        <input type="text"  class="form-control" autocomplete="off" name="building" id="building"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="floor">Floor</label>
+                                        <input type="text"  class="form-control" autocomplete="off" name="floor" id="floor"/>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="room">Room</label>
+                                        <input type="text"  class="form-control" autocomplete="off" name="room" id="room"/>
+                                    </div>
+                                    <input type="text" hidden id="test_id">
+
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-7">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary button-custom-hover"
+                                            data-dismiss="modal" onclick="window.location.reload()">Close
+                                    </button>
+                                    <button type="submit" id="submit_id" class="btn btn-primary button-custom-hover">Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+                            
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+                <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body">
+                    <p>are you sure you want to delete..?</p>
+                    <div style="float:right">
+                        <button type="button" class="btn btn-danger delete_data" data-dismiss="modal" id="deleteid"
+                                onclick="delete1()">yes
+                        </button>
+                        <button type="button" class="btn btn-success ml-2" data-dismiss="modal">cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div class="modal" id="newModal_export" role="dialog" aria-labelledby="exampleModalLabelExport" aria-hidden="true">
+    <form method="POST" action="{% url 'add_branch_export' %}">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelExport">Export</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="alert alert-danger alert-dismissible alert8" id="date_err_msg" style="display: none;">
+                            <p style="text-align:center;height:14px;" id="date_msg">Dateeee</p>
+                        </div>
+                        <div class="form-group col-sm-6" id="from">
+                            
+                                <input placeholder="From Date" name="export_fromdate" id="export_fromdate" class="form-control export_date_validity" type="text"
+                                onchange='export_dateFunction(id)' onfocus="(this.type='date')">
+                        </div>
+                        
+                        <div class="form-group col-sm-6" id="to">
+                                <input placeholder="To Date" class="form-control export_date_validity" name="export_todate" id="export_todate" type="text"
+                                    onfocus="(this.type='date')">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger button-custom-hover"
+                                data-dismiss="modal" id="close_id" >Close
+                            </button>
+                            <button type="submit"
+                                class="btn btn-primary button-custom-hover" id="submit_export">Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> 
+
+<script src={% static '/assets/static_files/js/custome.js' %}"></script>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+<script>
+    function myFunction(a, b, c, d, e, f,g,h,i,j,k,l) { 
+        $('#branch_code').attr('disabled', true);   
+        var req_id = a;
+        var loc_id = b;
+        var branch_name= c;
+        var branch_code = d;
+        var zone = e;
+        var address = f;
+        var city = g;
+        var pincode = h;
+        var building = i;
+        var floor = j;
+        var room = k;
+        var test = l
+        console.log(req_id)
+
+        $('#req_id').val(req_id);
+        $('#loc_id').val(loc_id);
+        $('#branch_name').val(branch_name);
+        $('#branch_code').val(branch_code);
+        $('#zone').val(zone);
+        $('#city').val(city);
+        $('#pincode').val(pincode);
+        $('#address').val(address);
+        $('#building').val(building);
+        $('#floor').val(floor);
+        $('#room').val(room);
+        $('#test_id').val(test),
+        console.log(req_id, branch_code,branch_name,zone,city,address,building,floor,room,test)
+    }
+</script>
+<script>
+    function resetPopup() {
+        $('#edit_modal').trigger("reset");
+
+    }
+    </script>
+<!-- <script>
+        
+    $(function () {
+        $('#edit_modal').on('submit', function (e) {
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $('#submit_id').attr('disabled',true);
+            var req_id = $('#req_id').val();
+            var loc_id =$('#loc_id').val();
+            var branch_name = $('#branch_name').val();
+            var branch_code = $('#branch_code').val()
+            var zone = $('#zone').val()
+            var building = $('#building').val()
+            var address = $('#address').val()
+            var city = $('#city').val() 
+            var pincode = $('#pincode').val()
+            var floor = $('#floor').val();  
+            var room = $('#room').val();  
+            var add_type=$('#test_id').val();
+            console.log(branch_code,branch_name,zone,building,address,city,floor,room,add_type)
+            e.preventDefault();
+            if(add_type == 'Edit'){
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_branch_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'req_id':req_id,
+                        'loc_id':loc_id,
+                        'branch_name': branch_name,
+                        'branch_code': branch_code,
+                        'zone': zone,
+                        'building': building,
+                        'address': address,
+                        'city': city,
+                        'pincode':pincode,
+                        'floor' : floor,
+                        'room':room
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+                
+            }
+            else if(add_type == ""){
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_branch_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'req_id':'',
+                        'loc_id':'',
+                        'branch_name': branch_name,
+                        'branch_code': branch_code,
+                        'zone': zone,
+                        'building': building,
+                        'address': address,
+                        'city': city,
+                        'pincode':pincode,
+                        'floor' : floor,
+                        'room':room
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            }
+            });
+        });
+</script> -->
+<script>
+        
+    $(function () {
+        $('#edit_modal').on('submit', function (e) {
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $('#submit_id').attr('disabled',true);
+            var req_id = $('#req_id').val();
+            var loc_id =$('#loc_id').val();
+            var branch_name = $('#branch_name').val();
+            var branch_code = $('#branch_code').val()
+            var zone = $('#zone').val()
+            var building = $('#building').val()
+            var address = $('#address').val()
+            var city = $('#city').val() 
+            var pincode = $('#pincode').val()
+            var floor = $('#floor').val();  
+            var room = $('#room').val();  
+            var add_type=$('#test_id').val();
+            console.log(branch_code,branch_name,zone,add_type)
+            e.preventDefault();
+            if(add_type == "Edit"){
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_branch_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'req_id':req_id,
+                        'loc_id':loc_id,
+                        'branch_name': branch_name,
+                        'branch_code': branch_code,
+                        'zone': zone,
+                        'building': building,
+                        'address': address,
+                        'city': city,
+                        'pincode':pincode,
+                        'floor' : floor,
+                        'room':room
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            }
+            else if(add_type == ""){
+                //alert("Hyy")               
+                e.preventDefault();
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_branch_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'req_id':'',
+                        'loc_id':'',
+                        'branch_name': branch_name,
+                        'branch_code': branch_code,
+                        'zone': zone,
+                        'building': building,
+                        'address': address,
+                        'city': city,
+                        'pincode':pincode,
+                        'floor' : floor,
+                        'room':room
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            }
+        });
+    });
+</script>
+<!-- <script>
+        
+    $(function () {
+        $('#submit_id').on('click', function (e) {
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+            $('#submit_id').attr('disabled',true);
+            var req_id = $('#req_id').val();
+            var loc_id =$('#loc_id').val();
+            var branch_name = $('#branch_name').val();
+            var branch_code = $('#branch_code').val()
+            var zone = $('#zone').val()
+            var building = $('#building').val()
+            var address = $('#address').val()
+            var city = $('#city').val() 
+            var pincode = $('#pincode').val()
+            var floor = $('#floor').val();  
+            var room = $('#room').val();  
+            console.log(req_id,branch_code,branch_name,zone,building,address,city,floor,room)
+            e.preventDefault();
+                $.ajax({
+                    
+                    type: "POST",
+                    url: '/add_branch_ajax/',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false,      
+                    data: {
+                        'req_id':req_id,
+                        'loc_id':loc_id,
+                        'branch_name': branch_name,
+                        'branch_code': branch_code,
+                        'zone': zone,
+                        'building': building,
+                        'address': address,
+                        'city': city,
+                        'pincode':pincode,
+                        'floor' : floor,
+                        'room':room
+                    },
+                    success: function (data) {
+                        $('#success').show();
+                        window.location.reload();
+                            }
+                });
+            });
+        });
+</script> -->
+<script>
+    function bulkasset(){
+        $('.row1').show();
+        $('.mytable').hide(); 
+        $('#search_all').hide();
+    }
+
+    function addasset(){
+        $('.row1').hide();
+        $('.mytable').show(); 
+        $('#search_all').show();
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+    
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 5000); 
+
+        
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+<!-- value to button deleteid-->
+<script>
+    function confirms(a) {
+        $("#deleteid").attr('value',a);
+       }
+    </script>
+    
+    <!-- to DELETE THE BASED ON DELETEID -->
+    <script>
+    function delete1() {
+    var delete_data = $("#deleteid").val();
+    console.log(delete_data)
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        
+            $.ajax({
+                    url: "/delete_branch/",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                        },
+                    cache: false, 
+                    data: { "value": delete_data },
+                    dataType:"html",
+                    type: "post",
+                    success: function(data){
+                       location.reload();
+                    }
+                });
+            }
+    </script>
+
+
+<script>
+$('#branch_id').change(function() {
+
+  // get optios of second dropdown and cache it
+  var $options = $('#employee_id')
+
+
+    // update the dropdown value if necessary
+    .val('')
+    // get options
+    .find('option')
+    // show all of the initially
+    .show();
+  // check current value is not 0
+  if (this.value != '0')
+    $options
+    // filter out options which is not corresponds to the first option
+    .not('[data-val="' + this.value + '"],[data-val=""]')
+    // hide them
+    .hide();
+})
+</script>
+
+<script>
+$(document).ready(function () {
+  $('#asset_name_id').selectize({
+      sortField: 'text'
+  });
+
+  });
+
+  
+</script>
+
+{%  endblock content %}
