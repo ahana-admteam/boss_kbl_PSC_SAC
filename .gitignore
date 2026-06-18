@@ -21,6 +21,7 @@ Thumbs.db
 venv/
 env/
 ENV/
+kblpsc_env39/
 
 # Keys and certificates
 *.pem
