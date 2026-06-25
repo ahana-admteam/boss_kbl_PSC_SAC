@@ -28,10 +28,10 @@ def login(request):
     tenant = get_hostname(request)
     # print(tenant)
     # print(settings.BASE_DIR)
-    if os.path.isdir(os.path.join(str(settings.BASE_DIR), "/boss/boss_v1/configurations/{}".format('ahana'))):
-        with open(os.path.join(str(settings.BASE_DIR), "/boss/boss_v1/configurations/{}/{}.config.json".format('ahana','ahana'))) as f:
+    if os.path.isdir(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}".format('ahana'))):
+        with open(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana'))) as f:
             config_data = Box(json.load(f))
-            # print(os.path.join(str(settings.BASE_DIR), "/boss/boss_v1/configurations/{}/{}.config.json".format('ahana','ahana')))
+            # print(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana')))
     tenant_image_path = config_data.logo_image.image_path
     tenant_css_path = config_data.global_styles
     title = config_data.module.PSC001.app_name

@@ -3,9 +3,8 @@ from .base import *
 #env = environ.Env()
 #environ.Env.read_env()
 #print(REGISTERS_LOG)
-BOSS_ENV="prod" 
+BOSS_ENV="local" 
 if BOSS_ENV == "prod":
     from .prod import *
 else:
-    print("else")
     from .dev import *

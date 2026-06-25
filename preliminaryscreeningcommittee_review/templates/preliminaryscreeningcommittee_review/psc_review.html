@@ -4,9 +4,7 @@
 
 {% block content %}
 {% with request.session.new_roles|my_filter as roles %}
-{% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker2' in roles or 'psc001checker2' in roles or
-'psc001maker3' in roles or 'psc001checker3' in roles or 'momconvener' in roles or 'sac001maker3' in roles or
-'sac001checker3' in roles %}<!-- custom styling -->
+{% if 'psc001maker1' in roles or 'psc001checker1' in roles or 'psc001maker2' in roles or 'psc001checker2' in roles or 'psc001maker3' in roles or 'psc001checker3' in roles or 'momconvener' in roles or 'sac001maker3' in roles or 'sac001checker3' in roles %}<!-- custom styling -->
 <style>
     #bo_names_table,
     #bo_names_table tr,
@@ -386,7 +384,7 @@
                             Others<span class="glyphicon glyphicon-collapse-down pull-right"></span><i
                                 class="arrow right pull-right"></i></h6>
                         <div id="othersdetailsvaliadtion" class="content" style="padding-bottom: 2%; display: block;">
-                            <!-- Details of credit facility sanctionedNature of Account
+                            <!-- Details of credit facility sanctionedNature of Account -->
                             <label><strong>2. Details of credit facility sanctioned.</strong></label>
                             <div>
                                 {% comment %}
@@ -494,34 +492,25 @@
 
                                         {% for cs in credit_config %}
                                         <tr>
-                                            <td id="cs_slid-{{ forloop.counter }}" style="display: none;">{{
-                                                forloop.counter }}</td>
-                                            <td id="cs_slno-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.credit_feci_slno }}</td>
-                                            <td id="cs_refno-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.reference_num }}</td>
+                                            <td id="cs_slid-{{ forloop.counter }}" style="display: none;">{{ forloop.counter }}</td>
+                                            <td id="cs_slno-{{ forloop.counter }}" style="padding: 4px;">{{ cs.credit_feci_slno }}</td>
+                                            <td id="cs_refno-{{ forloop.counter }}" style="padding: 4px;">{{ cs.reference_num }}</td>
                                             <td id="cs_sanc_date-{{ forloop.counter }}"
                                                 style="padding: 4px; white-space: nowrap;">{{ cs.sanction_date }}</td>
-                                            <td id="cs_acc_nat-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.account_nature }}</td>
-                                            <td id="cs_adv_nat-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.advance_nature }}</td>
+                                            <td id="cs_acc_nat-{{ forloop.counter }}" style="padding: 4px;">{{ cs.account_nature }}</td>
+                                            <td id="cs_adv_nat-{{ forloop.counter }}" style="padding: 4px;">{{ cs.advance_nature }}</td>
                                             <td id="cs_lan-{{ forloop.counter }}" style="padding: 4px;">{{ cs.lan }}
                                             </td>
-                                            <td id="cs_san_lim-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.sanctioned_limit }}</td>
+                                            <td id="cs_san_lim-{{ forloop.counter }}" style="padding: 4px;">{{ cs.sanctioned_limit }}</td>
                                             <td id="cs_duedate-{{ forloop.counter }}"
                                                 style="padding: 4px; white-space: nowrap;">{{ cs.due_date }}</td>
                                             <td id="cs_npadate-{{ forloop.counter }}"
                                                 style="padding: 4px; white-space: nowrap;">{{ cs.npa_date }}</td>
-                                            <td id="cs_npa_bal-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.npa_balance }}</td>
+                                            <td id="cs_npa_bal-{{ forloop.counter }}" style="padding: 4px;">{{ cs.npa_balance }}</td>
                                             <td id="cs_bal-{{ forloop.counter }}" style="padding: 4px;">{{ cs.balance }}
                                             </td>
-                                            <td id="cs_adv_purp-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.advance_purpose }}</td>
-                                            <td id="cs_asst_clss-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                cs.asset_classification }}</td>
+                                            <td id="cs_adv_purp-{{ forloop.counter }}" style="padding: 4px;">{{ cs.advance_purpose }}</td>
+                                            <td id="cs_asst_clss-{{ forloop.counter }}" style="padding: 4px;">{{ cs.asset_classification }}</td>
                                             <td id="doc_date-{{ forloop.counter }}"
                                                 style="padding: 4px; white-space: nowrap;">{{ cs.doc_date }}</td>
                                             <td style="padding: 4px;">
@@ -620,29 +609,21 @@
                                     <tbody style="border:1px solid rgb(235, 235, 235); font-size: 10px;">
                                         {% for sv in securities_config %}
                                         <tr>
-                                            <td id="sv_sec_nat-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.security_nature }}</td>
+                                            <td id="sv_sec_nat-{{ forloop.counter }}" style="padding: 4px;">{{ sv.security_nature }}</td>
                                             <td id="sv_lansv-{{ forloop.counter }}" style="padding: 4px;">{{ sv.lan }}
                                             </td>
-                                            <td id="sv_sec_type-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.security_type }}</td>
-                                            <td id="sv_san_val-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.sanction_valuation }}</td>
+                                            <td id="sv_sec_type-{{ forloop.counter }}" style="padding: 4px;">{{ sv.security_type }}</td>
+                                            <td id="sv_san_val-{{ forloop.counter }}" style="padding: 4px;">{{ sv.sanction_valuation }}</td>
                                             <td id="sv_san_val_date-{{ forloop.counter }}"
-                                                style="padding: 4px; white-space: nowrap;">{{ sv.sanction_valuation_date
-                                                }}</td>
-                                            <td id="sv_lat_val-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.latest_valuation }}</td>
+                                                style="padding: 4px; white-space: nowrap;">{{ sv.sanction_valuation_date }}</td>
+                                            <td id="sv_lat_val-{{ forloop.counter }}" style="padding: 4px;">{{ sv.latest_valuation }}</td>
                                             <td id="sv_lat_val_date-{{ forloop.counter }}"
-                                                style="padding: 4px; white-space: nowrap;">{{ sv.latest_valuation_date
-                                                }}</td>
+                                                style="padding: 4px; white-space: nowrap;">{{ sv.latest_valuation_date }}</td>
                                             <td id="sv_ins_valid-{{ forloop.counter }}"
                                                 style="padding: 4px; white-space: nowrap;">{{ sv.insurance_valid_upto }}
                                             </td>
-                                            <td id="sv_ins_value-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.insurance_value }}</td>
-                                            <td id="sv_cersai_num-{{ forloop.counter }}" style="padding: 4px;">{{
-                                                sv.cersai_num }}</td>
+                                            <td id="sv_ins_value-{{ forloop.counter }}" style="padding: 4px;">{{ sv.insurance_value }}</td>
+                                            <td id="sv_cersai_num-{{ forloop.counter }}" style="padding: 4px;">{{ sv.cersai_num }}</td>
                                             <td id="sv_ins_doc-2" style="text-align: center; padding: 4px;">
                                                 <button id="insurance_doc{{ forloop.counter }}" type="button"
                                                     class="btn btn-primary btn-sm" data-toggle="modal"

@@ -1,0 +1,103 @@
+{
+  "RequestUUID": "14145885410582110",
+  "HStatus": "SUCCESS",
+  "basic_details": {
+    "borrower_name": "NA",
+    "borrower_address": "NA",
+    "constitution": "001007001110000",
+    "partners": "UDAYA RAVI ENTERPRISES",
+    "establishment_date": "1900-01-01",
+    "networth": "19972000",
+    "dealing_since": "2022-11-19",
+    "business_nature": "N-OTHERS",
+    "guarantors_name": "0"
+  },
+  "credit_factility": [
+    {
+      "credit_feci_slno": "1",
+      "reference_num": "DIGI/CMRS/RLPSC/950/6210/2024-25/31-08-2024",
+      "sanction_date": "31-08-2024",
+      "account_nature": "01-FULLY SECURED",
+      "advance_nature": "NA",
+      "lan": "9597000600001501",
+      "sanctioned_limit": "7500000",
+      "due_date": "31-08-2025",
+      "npa_date": "28-12-2024",
+      "npa_balance": "-7565675.32",
+      "balance": "NA",
+      "advance_purpose": "null",
+      "asset_classification": "MAIN",
+      "doc_date": "15-03-2023"
+    },
+    {
+      "credit_feci_slno": "1",
+      "reference_num": "DIGI/CMRS/RLPSC/950/6210/2024-25/31-08-2024",
+      "sanction_date": "31-08-2024",
+      "account_nature": "01-FULLY SECURED",
+      "advance_nature": "NA",
+      "lan": "9597001400001901",
+      "sanctioned_limit": "10000000",
+      "due_date": "31-05-2026",
+      "npa_date": "28-12-2024",
+      "npa_balance": "-5776876.32",
+      "balance": "NA",
+      "advance_purpose": "null",
+      "asset_classification": "MAIN",
+      "doc_date": "01-01-1990"
+    },
+    {
+      "credit_feci_slno": "1",
+      "reference_num": "DIGI/CMRS/RLPSC/950/6210/2024-25/31-08-2024",
+      "sanction_date": "31-08-2024",
+      "account_nature": "01-FULLY SECURED",
+      "advance_nature": "NA",
+      "lan": "9597001400001901",
+      "sanctioned_limit": "10000000",
+      "due_date": "31-05-2026",
+      "npa_date": "28-12-2024",
+      "npa_balance": "-5776876.32",
+      "balance": "NA",
+      "advance_purpose": "null",
+      "asset_classification": "MAIN",
+      "doc_date": "01-01-1990"
+    }
+  ],
+  "securites_values": [
+    {
+      "security_nature": "09590001530",
+      "lan": "9597000600001501",
+      "security_type": "COLLATERAL",
+      "sanction_valuation": "NA",
+      "sanction_valuation_date": "17/05/2022",
+      "latest_valuation": "24016000",
+      "latest_valuation_date": "17/05/2022",
+      "insurance_valid_upto": "22-05-2024",
+      "insurance_value": "500000",
+      "cersai_num": "200066145354"
+    },
+    {
+      "security_nature": "09590001530",
+      "lan": "9597001400001901",
+      "security_type": "COLLATERAL",
+      "sanction_valuation": "NA",
+      "sanction_valuation_date": "17/05/2022",
+      "latest_valuation": "24016000",
+      "latest_valuation_date": "17/05/2022",
+      "insurance_valid_upto": "01-01-1990",
+      "insurance_value": "0",
+      "cersai_num": "200066145354"
+    },
+    {
+      "security_nature": "09590001530",
+      "lan": "9597001400001901",
+      "security_type": "COLLATERAL",
+      "sanction_valuation": "NA",
+      "sanction_valuation_date": "17/05/2022",
+      "latest_valuation": "24016000",
+      "latest_valuation_date": "17/05/2022",
+      "insurance_valid_upto": "01-01-1990",
+      "insurance_value": "0",
+      "cersai_num": "200066145354"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "security_nature":"Prime",
+    "lan": 5467893291,
+    "security_type": "Prime",
+    "sanction_valuation": 37,
+    "sanction_valuation_date": "01-02-2024",
+    "latest_valuation": 18,
+    "latest_valuation_date": "16-02-2024",
+    "insurance_valid_upto": "26-02-2024",
+    "insurance_value": 25000,
+    "cersai_num": 3546456
+  },
+  {
+    "security_nature":"Prime",
+    "lan": 1234567890,
+    "security_type": "Prime",
+    "sanction_valuation": 45,
+    "sanction_valuation_date": "15-01-2024",
+    "latest_valuation": 22,
+    "latest_valuation_date": "10-02-2024",
+    "insurance_valid_upto": "03-05-2024",
+    "insurance_value": 30000,
+    "cersai_num": 9876543
+  }
+]

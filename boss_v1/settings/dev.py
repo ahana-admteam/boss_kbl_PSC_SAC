@@ -1,7 +1,7 @@
 ######   Local settings   #####
 
 DEBUG = True
-AD_LOGIN = True
+AD_LOGIN = False
 
 ALLOWED_HOSTS = ["kotak.localhost", "localhost","fincare.localhost", "hdfc.localhost", "jana.localhost", "rbl.localhost", "fincare.13.68.238.3", ".fincare.13.68.238.3", "13.68.238.3", "demo.localhost", "ujjivan.localhost", "svc.localhost"]
 

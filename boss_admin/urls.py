@@ -8,8 +8,8 @@ from .views import main, authentication, roles_manage, kbl_reports, kbl_auth
 
 urlpatterns = [
     #### Authentication URLs ########
-    path('', kbl_auth.login, name='login_page'),
-    path('home', kbl_auth.home_page, name='home_page'),
+    path('', authentication.login, name='login_page'),
+    path('home', authentication.home_page, name='home_page'),
     path('file_encrypt', authentication.file_encrypt, name='file_encrypt'),
     
     #### Role Management URLs ########

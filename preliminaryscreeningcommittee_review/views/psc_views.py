@@ -1154,11 +1154,11 @@ def dashboard(request):
             print('BO region')
             bo_start_time = time.time()
             #Branch Maker/Checker Dashboard
-            _psc_cust_ids = set(PSCTable.objects.filter(branch_code_id__branch_code=request.session['branch_code']).values_list('cust_id',flat=True))
+            _psc_cust_ids = set(PSCTable.objects.filter(branch_code__branch_code=request.session['branch_code']).values_list('cust_id',flat=True))
 
             psccustomer_data = CustomerTable.objects.filter(
                 Q(review_type='psc') | Q(review_type__isnull=True),npa_status=True
-            ).filter(Q(branch_code=_branch) | Q(cust_id__in=_psc_cust_ids)
+            ).filter(Q(branch_code__branch_code=_branch) | Q(cust_id__in=_psc_cust_ids)
             ).annotate(
                 status_order=Case(
                     When(status__in=[ 'Draft', 'Rejected'], then=Value(0)),
@@ -1172,7 +1172,7 @@ def dashboard(request):
             
             psccustomer_dataApproval = CustomerTable.objects.filter(
                 Q(review_type='psc') | Q(review_type__isnull=True),npa_status=True
-            ).filter(Q(branch_code=_branch) | Q(cust_id__in=_psc_cust_ids)
+            ).filter(Q(branch_code__branch_code=_branch) | Q(cust_id__in=_psc_cust_ids)
             ).annotate(
                 status_order=Case(
                     When(status__in=[ 'Re-submitted', 'Submitted'], then=Value(0)),
@@ -1217,7 +1217,7 @@ def dashboard(request):
                     sacfiltered_accountsApproval.append(account)
             saccustomer_dataApproval = sacfiltered_accountsApproval
 
-            psc_data = PSCTable.objects.filter(npa_status=True,branch_code_id__branch_code=_branch).values(*psc_all_data).annotate(
+            psc_data = PSCTable.objects.filter(npa_status=True,branch_code__branch_code=_branch).values(*psc_all_data).annotate(
                     status_order=Case(
                         When(status__in=['Submitted','Convened','Approved'], then=Value(1)),
                         default=Value(0),
@@ -1226,14 +1226,14 @@ def dashboard(request):
                 ).order_by('status_order', '-last_modified_date')
             
             
-            sac_data = SACTable.objects.filter(psc_rec_id__npa_status=True,psc_rec_id__branch_code=_branch).values(*sac_all_data).annotate(
+            sac_data = SACTable.objects.filter(psc_rec_id__npa_status=True,psc_rec_id__branch_code__branch_code=_branch).values(*sac_all_data).annotate(
                 status_order=Case(
                     When(status__in=['Submitted','Convened','Approved'], then=Value(1)),
                     default=Value(0),
                     output_field=IntegerField(),
                 )
             ).order_by('status_order', '-last_modified_date')
-            sac_data_export = SACTable.objects.filter(psc_rec_id__npa_status=True,psc_rec_id__branch_code=request.session['branch_code']).values('sac_rec_id','psc_rec_id__branch_code','psc_rec_id__region_name','psc_rec_id__cust_id','psc_rec_id__facility_num','psc_rec_id__sanc_limit','psc_rec_id__npa_date','psc_rec_id__nap_tag','psc_rec_id__borrower_name','status','current_role')
+            sac_data_export = SACTable.objects.filter(psc_rec_id__npa_status=True,psc_rec_id__branch_code__branch_code=request.session['branch_code']).values('sac_rec_id','psc_rec_id__branch_code','psc_rec_id__region_name','psc_rec_id__cust_id','psc_rec_id__facility_num','psc_rec_id__sanc_limit','psc_rec_id__npa_date','psc_rec_id__nap_tag','psc_rec_id__borrower_name','status','current_role')
             bo_end_time = time.time()
             bo_total_time = bo_end_time-bo_start_time
             print("User Id: {}, Designation: {}, Role: {}, Action: {}, Message: BO Dashboard Loaded, Time Taken: {}".format(request.session['emp_id'], request.session['designation'], session_role, "BO Dashboard", bo_total_time))
@@ -1828,49 +1828,19 @@ def psc_review(request,pk):
         #                 "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
         #     return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
         else:
-            is_api_data = config_data.module.PSC001.is_api_data
-    
             cust_id = PSCTable.objects.filter(id=pk).values('cust_id')[0]['cust_id']
-            if is_api_data == True:
-                customerapi_data = KBLAPIWrapper.CustomerAssetsAPI(cust_id)
-                # print('customerapi_data', (customerapi_data))
-                if len(customerapi_data) == 1:
-                    messages.error(request,f'Customer Assets API error : {customerapi_data["response"]}')
-                    return redirect('dashboard')
-                # elif len(customerapi_data) <= 2:
-                #     messages.error(request,'Customer Assets API error : returned empty data for basic details, credit sanction & securities table')
-                #     return redirect('dashboard')
-                # elif len(customerapi_data) <= 30:
-                #     messages.error(request,'Customer Assets API error : Data for some tags not returned')
-                #     return redirect('dashboard')
-                elif customerapi_data['HStatus'] == 'FAILURE':
-                    messages.error(request,'Customer Assets API error : HStatus failure')
-                    return redirect('dashboard')
-                else:
-                    modifiedData = modify_cust_asst_data(request, customerapi_data)
-                    # print("modifiedData",modifiedData)
-                    basic_config = modifiedData['basic_details']
-                    credit_config = modifiedData['credit_facility']
-                    securities_config = modifiedData['securities_values']
-                    # print("securities_config",securities_config)
-                    psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
-                    # return
-                    context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
-                                "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
-                    return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
-            else:
-                with open("sample_data/basic_details.json", "r") as file:
-                    basic_config = json.load(file)
-                with open("sample_data/credit_factility.json", "r") as file:
-                    credit_config = json.load(file)
-                with open("sample_data/securites_values.json", "r") as file:
-                    securities_config = json.load(file)
-                # get_apidata(request)
-                psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
-                context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
-                            "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
-                print("User Id: {}, Designation: {}, Role: {}, Action: {}, Message: {}".format(request.session['emp_id'], request.session['designation'], session_role, "PSC Review Form", "PSC review form opened"))
-                return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
+            with open("sample_data/basic_details.json", "r") as file:
+                basic_config = json.load(file)
+            with open("sample_data/credit_factility.json", "r") as file:
+                credit_config = json.load(file)
+            with open("sample_data/securites_values.json", "r") as file:
+                securities_config = json.load(file)
+            # get_apidata(request)
+            psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
+            context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
+                        "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
+            print("User Id: {}, Designation: {}, Role: {}, Action: {}, Message: {}".format(request.session['emp_id'], request.session['designation'], session_role, "PSC Review Form", "PSC review form opened"))
+            return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
     except Exception as e:
         sc_log.error(e)
         messages.error(request, e)

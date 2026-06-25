@@ -284,14 +284,14 @@ def login(request):
     tenant = get_hostname(request)
     #print(tenant)
     #print(settings.BASE_DIR)
-    if os.path.isdir(os.path.join(str(settings.BASE_DIR), "/boss_v1/boss_v1/configurations/{}".format(tenant))):
-        with open(os.path.join(str(settings.BASE_DIR), "/boss_v1/boss_v1/configurations/{}/{}.config.json".format(tenant,tenant))) as f:
+    if os.path.isdir(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}".format(tenant))):
+        with open(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format(tenant,tenant))) as f:
             config_data = Box(json.load(f))
-            #print(os.path.join(str(settings.BASE_DIR), "/boss_v1/boss_v1/configurations/{}/{}.config.json".format(tenant,tenant)))
+            #print(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format(tenant,tenant)))
     else:
-        with open(os.path.join(str(settings.BASE_DIR), "/boss_v1/boss_v1/configurations/{}/{}.config.json".format('ahana','ahana'))) as f:
+        with open(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana'))) as f:
             config_data = Box(json.load(f))
-            #print(os.path.join(str(settings.BASE_DIR), "/boss_v1/boss_v1/configurations/{}/{}.config.json".format('ahana','ahana')))
+            #print(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana')))
     tenant_image_path = config_data.logo_image.image_path
     tenant_css_path = config_data.global_styles 
     title = config_data.module.PSC001.app_name
@@ -427,6 +427,7 @@ def load_session(_domain_id,request,tenant,_ses_key):
         request.session['branch_code'] = branch_code
         request.session['domain_id'] = domain_id
         request.session['emp_desig_role'] = emp_desig_role
+        request.session['designation'] = emp_desig_role
         request.session['active'] = active
         request.session['branch_name'] = branch_name
         ip_no = get_ip_address() # get ip address

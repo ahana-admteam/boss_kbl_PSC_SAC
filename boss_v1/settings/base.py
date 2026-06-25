@@ -102,7 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AD_LOGIN = True
+AD_LOGIN = False
 
 # if env('BOSS_ENV') == "prod":
 #     print('prod', env('BOSS_ENV'))

@@ -1247,7 +1247,7 @@
                     "display_name": "NO"
                 }
             ],
-            "is_api_data": true,
+            "is_api_data": false,
             "psc_mom_limit" : 10000000,
             "mail_configuration" : {
                 "Smtp_Server": "smtp.office365.com",

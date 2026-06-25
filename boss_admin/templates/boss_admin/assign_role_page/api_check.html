@@ -186,8 +186,8 @@
                             <td>1.</td>
                             <td>PSC Dashboard API</td>
                             <td>
-                                <textarea id="DashboardResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
-                                    readonly></textarea>
+                                <textarea id="DashboardResponse" cols="50" rows="4" type="text" class="form-control"
+                                    autocomplete="off" readonly></textarea>
                             </td>
                             <td>
                                 <button id="DashboardSubmit" class="btn btn-primary"
@@ -198,7 +198,8 @@
                             <td>2.</td>
                             <td>Branch API</td>
                             <td>
-                                <textarea id="BranchResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                                <textarea id="BranchResponse" cols="50" rows="4" type="text" class="form-control"
+                                    autocomplete="off" readonly></textarea>
                             </td>
                             <td>
                                 <button id="BranchSubmit" class="btn btn-primary"
@@ -209,7 +210,8 @@
                             <td>3.</td>
                             <td>NPA Status API</td>
                             <td>
-                                <textarea id="PSCResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off" readonly></textarea>
+                                <textarea id="PSCResponse" cols="50" rows="4" type="text" class="form-control"
+                                    autocomplete="off" readonly></textarea>
                             </td>
                             <td>
                                 <button id="PSCSubmit" class="btn btn-primary"
@@ -220,8 +222,8 @@
                             <td>4.</td>
                             <td>Employee API</td>
                             <td>
-                                <textarea id="HUPMINQResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
-                                    readonly></textarea>
+                                <textarea id="HUPMINQResponse" cols="50" rows="4" type="text" class="form-control"
+                                    autocomplete="off" readonly></textarea>
                             </td>
                             <td>
                                 <button id="HUPMINQSubmit" class="btn btn-primary"
@@ -232,8 +234,8 @@
                             <td>5.</td>
                             <td>Customer Assets API</td>
                             <td>
-                                <textarea id="CustomerAssetsResponse" cols="50" rows="4" type="text" class="form-control" autocomplete="off"
-                                    readonly></textarea>
+                                <textarea id="CustomerAssetsResponse" cols="50" rows="4" type="text"
+                                    class="form-control" autocomplete="off" readonly></textarea>
                             </td>
                             <td>
                                 <button id="CustomerAssetsSubmit" class="btn btn-primary"
@@ -313,23 +315,23 @@
 
 <script>
     function openApiDataModal(buttonId) {
-        document.getElementById('dataRequest').value =''
+        document.getElementById('dataRequest').value = ''
         clickedButtonId = buttonId;
         $('#ApiDataModal').modal('show');
-        if(buttonId == 'Dashboard'){
+        if (buttonId == 'Dashboard') {
             document.getElementById('dataLabel').textContent = `PSC Dashboard API Request Modal`
-            $('#dataRequest').attr('placeholder','Please enter the Branch Code')
-        }else if(buttonId == 'HUPMINQ'){
+            $('#dataRequest').attr('placeholder', 'Please enter the Branch Code')
+        } else if (buttonId == 'HUPMINQ') {
             document.getElementById('dataLabel').textContent = `Employee Lookup API Request Modal`
-            $('#dataRequest').attr('placeholder','Please enter the Employee Id')
+            $('#dataRequest').attr('placeholder', 'Please enter the Employee Id')
         }
-        else if(buttonId == 'PSC'){
+        else if (buttonId == 'PSC') {
             document.getElementById('dataLabel').textContent = `NPA Status Check API Request Modal`
-            $('#dataRequest').attr('placeholder','Please enter the PSC ID')
+            $('#dataRequest').attr('placeholder', 'Please enter the PSC ID')
         }
-        else if(buttonId == 'CustomerAssets'){
+        else if (buttonId == 'CustomerAssets') {
             document.getElementById('dataLabel').textContent = `Customer Assets API Request Modal`
-            $('#dataRequest').attr('placeholder','Please enter the Customer ID')
+            $('#dataRequest').attr('placeholder', 'Please enter the Customer ID')
         }
     }
     function fetchApiData(api_type) {
@@ -349,10 +351,10 @@
                 },
                 success: function (data) {
                     $('#ApiDataModal').modal('hide');
-                    console.log('data',data);
+                    console.log('data', data);
                     response = JSON.parse(JSON.stringify(data.responseData))
-                    console.log(typeof(response));
-                    $('#'+data.api+'Response').val(response)
+                    console.log(typeof (response));
+                    $('#' + data.api + 'Response').val(response)
                 }
             });
         } else {
@@ -361,9 +363,9 @@
     }
 
     document.getElementById("cancelbutton12").addEventListener("click", function () {
-            $('#ApiDataModal').modal('hide');
-            // window.location.reload();
-        });
+        $('#ApiDataModal').modal('hide');
+        // window.location.reload();
+    });
 
     function editdatatobackend() {
         var role_name = document.getElementById('role_name').value;

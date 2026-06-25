@@ -30,3 +30,7 @@ kblpsc_env39/
 # Editor/IDE files
 .vscode/
 .idea/
+
+*.xlsx
+
+*.md

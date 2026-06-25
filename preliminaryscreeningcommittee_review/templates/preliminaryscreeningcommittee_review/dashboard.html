@@ -1833,8 +1833,8 @@
                     const roleChecker1 = roles.includes('psc001checker1')
                     const roleMaker2 = roles.includes('psc001maker2')
                     const roleChecker2 = roles.includes('psc001checker2')
-                    const roleMaker3 = roles.includes('sac001maker3')
-                    const roleChecker3 = roles.includes('sac001checker3')
+                    const roleMaker3 = roles.includes('sac001maker3') || roles.includes('psc001maker3')
+                    const roleChecker3 = roles.includes('sac001checker3') || roles.includes('psc001checker3')
                     
                     if (!data.status){
                         if (roleMaker1 || roleChecker1){
