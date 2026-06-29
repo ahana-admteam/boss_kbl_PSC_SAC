@@ -1,36 +1,64 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode and build artifacts
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
-# Database
-*.sqlite3
-
-# Log files and logs directories
-*.log
-CustomLog/
-Logs/
-registers_log/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Environments
-.env
+# Virtual environments
+.venv/
 venv/
 env/
 ENV/
 kblpsc_env39/
 
-# Keys and certificates
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+
+# Django / local database files
+*.sqlite3
+*.db
+*.log
+*.pid
+
+# Project-specific generated directories
+CustomLog/
+Logs/
+registers_log/
+media/
+staticfiles/
+collected_static/
+
+# Environment and secrets
+.env
+.env.*
 *.pem
 *.key
+*.crt
+*.secret
+local_settings.py
 
-# Editor/IDE files
+# IDE and OS files
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
 
+# Office and archive files commonly used as local data
 *.xlsx
+*.xls
+*.csv
+*.docx
+*.pdf
+*.zip
+*.tar
+*.gz
+*.tgz
 
-*.md
+# Local tooling and AI assistant state
+.claude/
+walkthrough.md
+BOSS_KBL_RHEL_Deployment_Guide.md

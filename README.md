@@ -31,3 +31,4 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+  ./kblpsc_env39/Scripts/python.exe -m pytest tests/
