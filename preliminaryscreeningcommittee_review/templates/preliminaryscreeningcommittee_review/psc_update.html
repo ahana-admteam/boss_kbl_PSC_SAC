@@ -2362,23 +2362,19 @@
     tableBody.innerHTML = ''; // Clear previous entries
         console.log(rowId);
         
-    // Get data from allAOD and storedAODData
-    const aodDataFromAllAOD = allAOD.find(aod => aod && aod.borrowerAODNo === rowId);
-    const aodDataFromStored = storedAODData[rowId] || [];
-    
     let mergedAODData = [];
 
-    // Add data from allAOD if available
-    if (aodDataFromAllAOD && Array.isArray(aodDataFromAllAOD.borrowerAODDates)) {
-        mergedAODData = [...aodDataFromAllAOD.borrowerAODDates];
-    }
-
-    // Add data from storedAODData, avoiding duplicates
-    aodDataFromStored.forEach(date => {
-        if (!mergedAODData.includes(date)) {
-            mergedAODData.push(date);
+    // If user has already interacted with this row's AOD (added/deleted),
+    // use only storedAODData — don't re-merge from allAOD
+    if (storedAODData[rowId] && storedAODData[rowId].length > 0) {
+        mergedAODData = [...storedAODData[rowId]];
+    } else {
+        // First time opening — seed from allAOD (saved DB data)
+        const aodDataFromAllAOD = allAOD.find(aod => aod && aod.borrowerAODNo === rowId);
+        if (aodDataFromAllAOD && Array.isArray(aodDataFromAllAOD.borrowerAODDates)) {
+            mergedAODData = [...aodDataFromAllAOD.borrowerAODDates];
         }
-    });
+    }
 
     // If no data found, call addRow() to add an empty row
     if (mergedAODData.length === 0) {
@@ -2994,7 +2990,7 @@ $(document).ready(function () {
             // textarea.value = ''; // Empty the textarea
             textarea.required = true;
         } else {
-            textarea.disabled = true;
+            textarea.disabled = false;
             // textarea.value = ''; // Empty the textarea
             textarea.required = false;
         }
@@ -3116,8 +3112,8 @@ $(document).ready(function () {
                                                 </select>
                                             </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="pre_sanction_lapses_remarks" class="form-control 
-                                                ta-control pre_sanction_lapses_remarks" id="remarks-1"></textarea>
+                                                <textarea  name="pre_sanction_lapses_remarks" class="form-control 
+                                                ta-control pre_sanction_lapses_remarks" id="remarks-1">`+ element.pre_sanction_lapses_details.pre_sanction_lapses_remarks + `</textarea>
                                             </td>`
                 ynstatus.forEach(function (element1, index) {
                     $('#yn_dd-1').append($(document.createElement('option')).prop({
@@ -3221,8 +3217,8 @@ $(document).ready(function () {
                                                 </select>
                                             </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="pre_sanction_lapses_sa_remarks" class="form-control 
-                                                ta-control pre_sanction_lapses_sa_remarks" id="remarks-2"></textarea>
+                                                <textarea  name="pre_sanction_lapses_sa_remarks" class="form-control 
+                                                ta-control pre_sanction_lapses_sa_remarks" id="remarks-2">`+ element.pre_sanction_lapses_sa_details.pre_sanction_lapses_sa_remarks + `</textarea>
                                             </td>`
                 ynstatus.forEach(function (element1, index) {
                     $('#yn_dd-2').append($(document.createElement('option')).prop({
@@ -3328,8 +3324,8 @@ $(document).ready(function () {
                                                 </select>
                                             </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="post_sanction_lapses_remarks" class="form-control 
-                                                ta-control post_sanction_lapses_remarks" id="remarks-3"></textarea>
+                                                <textarea  name="post_sanction_lapses_remarks" class="form-control 
+                                                ta-control post_sanction_lapses_remarks" id="remarks-3">`+ element.post_sanction_lapses_details.post_sanction_lapses_remarks + `</textarea>
                                             </td>`
                 ynstatus.forEach(function (element1, index) {
                     $('#yn_dd-3').append($(document.createElement('option')).prop({
@@ -3440,8 +3436,8 @@ $(document).ready(function () {
                                                 </select>
                                             </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="post_sanction_lapses_sa_remarks" class="form-control 
-                                                ta-control post_sanction_lapses_sa_remarks" id="remarks-4"></textarea>
+                                                <textarea  name="post_sanction_lapses_sa_remarks" class="form-control 
+                                                ta-control post_sanction_lapses_sa_remarks" id="remarks-4">`+ element.post_sanction_lapses_sa_details.post_sanction_lapses_sa_remarks + `</textarea>
                                             </td>`
                 ynstatus.forEach(function (element1, index) {
                     $('#yn_dd-4').append($(document.createElement('option')).prop({
@@ -3544,9 +3540,9 @@ $(document).ready(function () {
                                                     <option value="" disabled hidden>Choose
                                                     </option>
                                                 </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="post_sanction_lapses_ma_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea  name="post_sanction_lapses_ma_remarks"
                                                     class="form-control ta-control post_sanction_lapses_ma_remarks"
-                                                    id="remarks-5"></textarea>
+                                                    id="remarks-5">`+ element.post_sanction_lapses_ma_details.post_sanction_lapses_ma_remarks +`</textarea>
                                             </td>`
                 ynstatus.forEach(function (element1, index) {
                     $('#yn_dd-5').append($(document.createElement('option')).prop({
@@ -3656,9 +3652,9 @@ $(document).ready(function () {
                                                     <option value="" disabled  hidden>Choose
                                                     </option>
                                                 </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="sanction_lapses_po_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea  name="sanction_lapses_po_remarks"
                                                     class="form-control ta-control sanction_lapses_po_remarks"
-                                                    id="remarks-6"></textarea>
+                                                    id="remarks-6">`+ element.sanction_lapses_po_details.sanction_lapses_po_remarks +`</textarea>
                                             </td>`
                 
                 ynstatus.forEach(function (element1, index) {
@@ -3762,7 +3758,7 @@ $(document).ready(function () {
                                                     <option value="" disabled selected hidden>Choose</option>
                                                 </select>
                                                </td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="non_fulfillment_tc_remarks" class="form-control ta-control non_fulfillment_tc_remarks" id="remarks-7"></textarea>
+                row.insertCell(3).innerHTML = `<td> <textarea name="non_fulfillment_tc_remarks" class="form-control ta-control non_fulfillment_tc_remarks" id="remarks-7">`+ element.non_fulfillment_tc_details.non_fulfillment_tc_remarks +`</textarea>
                                                </td>`
                 
                 ynstatus.forEach(function (element1, index) {
@@ -3855,7 +3851,7 @@ $(document).ready(function () {
                                                         <option value="" disabled selected hidden>Choose</option>
                                                     </select>
                                                 </td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="pow_exceeding_insts_remarks" class="form-control ta-control pow_exceeding_insts_remarks" id="remarks-9"></textarea>
+                row.insertCell(3).innerHTML = `<td> <textarea  name="pow_exceeding_insts_remarks" class="form-control ta-control pow_exceeding_insts_remarks" id="remarks-9">`+ element.pow_exceeding_insts_details.pow_exceeding_insts_remarks +`</textarea>
                                                 </td>`
                 
                 ynstatus.forEach(function (element1, index) {
@@ -3948,7 +3944,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="cersai_remarks" class="form-control ta-control cersai_remarks" id="remarks-11"></textarea>
+                                                <textarea  name="cersai_remarks" class="form-control ta-control cersai_remarks" id="remarks-11">`+ element.cersai_details.cersai_remarks +`</textarea>
                                                </td>`
                 
                 ynstatus.forEach(function (element1, index) {
@@ -4043,7 +4039,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="valua_remarks_varia_remarks" class="form-control ta-control valua_remarks_varia_remarks" id="remarks-16"></textarea>
+                                                <textarea  name="valua_remarks_varia_remarks" class="form-control ta-control valua_remarks_varia_remarks" id="remarks-16">`+ element.valua_remarks_varia_details.valua_remarks_varia_remarks +`</textarea>
                                                </td>`
                 
                 
@@ -4145,7 +4141,7 @@ $(document).ready(function () {
                                                     <option value="" disabled selected hidden>Choose</option>
                                                 </select></td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="sec_availability_remarks" class="form-control ta-control sec_availability_remarks" id="remarks-18"></textarea>
+                                                <textarea  name="sec_availability_remarks" class="form-control ta-control sec_availability_remarks" id="remarks-18">`+ element.sec_availability_details.sec_availability_remarks +`</textarea>
                                                </td>`
                 
                 ynstatus.forEach(function (element1, index) {
@@ -4242,7 +4238,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="loan_pro_woc_remarks" class="form-control ta-control loan_pro_woc_remarks" id="remarks-19"></textarea>
+                                                <textarea  name="loan_pro_woc_remarks" class="form-control ta-control loan_pro_woc_remarks" id="remarks-19">`+ element.loan_pro_woc_details.loan_pro_woc_remarks +`</textarea>
                 </td>`
                
                 
@@ -4336,7 +4332,7 @@ $(document).ready(function () {
                                                     <option value="" disabled selected hidden>Choose</option>
                                                 </select></td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="loan_pro_np_remarks" class="form-control ta-control loan_pro_np_remarks" id="remarks-20"></textarea>
+                                                <textarea  name="loan_pro_np_remarks" class="form-control ta-control loan_pro_np_remarks" id="remarks-20">`+ element.loan_pro_np_details.loan_pro_np_remarks +`</textarea>
                                                </td>`
                 
                
@@ -4432,7 +4428,7 @@ $(document).ready(function () {
                                                     <option value="" disabled selected hidden>Choose</option>
                                                 </select></td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="securities_div_remarks" class="form-control ta-control securities_div_remarks" id="remarks-21"></textarea>
+                                                <textarea  name="securities_div_remarks" class="form-control ta-control securities_div_remarks" id="remarks-21">`+ element.securities_div_details.securities_div_remarks +`</textarea>
                                                 </td>`
                 
                 
@@ -4532,7 +4528,7 @@ $(document).ready(function () {
                                                 </select>
                                                 </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                <textarea disabled name="loan_sec_irregularities_remarks" class="form-control ta-control loan_sec_irregularities_remarks" id="remarks-22"></textarea>
+                                                <textarea  name="loan_sec_irregularities_remarks" class="form-control ta-control loan_sec_irregularities_remarks" id="remarks-22">`+ element.loan_sec_irregularities_details.loan_sec_irregularities_remarks +`</textarea>
                                               </td>`
                 
                 
@@ -4630,7 +4626,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                    <textarea disabled name="fraud_cases_remarks" class="form-control ta-control fraud_cases_remarks" id="remarks-23"></textarea>
+                                                    <textarea  name="fraud_cases_remarks" class="form-control ta-control fraud_cases_remarks" id="remarks-23">`+ element.fraud_cases_details.fraud_cases_remarks +`</textarea>
                                                 </td>`
               
                 ynstatus.forEach(function (element1, index) {
@@ -4723,7 +4719,7 @@ $(document).ready(function () {
                                                     </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                    <textarea disabled name="other_info_remarks" class="form-control ta-control other_info_remarks" id="remarks-29"></textarea>
+                                                    <textarea  name="other_info_remarks" class="form-control ta-control other_info_remarks" id="remarks-29">`+ element.other_info_details.other_info_remarks +`</textarea>
                                                </td>`
                 
               
@@ -4820,7 +4816,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                    <textarea disabled name="aof_remarks" class="form-control ta-control aof_remarks" id="remarks-8"></textarea>
+                                                    <textarea name="aof_remarks" class="form-control ta-control aof_remarks" id="remarks-8">`+ element.aof_details.aof_remarks +`</textarea>
                                                </td>`
 
                 
@@ -4918,7 +4914,7 @@ $(document).ready(function () {
                                                 </select>
                                                </td>`
                 row.insertCell(3).innerHTML = `<td> 
-                                                    <textarea disabled name="post_sanc_doc_irregularities_remarks" class="form-control ta-control post_sanc_doc_irregularities_remarks" id="remarks-10"></textarea>
+                                                    <textarea  name="post_sanc_doc_irregularities_remarks" class="form-control ta-control post_sanc_doc_irregularities_remarks" id="remarks-10">`+ element.post_sanc_doc_irregularities_details.post_sanc_doc_irregularities_remarks +`</textarea>
                                                </td>`
                               
                 ynstatus.forEach(function (element1, index) {
@@ -5010,7 +5006,7 @@ $(document).ready(function () {
                         id="yn_dd-12">
                         <option value="" disabled selected hidden>Choose
                     </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="cgtmse_loan_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea name="cgtmse_loan_remarks"
                         class="form-control ta-control cgtmse_loan_remarks"
                         id="remarks-12"></textarea>
                 </td>`
@@ -5113,7 +5109,7 @@ $(document).ready(function () {
                         id="yn_dd-13">
                         <option value="" disabled selected hidden>Choose</option>
                     </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="mortgage_notice_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea name="mortgage_notice_remarks"
                         class="form-control ta-control mortgage_notice_remarks"
                         id="remarks-13"></textarea>
                 </td>`
@@ -5218,7 +5214,7 @@ $(document).ready(function () {
                         id="yn_dd-14">
                         <option value="" disabled selected hidden>Choose</option>
                     </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="housing_soc_conf_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea name="housing_soc_conf_remarks"
                         class="form-control ta-control housing_soc_conf_remarks"
                         id="remarks-14"></textarea>
                 </td>`
@@ -5320,7 +5316,7 @@ $(document).ready(function () {
                         id="yn_dd-15">
                         <option value="" disabled selected hidden>Choose</option>
                     </select></td>`
-                row.insertCell(3).innerHTML = `<td> <textarea disabled name="post_mort_ec_remarks"
+                row.insertCell(3).innerHTML = `<td> <textarea name="post_mort_ec_remarks"
                         class="form-control ta-control post_mort_ec_remarks"
                         id="remarks-15"></textarea>
                 </td>`
@@ -5366,99 +5362,7 @@ $(document).ready(function () {
                 var dropdowns = document.getElementsByClassName('post_mort_ec_dd');
     }
 
-    // draft for all_aod
-    // all_aod_populate = JSON.parse(JSON.stringify({{ all_aod| safe}}))
-    // if (all_aod_populate.length > 0) {
-    //     all_aod_condition = all_aod_populate[0].all_aod_dd;
-    //     // console.log('all_aod_condition', all_aod_condition);
-    //     if (all_aod_condition === 'YES') {
-    //         // console.log('if if');
-    //         all_aod_populate.forEach(function (element, index) {
-    //             //console.log('element.pre_sanction_lapses_ma_lapses_dd',element.post_sanction_lapses_dd);
-    //             var row = document.querySelector('tr[data-section="all_aod_ds"]');
-    //             row.insertCell(0).innerHTML = `<td style="width: 3%;">xvii)</td>`
-    //             row.insertCell(1).innerHTML = `<td style="width: 50%;">AOD obtained from all borrower
-    //                 (s)/guarantors/co-obligant(s) </td>`
-    //             row.insertCell(2).innerHTML = `<td style="width: 10%;"> <select class="custom-dropdown all_aod_dd"
-    //                     onchange="toggleTextarea(this)"
-    //                     onclick='toggleSubfields(this.id, "all_aod_subfields");' type="text"
-    //                     required class="form-control" name="yn_dd" id="yn_dd-17">
-    //                     <option value="" disabled selected hidden>Choose</option>
-    //                 </select></td>`
-    //             row.insertCell(3).innerHTML = `<td> <textarea  name="all_aod_remarks"
-    //                     class="form-control ta-control all_aod_remarks"
-    //                     id="remarks-17">` + element.all_aod_details.all_aod_remarks + `</textarea>
-    //             </td>`
-                                               
-    //             ynstatus.forEach(function (element1, index) {
-    //                 $('#yn_dd-17').append($(document.createElement('option')).prop({
-    //                     value: element1.option,
-    //                     text: element1.display_name,
-    //                 })
-    //                 )
-    //             })
-    //             var dropdowns = document.getElementsByClassName('all_aod_dd');
-    //             for (var i = 0; i < dropdowns.length; i++) {
-    //                 dropdowns[i].value = element.all_aod_dd;
-    //             }
-    //         })
-    //     } else if (all_aod_condition === 'NO') {
-    //         all_aod_populate.forEach(function (element, index) {
-    //             //console.log('element.pre_sanction_lapses_ma_lapses_dd',element.post_sanction_lapses_dd);
-    //             var row = document.querySelector('tr[data-section="all_aod_ds"]');
-    //             row.insertCell(0).innerHTML = `<td style="width: 3%;">xvii)</td>`
-    //             row.insertCell(1).innerHTML = `<td style="width: 50%;">AOD obtained from all borrower
-    //                 (s)/guarantors/co-obligant(s) </td>`
-    //             row.insertCell(2).innerHTML = `<td style="width: 10%;"> <select class="custom-dropdown all_aod_dd"
-    //                     onchange="toggleTextarea(this)"
-    //                     onclick='toggleSubfields(this.id, "all_aod_subfields");' type="text"
-    //                     required class="form-control" name="yn_dd" id="yn_dd-17">
-    //                     <option value="" disabled selected hidden>Choose</option>
-    //                 </select></td>`
-    //             row.insertCell(3).innerHTML = `<td> <textarea disabled name="all_aod_remarks"
-    //                     class="form-control ta-control all_aod_remarks"
-    //                     id="remarks-17"></textarea>
-    //             </td>`
-                                               
-    //             ynstatus.forEach(function (element1, index) {
-    //                 $('#yn_dd-17').append($(document.createElement('option')).prop({
-    //                     value: element1.option,
-    //                     text: element1.display_name,
-    //                 })
-    //                 )
-    //             })
-    //             var dropdowns = document.getElementsByClassName('all_aod_dd');
-    //             for (var i = 0; i < dropdowns.length; i++) {
-    //                 dropdowns[i].value = element.all_aod_dd;
-    //             }
-    //         })
-    //     }
-    // }
-    // else {
-    //             var row = document.querySelector('tr[data-section="all_aod_ds"]');
-    //             row.insertCell(0).innerHTML = `<td style="width: 3%;">xvii)</td>`
-    //             row.insertCell(1).innerHTML = `<td style="width: 50%;">AOD obtained from all borrower
-    //                 (s)/guarantors/co-obligant(s) </td>`
-    //             row.insertCell(2).innerHTML = `<td style="width: 10%;"> <select class="custom-dropdown all_aod_dd"
-    //                     onchange="toggleTextarea(this)"
-    //                     onclick='toggleSubfields(this.id, "all_aod_subfields");' type="text"
-    //                     required class="form-control" name="yn_dd" id="yn_dd-17">
-    //                     <option value="" disabled selected hidden>Choose</option>
-    //                 </select></td>`
-    //             row.insertCell(3).innerHTML = `<td> <textarea disabled name="all_aod_remarks"
-    //                     class="form-control ta-control all_aod_remarks"
-    //                     id="remarks-17"></textarea>
-    //             </td>`
-                                               
-    //             ynstatus.forEach(function (element1, index) {
-    //                 $('#yn_dd-17').append($(document.createElement('option')).prop({
-    //                     value: element1.option,
-    //                     text: element1.display_name,
-    //                 })
-    //                 )
-    //             })
-    //             var dropdowns = document.getElementsByClassName('all_aod_dd');
-    // }
+    
 
 </script>
 

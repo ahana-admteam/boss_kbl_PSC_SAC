@@ -1314,8 +1314,7 @@
                                                             <tr>
                                                                 <th>SL No</th>
                                                                 <th>Document Date</th>
-                                                                <th>AOD Dates
-                                                                <th>
+                                                                <th>AOD Dates<th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="aodSummaryBody">
@@ -1950,18 +1949,25 @@
                 document.getElementById('creditSanctionAODTitle').textContent = `AOD Details for the Document date ${currentdoc_date}`;
                 loadStoredAODData(currentRowId);
                 rowCount = tableBody.querySelectorAll('tr').length + 1;
-                addAODRow();
+                if (!storedAODData[currentRowId] || storedAODData[currentRowId].length === 0) {
+                    addAODRow();
+                }
             });
         });
 
         document.getElementById('addAODButton').addEventListener('click', function () {
             const lastRow = tableBody.querySelector('tr:last-child');
-            const lastInput = lastRow.querySelector('input[type="date"]');
-            const lastButtonIcon = lastRow.querySelector('button').innerHTML.trim();
 
-            if (lastInput.value === '' || lastButtonIcon !== 'Uploaded') {
-                alert('Please fill out the previous row details before adding a new one.');
-                return;
+            // If table has existing rows, validate the last row before adding
+            if (lastRow) {
+                const lastInput = lastRow.querySelector('input[type="date"]');
+                const lastUploadBtn = lastRow.querySelector('button');
+                const lastButtonIcon = lastUploadBtn ? lastUploadBtn.innerHTML.trim() : '';
+
+                if (lastInput.value === '' || lastButtonIcon !== 'Uploaded') {
+                    alert('Please fill out the previous row details before adding a new one.');
+                    return;
+                }
             }
 
             if (rowCount >= maxRows) {
@@ -2002,34 +2008,7 @@
             updateAbdData(); // Update the global JSON variable
         }
 
-        function addAODRow1() {
-            const newRowId = `${currentRowId}-${rowCount}`;
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-        <td>
-            <input type="date" max="${todayDate}" class="form-control" name="csdAOD${newRowId}" id="csdAOD${newRowId}" oninput="updateAODData('${newRowId}')">
-        </td>
-        <td>
-            <button style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
-                onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}',this.id)"><i class="fa fa-upload"></i></button>
-        </td>
-        <td>
-            <button style="margin-left: 30%;" class="btn btn-primary removeRow">
-                Delete
-            </button>
-        </td>
-    `;
-            tableBody.appendChild(newRow);
-
-            // Initialize the row data
-            if (!storedAODData[currentRowId]) {
-                storedAODData[currentRowId] = [];
-            }
-            storedAODData[currentRowId].push({ id: newRowId, date: "" });
-
-            rowCount++;
-            updateAbdData(); // Update the global JSON variable
-        }
+        
 
         tableBody.addEventListener('click', function (event) {
             if (event.target.classList.contains('removeRow')) {
@@ -2046,6 +2025,7 @@
                 storedAODData[currentRowId] = storedAODData[currentRowId].filter(item => item.id !== rowId);
                 row.remove();
                 rowCount--;
+                updateAODSummaryTable();
                 updateAbdData(); // Update the global JSON variable
             }
         });
@@ -2063,6 +2043,24 @@
 
             updateAODSummaryTable();
             updateAbdData(); // Update the global JSON variable
+            window.checkIfUploaded = function (newRowId) {
+                const spans = document.querySelectorAll('#myTable td span');
+                return Array.from(spans).some(span => span.textContent.trim() === `CSFAOD${newRowId}`);
+            };
+
+            window.updateButtonToUploaded = function (newRowId) {
+                const button = document.getElementById(`cSFAOD${newRowId}`);
+                if (!button) return;
+                if (checkIfUploaded(newRowId)) {
+                    button.innerHTML = 'Uploaded';
+                    // Also update stored status
+                    if (storedAODData[currentRowId]) {
+                        const rowData = storedAODData[currentRowId].find(item => item.id === newRowId);
+                        if (rowData) rowData.status = 'Uploaded';
+                    }
+                    updateAbdData();
+                }
+            };
         };
 
 
@@ -2077,7 +2075,7 @@
             </td>
             <td>
                 <button style="margin-left: 30%;" id="cSFAOD${id}" type="button" class="btn btn-primary" data-toggle="modal" 
-                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${id}',this.id)">${status === 'Uploaded' ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
+                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${id}',this.id)">${checkIfUploaded(id) ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
             </td>
             <td>
                 <button style="margin-left: 30%;" class="btn btn-primary removeRow">
@@ -2090,30 +2088,7 @@
             }
         }
 
-        function loadStoredAODData1(rowId) {
-            tableBody.innerHTML = '';
-            if (storedAODData[rowId]) {
-                storedAODData[rowId].forEach(({ id, date, status }) => {
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                <td>
-                    <input type="date" max="${todayDate}" class="form-control" name="csdAOD${id}" id="csdAOD${id}" value="${date}" oninput="updateAODData('${id}')">
-                </td>
-                <td>
-                    <button style="margin-left: 30%;" id="cSFAOD${id}" type="button" class="btn btn-primary" data-toggle="modal" 
-                        onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${id}',this.id)">${status === 'Uploaded' ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
-                </td>
-                <td>
-                    <button style="margin-left: 30%;" class="btn btn-primary removeRow">
-                        Delete
-                    </button>
-                </td>
-            `;
-                    tableBody.appendChild(newRow);
-                });
-            }
-        }
-
+        
         function formatDate(dateStr) {
             const [year, month, day] = dateStr.split('-');
             return `${day}-${month}-${year}`;
@@ -2145,28 +2120,7 @@
         }
 
 
-        function updateAODSummaryTable1() {
-            aodSummaryBody.innerHTML = '';
-            console.log('currentdoc_date', currentdoc_date);
-
-            Object.entries(storedAODData).forEach(([rowId, rows], index) => {
-                const dates = rows
-                    .map(item => item.date)
-                    .filter(date => date !== '')
-                    .map(date => formatDate(date))  // Format each date
-                    .join(', ');
-
-                if (dates) {
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-            <td id="borrowerAODNo-${index + 1}">${rowId}</td>
-            <td id="borrowerDocDate-${index + 1}">${currentdoc_date}</td>
-            <td id="borrowerAODDate-${index + 1}">${dates}</td>
-        `;
-                    aodSummaryBody.appendChild(newRow);
-                }
-            });
-        }
+        
 
 
         function updateAbdData() {
@@ -2562,7 +2516,7 @@
             textarea.value = ''; // Empty the textarea
             textarea.required = true;
         } else {
-            textarea.disabled = true;
+            textarea.disabled = false;
             textarea.value = ''; // Empty the textarea
             textarea.required = false;
         }
