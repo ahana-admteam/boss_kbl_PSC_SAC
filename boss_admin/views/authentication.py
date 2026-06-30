@@ -272,6 +272,7 @@ def home_page(request):
         return redirect('login_page')
     
 
+
 @csrf_exempt
 def login(request):
     """
@@ -287,51 +288,74 @@ def login(request):
     if os.path.isdir(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}".format(tenant))):
         with open(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format(tenant,tenant))) as f:
             config_data = Box(json.load(f))
-            #print(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format(tenant,tenant)))
     else:
         with open(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana'))) as f:
             config_data = Box(json.load(f))
-            #print(os.path.join(str(settings.BASE_DIR), "boss_v1/configurations/{}/{}.config.json".format('ahana','ahana')))
     tenant_image_path = config_data.logo_image.image_path
     tenant_css_path = config_data.global_styles 
     title = config_data.module.PSC001.app_name
     #print('title',title)
     try:
-        if request.is_ajax() and request.method == 'POST':             
+        if request.is_ajax() and request.method == 'POST':
+            login_start = time.time()
             _domain_id = request.POST.get('userId')
             _password = request.POST.get('pwd')#check user
             dtstmp = request.POST.get('dtstmp')
-           
-            #print(base.AD_LOGIN, 'base.AD_LOGIN')
-            user = login_verification(_domain_id,_password,dtstmp)
-            json_data = json.loads(user.content)
-            #print(json_data['msg'])
-            if json_data['msg'] =='success':
-                _ses_key = generate_session_ses_key(_domain_id)
-                if _ses_key is False:
-                    messages.error(request, 'Please Login Again')
-                    return JsonResponse({"msg": 'failure'}, status=200)
-                # else:
-                #     request.session['ses_key'] = _ses_key
-                session_status = load_session(_domain_id,request,tenant,_ses_key)
-                #print(session_status)
-                if session_status =="success":
-                    emp_user = EmployeeMaster.objects.get(emp_id=request.session['emp_id'])
-                    roles = fetch_roles(request.session['emp_id'],request.session['branch_code'],'loggedin_user_roles')
-                    roles_data = json.loads(roles.content)
-                    if roles_data['msg'] =='success':
-                        request.session['audit_roles'] = roles_data['audit_roles']
-                        request.session['new_roles'] = roles_data['user_roles']
-                        return JsonResponse({"msg": 'success'}, status=200)
-                    else: 
+            is_api_data = config_data.module.PSC001.is_api_data
+            
+            user = login_verification(_domain_id,_password,dtstmp, is_api_data)
+            
+            if is_api_data == False:
+                json_data = json.loads(user.content)
+                if json_data['msg'] =='success':
+                    _ses_key = generate_session_ses_key(_domain_id)
+                    if _ses_key is False:
+                        messages.error(request, 'Please Login Again')
+                        return JsonResponse({"msg": 'failure'}, status=200)
+                    session_status = load_session(_domain_id,request,tenant,_ses_key)
+                    if session_status =="success":
+                        emp_user = EmployeeMaster.objects.get(emp_id=request.session['emp_id'])
+                        roles = fetch_roles(request.session['emp_id'],request.session['branch_code'],'loggedin_user_roles')
+                        roles_data = json.loads(roles.content)
+                        if roles_data['msg'] =='success':
+                            request.session['audit_roles'] = roles_data['audit_roles']
+                            request.session['new_roles'] = roles_data['user_roles']
+                            return JsonResponse({"msg": 'success'}, status=200)
+                        else: 
+                            messages.error(request, 'Incorrect Domain_id Or Password')
+                            return JsonResponse({"msg": 'failure'}, status=200)
+                    else:
                         messages.error(request, 'Incorrect Domain_id Or Password')
                         return JsonResponse({"msg": 'failure'}, status=200)
                 else:
                     messages.error(request, 'Incorrect Domain_id Or Password')
                     return JsonResponse({"msg": 'failure'}, status=200)
             else:
-                messages.error(request, 'Incorrect Domain_id Or Password')
-                return JsonResponse({"msg": 'failure'}, status=200)
+                if user['msg'] == 'pass':
+                    _ses_key = generate_session_ses_key(_domain_id)
+                    if _ses_key is False:
+                        messages.error(request, 'Please Login Again')
+                        return JsonResponse({"msg": 'failure'}, status=200)
+                    session_status = load_session_ad(user,request,tenant,_ses_key)
+                    if session_status == 'success':
+                        suc_time = time.time()
+                        print('****login success time -- ',suc_time-login_start)    
+                        return JsonResponse({"msg": 'success'}, status=200)
+                    elif session_status['msg'] =='title na':
+                        suc_time = time.time()
+                        print('****login failed -- time: ',suc_time-login_start)    
+                        messages.error(request, 'Matching designation not available')
+                        return JsonResponse({"msg": 'failure'}, status=200)
+                    elif session_status['msg'] =='failure':
+                        suc_time = time.time()
+                        print('****login fail -- time: ',suc_time-login_start)    
+                        messages.error(request, 'Please Login Again')
+                        return JsonResponse({"msg": 'failure'}, status=200)
+                elif user['msg'] == 'fail':
+                    suc_time = time.time()
+                    print('****login fail -- time: ',suc_time-login_start)    
+                    messages.error(request, 'Incorrect Domain_id Or Password')
+                    return JsonResponse({"msg": 'failure'}, status=200)
         else:
             tenant=config_data.tenant
             print(tenant)
@@ -341,7 +365,7 @@ def login(request):
         print(e)
         messages.error(request, 'Incorrect Domain_id Or Password')
         return JsonResponse({"msg": 'failure'}, status=200)
-    
+
 def fetch_roles(employee_id,branch,user):
     
     new_r = ""
@@ -440,15 +464,126 @@ def load_session(_domain_id,request,tenant,_ses_key):
         # messages.error(request, 'Incorrect Domain_id Or Password')
         return JsonResponse({"msg": 'failure'}, status=200)
     
-def login_verification(_domain_id,_password,dtstmp):
+
+def load_session_ad(data,request,tenant,_ses_key):
+    
+    try:
+        request.session['ses_key'] = _ses_key
+        domain_id = data['entries'][0]['attributes']['sAMAccountName']
+        # print(domain_id)
+        employee_id = data['entries'][0]['attributes']['employeeID']
+        emp_name = data['entries'][0]['attributes']['givenName']
+        
+        n = int(len(str(emp_name)))
+        if emp_name[(n-1)]=='.':
+            emp_name = emp_name[:-1]
+            emp_name = emp_name.strip()
+
+        branch_code = data['entries'][0]['attributes']['physicalDeliveryOfficeName']
+        b_name = BranchMaster.objects.filter(branch_code = branch_code).values('branch_name')
+        branch_name = str(b_name[0]['branch_name']).strip()
+        if data['entries'][0]['attributes']['title'] != '':
+            emp_desig_role = data['entries'][0]['attributes']['title']
+            #print(emp_desig_role)
+        else:
+            return JsonResponse({'msg':'title na'}, status=200)
+        
+        region_list = BranchMaster.objects.order_by().values_list('zone',flat=True).distinct().exclude(branch_code='001')
+        # print(region_list)
+        ho_list = ['001']
+        if branch_code in ho_list:
+            # print('HO')
+            role_type = 'Head'
+        elif branch_code in region_list:
+            # print('RO')
+            role_type = 'Region'
+        else:
+            # print('BO')
+            role_type = 'Branch'
+        
+        if role_type == 'Head':
+            department = data['entries'][0]['attributes']['department']
+            # print("------> Department",department)
+            if department == '':
+                return JsonResponse({'msg':'department na'}, status=200)
+            else:
+                temp = DesignationMatrix.objects.filter(role_type=role_type)
+                for i in temp:
+                    # print('inside head temp',i.role_dept)
+                    dept_sim = sim_check(department,i.role_dept)
+                    desig_sim = sim_check(emp_desig_role,i.designations)
+                    if dept_sim == True and desig_sim == True:
+                        # print('True, True')
+                        role = i.role_code
+        else:
+            temp = DesignationMatrix.objects.filter(role_type=role_type)
+            for i in temp:
+                desig_sim = sim_check(emp_desig_role,i.designations)
+                if desig_sim == True:
+                    role = i.role_code
+            # temp = DesignationMatrix.objects.filter(role_type=role_type,designations__contains=emp_desig_role).values('role_code')
+            # role = temp[0]['role_code']
+        # print(temp,role)
+
+        # branch_name = BranchMaster.objects.filter(branch_code=branch_code)[0]['branch_name']
+        request.session['tenant'] = tenant
+        request.session['config_data'] = config_data
+        request.session['emp_id'] = employee_id#move to session
+        # print(emp_name)
+        request.session['emp_name'] = emp_name
+        request.session['branch_code'] = branch_code
+        request.session['domain_id'] = domain_id
+        request.session['designation'] = emp_desig_role
+        request.session['new_roles'] = role
+        request.session['branch_name'] = branch_name
+        ip_no = get_ip_address() # get ip address
+        # print(ip_no,'ip_no')
+        if not ip_no:
+            # print('no ip available')
+            return JsonResponse({"msg": 'failure'}, status=200)
+        else:
+            # print('ip available')
+            return 'success'
+    except Exception as e:
+        # messages.error(request, 'Incorrect Domain_id Or Password')
+        print('session',e)
+        messages.error(request, 'Incorrect Domain_id Or Password')
+        return JsonResponse({"msg": 'failure'}, status=200)
+
+
+def sim_check(ad_data,db_data):
+    
+    if type(db_data) == str:
+        # print('str dept sim check')
+        if re.sub(r'[^a-zA-Z0-9]','',db_data).lower() == re.sub(r'[^a-zA-Z0-9]','',ad_data).lower():
+            # print('str dept sim check true')
+            return True
+        else:
+            # print('str dept sim check false')
+            return False
+    else:
+        # print('str desig sim check')
+        # print(db_data)
+        for i in db_data:
+            # print('designations --->',i)
+            if re.sub(r'[^a-zA-Z0-9]','',i).lower() == re.sub(r'[^a-zA-Z0-9]','',ad_data).lower():
+                # print('str desig sim check true')
+                return True
+        return False
+
+    
+
+
+def login_verification(_domain_id,_password,dtstmp, is_api_data):
     print('here')
+    ver_st_time = time.time()
     private_key_file_name = "private_key_" + str(_domain_id) + "_" + str(dtstmp) + ".pem"
     public_key_file_name = "public_key_" + str(_domain_id) + "_" + str(dtstmp) + ".pem"
     key = RSA.importKey(file_decrpyt_contents(settings.BASE_DIR + "/boss_admin/keys/" + private_key_file_name))
     cipher = PKCS1_OAEP.new(key, hashAlgo=SHA256)
     em2 = cipher.decrypt(base64.b64decode(_password))
     em1 = em2.decode('utf-8')
-    if base.AD_LOGIN == False:
+    if is_api_data == False:
         try:
             user = EmployeeMaster.objects.get(domain_id__iexact=_domain_id, pwd=em1)
             if user:
@@ -468,19 +603,12 @@ def login_verification(_domain_id,_password,dtstmp):
             return JsonResponse({"msg": 'fail'}, status=400)
     else:
         user = ad_login_test(_domain_id, em1)
-        print(user, 'j')
-        if user == True:
-            
-            emp = EmployeeMaster.objects.filter(domain_id__iexact=_domain_id)\
-                .values("emp_id")#concurrent user login check
-            print(emp[0]['emp_id'])
-            if not emp: #get emp_id
-                #messages.error(request, 'Incorrect Domain_id Or Password')
-                return JsonResponse({"msg": 'fail'}, status=400)
-            else:
-                data = {"msg": 'success', 'emp_id': emp[0]['emp_id']}
-                return JsonResponse(data, status=200)
-                # return JsonResponse({"msg": 'success', 'data':emp[0]['emp_id']}, status=200)
+        if user != False:
+            evt_time = time.time()
+            print(f"****emp verify true time -- {evt_time-ver_st_time}")
+            user['msg'] = 'pass'
+            return user
         else:
+            evf_time = time.time()
+            print(f"****emp verify false time -- {evf_time-ver_st_time}")
             return JsonResponse({"msg": 'fail'}, status=400)
-

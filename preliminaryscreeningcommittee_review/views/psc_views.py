@@ -1725,6 +1725,75 @@ def modify_cust_asst_data(request, api_res):
 
 
 @my_login_required
+def modify_cust_asst_data(request, api_res):
+    try:
+        ca_api_data = {
+            "RequestUUID": api_res.get("RequestUUID"),
+            "HStatus": api_res.get("HStatus"),
+            "basic_details":{
+                "borrower_name" : api_res.get("Name_of_the_Properiter_1", "NA"),
+                "borrower_address" : api_res.get("Address_1", "NA"),
+                "constitution" : api_res.get("Constitution_1", "NA"),
+                "partners" : api_res.get("Name_of_the_Properiter_1", "NA"),
+                "establishment_date" : convertToYYYYMMDD(api_res.get("DateOfEstablishment_1","NA")),
+                "networth" : api_dataType_num_check(api_res.get("Networth_of_the_Borrower_1", 0)),
+                "dealing_since" : convertToYYYYMMDD(api_datatype_check(api_res.get("Dealing_with_us_Since_1", "NA"))),
+                "business_nature" : api_res.get("Nature_of_Business_1", "NA"),
+                "guarantors_name" : api_res.get("Names_of_the_Co_Obligant_1", "NA") 
+            },
+            "credit_facility":[],
+
+            "securities_values":[]
+        }
+
+        i=1
+        while f"Loan_Account_No_{i}" in api_res:
+            credit_facility = {
+                "credit_feci_slno": i,
+                "reference_num": api_res.get(f"Sanction_Ref_Number_{i}", "NA"),
+                "sanction_date": api_datatype_check(api_res.get(f"Sanction_Date_{i}", "01-01-1990")),
+                "account_nature": api_res.get(f"Nature_of_Account_{i}", "NA"),
+                "advance_nature": api_res.get(f"Count_of_Securities_{i}", "NA"),
+                "lan": api_res.get(f"Loan_Account_No_{i}", "NA"),
+                "sanctioned_limit": api_dataType_num_check(api_res.get(f"SanctionLimitAmt_{i}", 0)),
+                "due_date": api_datatype_check(api_res.get(f"DueDate_{i}", "01-01-1990")),
+                "npa_date": api_datatype_check(api_res.get(f"DATE_OF_NPA_{i}", "01-01-1990")),
+                "npa_balance": api_dataType_num_check(api_res.get(f"BalanceAsOnNPADate_{i}", 0)),
+                "balance": api_dataType_num_check(api_res.get(f"BalanceAsOnNPADate_{i}", 0)),
+                "advance_purpose": api_res.get(f"Purpose_of_Advance_{i}", "NA"),
+                "asset_classification": api_res.get(f"ASSET_CLASSIFICATION_{i}", "NA"),
+                "doc_date": api_datatype_check(api_res.get(f"AodDate_{i}", "01-01-1990"))
+            }
+
+            securities_values = {
+                "security_nature": api_res.get(f"Nature_of_Security_{i}", "NA"),
+                "lan": api_res.get(f"Loan_Account_No_{i}", "NA"),
+                "security_type": api_res.get(f"Type_of_Security_{i}", "NA"),
+                "sanction_valuation": api_dataType_num_check(api_res.get(f"SanctionLimitAmt_{i}", 0)),
+                "sanction_valuation_date": date_slash_2_hyphen(api_res.get(f"Date_of_Valuation_Sanction_{i}", "01-01-1990")),
+                "latest_valuation": api_dataType_num_check(api_res.get(f"Present_Valuation_{i}", 0)),
+                "latest_valuation_date": date_slash_2_hyphen(api_res.get(f"Date_of_Valuation_{i}", "01-01-1990")),
+                "insurance_valid_upto": api_datatype_check(api_res.get(f"InsuranceVaidUpToDate_{i}", "01-01-1990")),
+                "insurance_value": api_dataType_num_check(api_res.get(f"InsuranceValue_{i}", 0)),
+                "cersai_num": api_res.get(f"CERSAI_Number_{i}", "NA")
+            }
+            print('securities_values',securities_values)
+            ca_api_data['credit_facility'].append(credit_facility)
+            ca_api_data['securities_values'].append(securities_values)
+            
+            i+=1
+        return ca_api_data
+
+    except Exception as e:
+        # print('formapi error',e)
+        sc_log.error(e)
+        print("User Id: {}, Designation: {}, Action: {}, Message: {}".format(request.session['emp_id'], request.session['designation'], "Customer Assets API Error", e))
+        return None
+
+
+@my_login_required
+
+
 def psc_review(request,pk):
     """
     welcome
@@ -1828,19 +1897,48 @@ def psc_review(request,pk):
         #                 "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
         #     return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
         else:
+            is_api_data = config_data.module.PSC001.is_api_data
+    
             cust_id = PSCTable.objects.filter(id=pk).values('cust_id')[0]['cust_id']
-            with open("sample_data/basic_details.json", "r") as file:
-                basic_config = json.load(file)
-            with open("sample_data/credit_factility.json", "r") as file:
-                credit_config = json.load(file)
-            with open("sample_data/securites_values.json", "r") as file:
-                securities_config = json.load(file)
-            # get_apidata(request)
-            psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
-            context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
-                        "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
-            print("User Id: {}, Designation: {}, Role: {}, Action: {}, Message: {}".format(request.session['emp_id'], request.session['designation'], session_role, "PSC Review Form", "PSC review form opened"))
-            return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
+            if is_api_data == True:
+                customerapi_data = KBLAPIWrapper.CustomerAssetsAPI(cust_id)
+                # print('customerapi_data', (customerapi_data))
+                if len(customerapi_data) == 1:
+                    messages.error(request,f'Customer Assets API error : {customerapi_data["response"]}')
+                    return redirect('dashboard')
+                # elif len(customerapi_data) <= 2:
+                #     messages.error(request,'Customer Assets API error : returned empty data for basic details, credit sanction & securities table')
+                #     return redirect('dashboard')
+                # elif len(customerapi_data) <= 30:
+                #     messages.error(request,'Customer Assets API error : Data for some tags not returned')
+                #     return redirect('dashboard')
+                elif customerapi_data['HStatus'] == 'FAILURE':
+                    messages.error(request,'Customer Assets API error : HStatus failure')
+                    return redirect('dashboard')
+                else:
+                    modifiedData = modify_cust_asst_data(request, customerapi_data)
+                    # print("modifiedData",modifiedData)
+                    basic_config = modifiedData['basic_details']
+                    credit_config = modifiedData['credit_facility']
+                    securities_config = modifiedData['securities_values']
+                    # print("securities_config",securities_config)
+                    psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
+                    # return
+                    context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
+                                "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
+                    return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
+            else:
+                with open("sample_data/basic_details.json", "r") as file:
+                    basic_config = json.load(file)
+                with open("sample_data/credit_factility.json", "r") as file:
+                    credit_config = json.load(file)
+                with open("sample_data/securites_values.json", "r") as file:
+                    securities_config = json.load(file)
+                psc_data = list(PSCTable.objects.filter(npa_status=True,id=pk).values(*psc_all_data))
+                context = {'title': title, 'tenant_image': tenant_image,'psc_data':psc_data,"basic_config":basic_config,"credit_config":credit_config,"securities_config":securities_config,
+                            "tenant": tenant, "branch_data": branch_data,"ynstatus":ynstatus,'datadisable':datadisable}
+                print("User Id: {}, Designation: {}, Role: {}, Action: {}, Message: {}".format(request.session['emp_id'], request.session['designation'], session_role, "PSC Review Form", "PSC review form opened"))
+                return render(request, 'preliminaryscreeningcommittee_review/psc_review.html', context=context)
     except Exception as e:
         sc_log.error(e)
         messages.error(request, e)
