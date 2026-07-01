@@ -515,7 +515,7 @@
                                             <td style="width: 3%; padding-left: 30px;">a)</td>
                                             <td style="width: 50%;">Permission Reference Number</td>
                                             <td colspan="2" style="width: 10%;">
-                                                <input required type="number" class="form-control in-control"
+                                                <input required type="number" class="form-control block-e in-control"
                                                        id="aof_prn" value="{{ item.aof_details.aof_prn }}" name="aof_prn">
                                             
                                             </td>
@@ -606,7 +606,7 @@
                                             <td style="width: 3%; padding-left: 30px;">a)</td>
                                             <td style="width: 50%;">Permission Reference Number</td>
                                             <td colspan="2" style="width: 10%;">
-                                                <input required type="number" class="form-control in-control"
+                                                <input required type="number" class="form-control in-control block-e"
                                                        id="aof_prn" value="" name="aof_prn">
                                             
                                             </td>
@@ -692,7 +692,7 @@
                                             <td style="width: 3%; padding-left: 30px;">a)</td>
                                             <td style="width: 50%;">Permission Reference Number</td>
                                             <td colspan="2" style="width: 10%;">
-                                                <input required type="number" class="form-control in-control"
+                                                <input required type="number" class="form-control in-control block-e"
                                                        id="aof_prn" value="" name="aof_prn">
                                             
                                             </td>
@@ -1550,7 +1550,7 @@
                                             <td style="width: 3%;">xxiii)</td>
                                             <td style="width: 50%;">Number of Inspection done at the Branch by
                                                 Inspection Officials (from the date of sanction till date)</td>
-                                            <td style="width: 10%;"> <input required type="number" class="form-control in-control"
+                                            <td style="width: 10%;"> <input required type="number" class="form-control in-control block-e"
                                                 id="num_inspec_lapses" name="num_inspec_lapses" value="{{ item.num_inspec_lapses }}"> </td>
                                             <td> 
                                             </td>
@@ -2281,6 +2281,15 @@
         addAODRow();
     });
 
+    window.validateAODDateAndUpload = function (rowId, refDoc, buttonKey, buttonId) {
+        const dateInput = document.getElementById(`csdAOD${rowId}`);
+        if (!dateInput || !dateInput.value) {
+            alert('Please select an AOD Date before uploading a document.');
+            return;
+        }
+        openFileUploadModal(refDoc, 'PSC', buttonKey, buttonId);
+    };
+
     function addAODRow() {
         const newRowId = `${currentRowId}-${rowCount}`;
         const newRow = document.createElement('tr');
@@ -2291,7 +2300,7 @@
             </td>
             <td>
                 <button style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
-                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}',this.id)"><i class="fa fa-upload"></i></button>
+                    onclick="validateAODDateAndUpload('${newRowId}', 'AOD-${currentRefNo}', 'CSFAOD${newRowId}', this.id)"><i class="fa fa-upload"></i></button>
             </td>
              
             <td>
@@ -2305,7 +2314,7 @@
             </td>
             <td>
                 <button disabled style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
-                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}',this.id)"><i class="fa fa-upload"></i></button>
+                    onclick="validateAODDateAndUpload('${newRowId}', 'AOD-${currentRefNo}', 'CSFAOD${newRowId}', this.id)"><i class="fa fa-upload"></i></button>
             </td>
             {% endif %}
         `;
@@ -2407,7 +2416,7 @@
             </td>
             <td>
                 <button style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
-                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}',this.id)">${isUploaded ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
+                    onclick="validateAODDateAndUpload('${newRowId}', 'AOD-${currentRefNo}', 'CSFAOD${newRowId}', this.id)">${isUploaded ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
             </td>
             <td>
                 <button style="margin-left: 30%;" class="btn btn-primary removeRow" ${index + 1 === mergedAODData.length ? '' : 'disabled'}>
@@ -2420,7 +2429,7 @@
             </td>
             <td>
                 <button disabled style="margin-left: 30%;" id="cSFAOD${newRowId}" type="button" class="btn btn-primary" data-toggle="modal" 
-                    onclick="openFileUploadModal('AOD-${currentRefNo}','PSC', 'CSFAOD${newRowId}',this.id)">${isUploaded ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
+                    onclick="validateAODDateAndUpload('${newRowId}', 'AOD-${currentRefNo}', 'CSFAOD${newRowId}', this.id)">${isUploaded ? 'Uploaded' : '<i class="fa fa-upload"></i>'}</button>
             </td>
         {% endif %}
         `;

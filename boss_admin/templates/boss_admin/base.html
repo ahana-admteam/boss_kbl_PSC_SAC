@@ -471,6 +471,49 @@
         });
 </script>
 
+<script>
+    // Block 'e', 'E', '+', '-' from ALL number inputs (typing + paste)
+    document.addEventListener('DOMContentLoaded', function () {
+        function protectNumberInput(el) {
+            if (el.dataset.blockEBound) return;  // don't bind twice
+            el.dataset.blockEBound = '1';
+
+            el.addEventListener('keydown', function (e) {
+                if (['e', 'E', '+', '-'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            el.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = text.replace(/[^0-9]/g, '');
+                document.execCommand('insertText', false, cleaned);
+            });
+            el.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+
+        // Bind to inputs already in the DOM
+        document.querySelectorAll('input[type="number"]').forEach(protectNumberInput);
+
+        // Bind to inputs added dynamically later (e.g., AOD rows, credit facility rows)
+        const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+                m.addedNodes.forEach(function (node) {
+                    if (node.nodeType !== 1) return;  // not an Element
+                    if (node.matches && node.matches('input[type="number"]')) {
+                        protectNumberInput(node);
+                    }
+                    if (node.querySelectorAll) {
+                        node.querySelectorAll('input[type="number"]').forEach(protectNumberInput);
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
 <!-- file upload start -->
 <script>
   let buttonid_modal = ''
